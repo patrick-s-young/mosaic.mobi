@@ -1,0 +1,66 @@
+.app-container {
+  background-color: #ffffff6d;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: top;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.iphone-x-notch-spacer {
+  height: 64px;
+}
+
+.iphone-x-main-screen {
+  width: 100vw; 
+  height: 100vw;
+  background-color: rgb(242, 242, 242);
+}
+
+.iphone-x-main-screen-to-slider-spacing {
+  width: 100vw;
+  height: 4vw;
+}
+
+.iphone-x-slider {
+  width: 100vw;
+  height: 12vw;
+  align-content: center;
+  background-color: rgb(255, 255, 255);
+}
+
+.iphone-x-slider-to-filter-buttons-spacing {
+  width: 100vw;
+  height: 2vw;
+}
+
+.iphone-x-filter-buttons-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.iphone-x-filter-button {
+  width: 18vw;
+  height: 18vw;
+  margin: 1vw;
+  background-color: rgb(223, 0, 67);
+}
+
+.iphone-x-buttons-to-navigation-spacing {
+  width: 100vw;
+  height: 2vw;
+}
+
+.iphone-x-navigation-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.iphone-x-navigation-button {
+  width: 31vw;
+  height: 31vw;
+  margin: 1vw;
+  background-color: rgb(0, 109, 0);
+}
