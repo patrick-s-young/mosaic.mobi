@@ -1,5 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+export enum UploadPhaseEnum {
+  PROMPT,
+  VALIDATING_FILE,
+  UPLOADING_VIDEO,
+  PRELOADING_VIDEO,
+  PRELOADING_IMAGES,
+  FINISHED
+}
+
+export interface UploadPhase {
+  uploadPhase: UploadPhaseEnum
+}
+
 export interface VideoIsUploaded {
   videoIsUploaded: boolean
   assetID: string
@@ -19,7 +32,7 @@ export interface ImagesArePreloaded {
   imageURLs: Array<string>
 }
 
-export type UploadState = VideoIsUploaded & VideoIsPreloaded & ImagesArePreloaded & VideoDuration
+export type UploadState = VideoIsUploaded & VideoIsPreloaded & ImagesArePreloaded & VideoDuration & UploadPhase
 
 const initialState: UploadState = {
   videoIsUploaded: false,
@@ -28,7 +41,8 @@ const initialState: UploadState = {
   videoIsPreloaded: false,
   videoURL: '',
   imagesArePreloaded: false,
-  imageURLs: []
+  imageURLs: [],
+  uploadPhase: UploadPhaseEnum.PROMPT
 }
 
 const uploadSlice = createSlice ({
@@ -36,19 +50,26 @@ const uploadSlice = createSlice ({
   initialState,
   reducers: {
     setVideoDuration (state, action: PayloadAction<VideoDuration>) {
-      state.duration = action.payload.duration
+      state.duration = action.payload.duration;
+      state.uploadPhase = UploadPhaseEnum.UPLOADING_VIDEO;
     },
     setVideoIsUploaded (state, action: PayloadAction<VideoIsUploaded>) {
       state.videoIsUploaded = true;
       state.assetID = action.payload.assetID;
+      state.uploadPhase = UploadPhaseEnum.PRELOADING_VIDEO;
     },
     setVideoIsPreloaded (state, action: PayloadAction<VideoIsPreloaded>) {
       state.videoIsPreloaded = true;
       state.videoURL = action.payload.videoURL;
+      state.uploadPhase = UploadPhaseEnum.PRELOADING_IMAGES;
     },
     setImagesArePreloaded (state, action: PayloadAction<ImagesArePreloaded>) {
       state.imagesArePreloaded = true;
       state.imageURLs = action.payload.imageURLs;
+      state.videoIsUploaded = false;
+      state.videoIsPreloaded = false;
+      state.imagesArePreloaded = false;
+      state.uploadPhase = UploadPhaseEnum.PROMPT;
     }   
   }
 });

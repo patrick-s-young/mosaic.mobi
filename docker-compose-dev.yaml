@@ -8,7 +8,7 @@ services:
       - backend
       - api
     build:
-      context: ../mosaic-proxy-server
+      context: ./mosaic-proxy
       dockerfile: Dockerfile
     ports:
       - '80:80'
@@ -17,14 +17,14 @@ services:
 
   frontend:
     build:
-      context: ../mosaic-ui
+      context: ./mosaic-frontend
       dockerfile: Dockerfile
     networks:
       - mosaic-network
 
   backend:
     build:
-      context: ../mosaic-app-server
+      context: ./mosaic-backend
       dockerfile: Dockerfile
     volumes:
       - mosaic-volume:/var/lib/video
@@ -33,7 +33,7 @@ services:
 
   api:
     build:
-      context: ../mosaic-ffmpeg-api
+      context: ./mosaic-api
       dockerfile: Dockerfile
     volumes:
       - mosaic-volume:/var/lib/video
