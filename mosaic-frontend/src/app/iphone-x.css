@@ -1,22 +1,10 @@
-.app-container {
-  background-color: #ffffff6d;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: top;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
 
-.iphone-x-notch-spacer {
-  height: 64px;
-}
+
 
 .iphone-x-main-screen {
   width: 100vw; 
   height: 100vw;
-  background-color: rgb(242, 242, 242);
+  background-color: rgb(255, 255, 255);
 }
 
 .iphone-x-main-screen-to-slider-spacing {
