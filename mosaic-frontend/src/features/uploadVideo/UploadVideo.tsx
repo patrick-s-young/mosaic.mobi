@@ -1,12 +1,16 @@
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setVideoDuration, setVideoIsUploaded, setVideoIsPreloaded, setImagesArePreloaded } from 'features/uploadVideo/uploadSlice';
+import { setVideoDuration, setVideoIsUploaded, setVideoIsPreloaded, setImagesArePreloaded, UploadPhaseEnum } from 'features/uploadVideo/uploadSlice';
 import { setNavSection } from 'features/navigation/navSlice';
 import type { RootState } from 'app/rootReducer';
 import type { UploadState } from 'features/uploadVideo/uploadSlice';
 import { preloadSequentialImages, preloadVideo, uploadFile } from 'utils';
 import { loadVideoMetadata } from 'utils/loadVideoMetadata';
+import type { UploadPhase } from 'features/uploadVideo/uploadSlice';
+
+import loadingAnim from 'assets/images/loading_200x200.gif';
+import 'features/uploadVideo/uploadVideo.css';
 
 ///// TEST VALUES ///////
 const isTesting: boolean = false;
@@ -18,9 +22,11 @@ export const UploadVideo: React.FC = () => {
   const dispatch = useDispatch();
   const { videoIsUploaded, 
           videoIsPreloaded, 
-          imagesArePreloaded, 
+          imagesArePreloaded,
+          uploadPhase, 
           assetID } = useSelector<RootState, UploadState>((state) => state.upload);
 
+  console.log(`uploadPhase: ${uploadPhase}\n\n`);
 
   function onSetVideoDuration (duration: number) {
     dispatch(setVideoDuration({ duration }));
@@ -40,20 +46,20 @@ export const UploadVideo: React.FC = () => {
   }
 
   function onFormSubmit (event) {
-
+/*
     if (isTesting == true) {
       loadVideoMetadata(`/${testAssetID}/resized.mov`, 1000)
         .then(data => onSetVideoDuration(data.duration))
         .then(() => onVideoIsUploaded(testAssetID));
       return; 
     }
-
+*/
 
     const selectedFile = event.target.files[0];
-    console.log(`selectedFile: ${selectedFile.name}`);
+    console.log(`_selectedFile: ${selectedFile.name}`);
     const reader = new FileReader();
     reader.onload = function(evt) {
-      console.log(`evt.target.result: ${evt.target.result}`);
+      console.log(`_evt.target.result: ${evt.target.result}`);
       const blob: Blob = new Blob( [ evt.target.result ], { type: "video/mp4" } );
       const urlCreator = window.URL || window.webkitURL;
       var videoUrl = urlCreator.createObjectURL( blob );
@@ -103,10 +109,17 @@ export const UploadVideo: React.FC = () => {
 
   return (
     <div>
-      {!videoIsUploaded &&
+      {uploadPhase === UploadPhaseEnum.PROMPT &&
         <div>
           <label>UPLOAD - VIDEO</label>
           <input id="myFile" type="file" onChange={onFormSubmit} ></input>
+        </div>
+      }
+      {uploadPhase !== UploadPhaseEnum.PROMPT &&
+        <div className='loading-anim-container'>
+          <div className='loading-anim-item'>
+            <img src={loadingAnim}  />
+          </div>
         </div>
       }
     </div>

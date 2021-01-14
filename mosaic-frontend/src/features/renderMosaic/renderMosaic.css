@@ -1,0 +1,14 @@
+.loading-anim-container {
+  display: flex; /* establish flex container */
+  flex-direction: column; /* make main-axis vertical */
+  justify-content: center; /* align items vertically, in this case */
+  align-items: center; /* align items horizontally, in this case */
+  height: 100vw; /* for demo purposes */
+  background-color: rgb(255, 255, 255); /* for demo purposes */
+}
+
+.loading-anim-item {
+  width: 200px;
+  margin: 0px;
+  text-align: center;
+}
