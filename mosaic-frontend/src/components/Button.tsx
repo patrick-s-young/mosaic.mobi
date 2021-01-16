@@ -1,19 +1,26 @@
-import React from 'react';
-import type { ButtonProps } from 'components/button.config';
+import React, { PropsWithChildren } from 'react';
 
-const Button: React.FC<ButtonProps> = ({
-  onClickCallback,
-  stateValue,
-  isEnabled,
-  imagePath,
-  className,
-  altText
-}) => {
+
+export interface ButtonProps<T> {
+  stateValue: T
+  onClickCallback: (newStateValue: T) => void
+  isEnabled: boolean
+  className: { 
+    default: string,
+    hilite: string
+  }
+  imagePath: string
+  altText: string
+}
+
+const Button = <T, >(
+  props: PropsWithChildren<ButtonProps<T>>
+) => {
   return (
     <div >
-      { isEnabled ? 
-          <img src={imagePath} className={className.default} onClick={() => onClickCallback(stateValue)} alt={altText} /> 
-        : <img src={imagePath} className={className.hilite} alt={altText} />
+      { props.isEnabled ? 
+          <img src={props.imagePath} className={props.className.default} onClick={() => props.onClickCallback(props.stateValue)} alt={props.altText} /> 
+        : <img src={props.imagePath} className={props.className.hilite} alt={props.altText} />
       }
     </div>
   );
