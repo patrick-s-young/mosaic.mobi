@@ -1,3 +1,4 @@
+
 export interface UploadFile {
   (file: File, url: string): Promise<string>
 }

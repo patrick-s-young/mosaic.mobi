@@ -14,8 +14,7 @@ import 'features/uploadVideo/uploadVideo.css';
 
 ///// TEST VALUES ///////
 const isTesting: boolean = false;
-const testAssetID: string = '1610144614058';
-
+const testAssetID: string = 'test-video';
 
 ///////////////////
 export const UploadVideo: React.FC = () => {
@@ -46,14 +45,13 @@ export const UploadVideo: React.FC = () => {
   }
 
   function onFormSubmit (event) {
-/*
-    if (isTesting == true) {
-      loadVideoMetadata(`/${testAssetID}/resized.mov`, 1000)
-        .then(data => onSetVideoDuration(data.duration))
-        .then(() => onVideoIsUploaded(testAssetID));
-      return; 
+
+    if (isTesting) {
+      onSetVideoDuration(8); // duration of 'src\assets\test-video\resized.mov'
+      onVideoIsUploaded(testAssetID);
+      return;
     }
-*/
+
 
     const selectedFile = event.target.files[0];
     console.log(`_selectedFile: ${selectedFile.name}`);
@@ -84,7 +82,6 @@ export const UploadVideo: React.FC = () => {
 
   useEffect(() => {
     if (videoIsUploaded && !videoIsPreloaded) {
-
       const videoPath = !isTesting ? `/uploads/${assetID}/resized.mov` : `/${testAssetID}/resized.mov`;
       preloadVideo(videoPath)
         .then(videoURL => onVideoIsPreloaded(videoURL))
@@ -110,17 +107,21 @@ export const UploadVideo: React.FC = () => {
   return (
     <div>
       {uploadPhase === UploadPhaseEnum.PROMPT &&
-        <div>
-          <label>UPLOAD - VIDEO</label>
-          <input id="myFile" type="file" onChange={onFormSubmit} ></input>
+      <div className='uploadVideo_flex-container'>
+        <div className="uploadVideo_button_wrapper">
+          <label className="uploadVideo_button_label">
+            Upload Video
+            <input type="file" className="file-submit" name="myFile" onChange={onFormSubmit}></input>
+          </label>
         </div>
+      </div>
       }
       {uploadPhase !== UploadPhaseEnum.PROMPT &&
-        <div className='loading-anim-container'>
-          <div className='loading-anim-item'>
-            <img src={loadingAnim}  />
-          </div>
+        <div className='uploadVideo_flex-container'>
+        <div className='uploadVideo_loading-animation'>
+          <img src={loadingAnim}  alt='Loading..please wait'/>
         </div>
+      </div>
       }
     </div>
   )
