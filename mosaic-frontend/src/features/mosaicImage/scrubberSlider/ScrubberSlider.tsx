@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentScrubberFrame } from 'features/mosaicImage/scrubberSlice';
 import type { CurrentScrubberFrame, ScrubberState } from 'features/mosaicImage/scrubberSlice';
 import type { RootState } from 'app/rootReducer';
-import 'features/mosaicImage/scrubberStyles.css';
+import 'features/mosaicImage/scrubberSlider/scrubberSlider.css';
 
 
 const ScrubberSlider: React.FC = () => {
@@ -23,9 +23,8 @@ const ScrubberSlider: React.FC = () => {
         max={scrubberFramesMax - 1} 
         step='1'
         defaultValue={currentScrubberFrame} 
-        className='scrubberSlider' 
+        className='scrubberSlider_input' 
         onChange={onSlideHandler}
-        data-testid='backgroundSelectorInput'
       />
     </div>
   );
