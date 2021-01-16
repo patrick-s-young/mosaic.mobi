@@ -5,7 +5,7 @@ import { MosaicSelector, setMosaicVideo, setNumTiles, mosaicTile } from 'feature
 import type { RootState } from 'app/rootReducer';
 import type { MosaicState, MosaicTile, NumTiles } from 'features/mosaicVideo';
 import type { UploadState } from 'features/uploadVideo/uploadSlice';
-import 'features/mosaicVideo/mosaicStyles.css';
+import 'features/mosaicVideo/mosaicTiles.css';
 
 
 export const MosaicTiles: React.FC= () => {
