@@ -10,29 +10,42 @@ html, body, .full_size {
 }
 
 
-
-.app-container- {
-  display: grid;
-  grid-template-rows: 600px, 30hv;
-  grid-template-columns: 1fr;
-  border-style: dashed;
-
-  border-width: 2px;
-  background-color: antiquewhite;
+.app_main-screen_container {
+  width: 100vw; 
+  height: 100vw;
+  background-color: rgb(255, 255, 255);
 }
 
-.upload-video-container- {
-  display: grid;
-  grid-template-rows: 600px;  
-  border-style: dashed;
-  border-color: rgb(228, 180, 22);
-  border-width: 2px;
+.app_main-screen_margin-bottom {
+  width: 100vw;
+  height: 4vw;
 }
 
-.edit-mosaic-container- {
-  display: grid;
-  grid-template-rows: 480px, 48px, 72px;
-  border-style: dashed;
-  border-color: rgb(159, 29, 148);
-  border-width: 2px;
+.app_scrubber-slider_container {
+  width: 100vw;
+  height: 12vw;
+  align-content: center;
+  background-color: rgb(255, 255, 255);
+}
+
+.app_mosaic-selector_container {
+  display: flex;
+  flex-direction: row;
+}
+
+.app_mosaic-selector_button {
+  width: 18vw;
+  height: 18vw;
+  margin: 1vw;
+  background-color: rgb(223, 0, 67);
+}
+
+.app_mosaic-selector_margin-bottom {
+  width: 100vw;
+  height: 2vw;
+}
+
+.app_navigation_container {
+  display: flex;
+  flex-direction: row;
 }
