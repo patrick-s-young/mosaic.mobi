@@ -4,13 +4,14 @@ import { setNavSection } from 'features/navigation/navSlice';
 import type { NavState, NavSection } from 'features/navigation/navSlice';
 import { v1 as uuid } from 'uuid';
 import type { RootState } from 'app/rootReducer';
-import 'app/iphone-x.css';
+import Button from 'components/Button';
+import navigationConfig from 'features/navigation/navigation.config.ts';
+import 'features/navigation/navigation.css';
 
 
 
 export const Navigation: React.FC  = () => {
   const dispatch = useDispatch();
-  const navSections: Array<NavSection> = ['Upload Video', 'Edit Mosaic', 'Render Mosaic'];
   const { navSection } = useSelector<RootState, NavState>((state) => state.nav);
 
   const onClickHandler = (newStateValue: NavSection) => {
@@ -18,19 +19,17 @@ export const Navigation: React.FC  = () => {
   }
 
   return (
-    <div style={{display: 'flex', width: '480px'}}>
-      { navSections.map((section) =>
-        <div key={uuid()} >
-          { section !== navSection ?
-              <div  className='iphone-x-navigation-button' onClick={() => onClickHandler(section)}>
-                    {section}
-              </div>
-            : <div  className='iphone-x-navigation-button' style={{ backgroundColor: 'lightgreen'}}>
-                    {section}
-              </div>
-          }
-        </div>  
-        )
+    <div className='navigation_flex-container'>
+      { navigationConfig().map((button) =>
+          <Button 
+            onClickCallback={onClickHandler}
+            stateValue={button.stateValue}
+            isEnabled={button.stateValue !== navSection}
+            imagePath={button.imagePath}
+            className={button.className}
+            altText={button.altText}
+            key={uuid()}
+          />)
       }
     </div>
   )

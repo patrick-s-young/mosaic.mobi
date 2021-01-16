@@ -1,0 +1,24 @@
+
+.navigation_flex-container {
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.navigation_button_default {
+  width: 32vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  filter: grayscale(100%); 
+}
+
+.navigation_button_hilite {
+  width: 32vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  filter: saturate(2); 
+}
