@@ -2,11 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum UploadPhaseEnum {
   PROMPT,
-  VALIDATING_FILE,
   UPLOADING_VIDEO,
   PRELOADING_VIDEO,
-  PRELOADING_IMAGES,
-  FINISHED
+  PRELOADING_IMAGES
 }
 
 export interface UploadPhase {

@@ -1,4 +1,4 @@
-export { MosaicSelector } from 'features/mosaicVideo/MosaicSelector';
+export { MosaicSelector } from 'features/mosaicVideo/mosaicSelector/MosaicSelector';
 export { MosaicTiles } from 'features/mosaicVideo/MosaicTiles';
 export { mosaicTile } from 'features/mosaicVideo/MosaicTile';
 export { setMosaicVideo } from 'features/mosaicVideo/mosaicSlice';

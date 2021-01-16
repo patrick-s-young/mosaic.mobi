@@ -1,0 +1,21 @@
+.mosaicSelector_flex-container {
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.mosaicSelector_button_default {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  filter: grayscale(100%); 
+}
+
+.mosaicSelector_button_hilite {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  filter: saturate(2); 
+}

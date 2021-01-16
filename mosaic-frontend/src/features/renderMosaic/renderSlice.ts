@@ -26,21 +26,28 @@ const renderSlice = createSlice ({
   initialState,
   reducers: {
     setRenderPhase (state, action: PayloadAction<RenderPhase>) {
+      console.log(`renderSlice.ts > setRenderPhase > ${action.payload.renderPhase}`);
+      state.renderPhase = action.payload.renderPhase;
+    },
+    resetRenderPhase (state, action: PayloadAction<RenderPhase>) {
+      console.log(`renderSlice.ts > resetRenderPhase`);
       state.renderPhase = action.payload.renderPhase;
     },
     setRenderBlob (state, action: PayloadAction<RenderBlob>) {
+      console.log(`renderSlice.ts > setRenderBlob`);
       state.renderBlob = action.payload.renderBlob;
-      state.renderPhase = RenderPhaseEnum.SAVE_PROMPT;
     }
   }
 });
 
 export const {
   setRenderPhase,
+  resetRenderPhase,
   setRenderBlob
 } = renderSlice.actions;
 
 export type SetRenderPhase = ReturnType <typeof setRenderPhase>;
+export type ResetRenderPhase = ReturnType <typeof resetRenderPhase>;
 export type SetRenderBlob = ReturnType <typeof setRenderBlob>;
 
 export default renderSlice.reducer;
