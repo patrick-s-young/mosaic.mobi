@@ -12,7 +12,7 @@ services:
       - mosaic-network
 
   frontend:
-    image: patricksyoung/mosaic-frontend:1.2
+    image: patricksyoung/mosaic-frontend:latest
     networks:
       - mosaic-network
 
