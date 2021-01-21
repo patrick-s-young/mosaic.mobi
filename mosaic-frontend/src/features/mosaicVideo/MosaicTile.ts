@@ -134,8 +134,21 @@ export const mosaicTile: Partial<MosaicTile> = {
   _initFadeIn() {
     this._video.currentTime = this._inPoint;
     this._fadeStartTime = Date.now();
-    this._video.play();
-    this.currentEventAction = this._fadeIn;
+    const playPromise = this._video.play();
+    if (playPromise !== undefined) {
+      playPromise.then(_ => {
+        console.log(`Automatic playback started!`);
+        this.currentEventAction = this._fadeIn;
+        // Show playing UI.
+      })
+      .catch(error => {
+        console.log(`Auto-play was prevented by error: ${error}`);
+        // Auto-play was prevented
+        // Show paused UI.
+      });
+    }
+    ///this._video.play();
+    // this.currentEventAction = this._fadeIn;
   },
   _fadeIn() {
       const timeElapsed = Date.now() - this._fadeStartTime;
