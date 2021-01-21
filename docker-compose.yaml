@@ -12,7 +12,7 @@ services:
       - mosaic-network
 
   frontend:
-    image: patricksyoung/mosaic-frontend:1.3
+    image: patricksyoung/mosaic-frontend:1.4
     networks:
       - mosaic-network
 
@@ -38,3 +38,4 @@ volumes:
 networks:
   mosaic-network:
     driver: bridge # a user defined bridge is required; the default bridge network doesn't support name resolution
+
