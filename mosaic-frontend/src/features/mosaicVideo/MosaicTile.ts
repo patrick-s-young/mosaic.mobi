@@ -109,6 +109,7 @@ export const mosaicTile: Partial<MosaicTile> = {
     this.nextEventTime = this._tileAnimEvents[this._nextEventIndex].time;
   },
   clearAnimation() {
+    console.log(`MosaicTile > clearAnimation`);
     this.currentEventAction = this._wait;
     this._video.pause();
     this._video.removeAttribute('src');
@@ -116,6 +117,7 @@ export const mosaicTile: Partial<MosaicTile> = {
   },
   currentEventAction() {},
   updateCurrentEventAction() {
+    //console.log(`MosaicTile > updateCurrentEventAction`);
     const newCurrentEventAction = this._tileAnimEvents[this._nextEventIndex].action;
     this._nextEventIndex = (this._nextEventIndex + 1) % this._maxEventIndex;
     this.nextEventTime = this._tileAnimEvents[this._nextEventIndex].time;
@@ -137,7 +139,7 @@ export const mosaicTile: Partial<MosaicTile> = {
     const playPromise = this._video.play();
     if (playPromise !== undefined) {
       playPromise.then(_ => {
-        console.log(`Automatic playback started!`);
+        //console.log(`Automatic playback started!`);
         this.currentEventAction = this._fadeIn;
         // Show playing UI.
       })

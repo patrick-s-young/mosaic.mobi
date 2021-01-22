@@ -6,18 +6,13 @@ import type { RootState } from 'app/rootReducer';
 import { useSelector } from 'react-redux';
 
 const Scrubber: React.FC = () => {
-
-  const { imageURLs } = useSelector<RootState, UploadState>((state) => state.upload);
-  
-  // move to upload.slice
-  const width: number = window.innerWidth; //375; //480;
-  const height: number = window.innerWidth; //480;
+  const { imageURLs, canvasWidth } = useSelector<RootState, UploadState>((state) => state.upload);
 
   return (
     <div className='scrubber-container'>
       <ScrubberFrames
-        width={width}
-        height={height}
+        width={canvasWidth}
+        height={canvasWidth}
         imageArr={imageURLs}
       />
     </div>
