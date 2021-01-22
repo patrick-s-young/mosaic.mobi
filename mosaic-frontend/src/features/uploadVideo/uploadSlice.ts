@@ -2,86 +2,106 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum UploadPhaseEnum {
   PROMPT,
-  UPLOADING_VIDEO,
-  PRELOADING_VIDEO,
-  PRELOADING_IMAGES
+  VIDEO_SUBMITED,
+  VIDEO_UPLOADED,
+  VIDEO_PRELOADED,
+  IMAGES_PRELOADED,
+  MOSAIC_INITIALIZED
 }
 
 export interface UploadPhase {
   uploadPhase: UploadPhaseEnum
 }
 
-export interface VideoIsUploaded {
-  videoIsUploaded: boolean
+export interface UploadAssetID {
   assetID: string
 }
 
-export interface VideoDuration {
-  duration: number
+export interface UploadDuration {
+  uploadDuration: number
 }
 
-export interface VideoIsPreloaded {
-  videoIsPreloaded: boolean
+export interface UploadVideoURL {
   videoURL: string
 }
 
-export interface ImagesArePreloaded {
-  imagesArePreloaded: boolean
+export interface UploadSelectedFile {
+  selectedFile: File | undefined
+}
+
+export interface UploadImageURLs {
   imageURLs: Array<string>
 }
 
-export type UploadState = VideoIsUploaded & VideoIsPreloaded & ImagesArePreloaded & VideoDuration & UploadPhase
+export interface UploadVideoResized {
+  resizedWidth: number
+}
+
+export interface UploadCanvasWidth {
+  canvasWidth: number
+}
+
+export type UploadState = 
+    UploadPhase 
+  & UploadAssetID 
+  & UploadDuration 
+  & UploadVideoURL 
+  & UploadSelectedFile
+  & UploadImageURLs
+  & UploadVideoResized
+  & UploadCanvasWidth
 
 const initialState: UploadState = {
-  videoIsUploaded: false,
+  uploadPhase: UploadPhaseEnum.PROMPT,
+  selectedFile: undefined,
   assetID: '',
-  duration: 0,
-  videoIsPreloaded: false,
+  uploadDuration: 0,
   videoURL: '',
-  imagesArePreloaded: false,
   imageURLs: [],
-  uploadPhase: UploadPhaseEnum.PROMPT
+  resizedWidth: 320, // make dynamically linked to video meta data of resized.mov
+  canvasWidth: 0
 }
 
 const uploadSlice = createSlice ({
   name: 'upload',
   initialState,
   reducers: {
-    setVideoDuration (state, action: PayloadAction<VideoDuration>) {
-      state.duration = action.payload.duration;
-      state.uploadPhase = UploadPhaseEnum.UPLOADING_VIDEO;
+    setUploadPhase (state, action: PayloadAction<UploadPhase>) {
+      state.uploadPhase = action.payload.uploadPhase;
     },
-    setVideoIsUploaded (state, action: PayloadAction<VideoIsUploaded>) {
-      state.videoIsUploaded = true;
+    setVideoSubmitted (state, action: PayloadAction<UploadDuration & UploadSelectedFile>) {
+      state.uploadDuration = action.payload.uploadDuration;
+      state.selectedFile = action.payload.selectedFile;
+      state.uploadPhase = UploadPhaseEnum.VIDEO_SUBMITED;
+    },
+    setVideoIsUploaded (state, action: PayloadAction<UploadAssetID>) {
       state.assetID = action.payload.assetID;
-      state.uploadPhase = UploadPhaseEnum.PRELOADING_VIDEO;
+      state.uploadPhase = UploadPhaseEnum.VIDEO_UPLOADED;
     },
-    setVideoIsPreloaded (state, action: PayloadAction<VideoIsPreloaded>) {
-      state.videoIsPreloaded = true;
+    setVideoIsPreloaded (state, action: PayloadAction<UploadVideoURL & UploadCanvasWidth>) {
       state.videoURL = action.payload.videoURL;
-      state.uploadPhase = UploadPhaseEnum.PRELOADING_IMAGES;
+      state.canvasWidth = action.payload.canvasWidth;
+      state.uploadPhase = UploadPhaseEnum.VIDEO_PRELOADED;
     },
-    setImagesArePreloaded (state, action: PayloadAction<ImagesArePreloaded>) {
-      state.imagesArePreloaded = true;
+    setImagesArePreloaded (state, action: PayloadAction<UploadImageURLs>) {
       state.imageURLs = action.payload.imageURLs;
-      state.videoIsUploaded = false;
-      state.videoIsPreloaded = false;
-      state.imagesArePreloaded = false;
-      state.uploadPhase = UploadPhaseEnum.PROMPT;
+      state.uploadPhase = UploadPhaseEnum.IMAGES_PRELOADED;
     }   
   }
 });
 
 export const {
-  setVideoDuration,
+  setVideoSubmitted,
   setVideoIsUploaded,
   setVideoIsPreloaded,
-  setImagesArePreloaded
+  setImagesArePreloaded,
+  setUploadPhase
 } = uploadSlice.actions;
 
-export type SetVideoDuration = ReturnType <typeof setVideoDuration>;
+export type SetVideoSubmitted = ReturnType <typeof setVideoSubmitted>;
 export type SetVideoIsUploaded = ReturnType <typeof setVideoIsUploaded>;
 export type SetVideoIsPreloaded = ReturnType <typeof setVideoIsPreloaded>;
 export type SetImagesArePreloaded = ReturnType <typeof setImagesArePreloaded>;
+export type SetUploadPhase = ReturnType <typeof setUploadPhase>;
 
 export default uploadSlice.reducer;
