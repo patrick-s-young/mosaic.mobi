@@ -13,10 +13,6 @@ import 'app/app.css';
 const App: React.FC = () => {
   const { navSection } = useSelector<RootState, NavState>((state) => state.nav);
 
-  console.log(`window.innerWidth: ${window.innerWidth}`);
-
-  console.log(`window.innerWidth: ${window.innerHeight}`);
-
   return (
     <div>
 
