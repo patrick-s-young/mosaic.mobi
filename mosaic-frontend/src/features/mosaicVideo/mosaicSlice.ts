@@ -1,10 +1,22 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 import {
   getInPoints,
   getTileAnimEvents,
   getDrawToCanvasArea,
   getCopyVideoFromArea
 }  from 'features/mosaicVideo/helpers';
+
+export enum MosaicPhaseEnum {
+  NUMTILES_UPDATED,
+  ANIMATION_STOPPED,
+  TILES_UPDATED,
+  ANIMATION_STARTED,
+  DEBUG_PAUSE
+}
+
+export interface MosaicPhase {
+  mosaicPhase: MosaicPhaseEnum
+}
 
 export type NumTiles = 2 | 3 | 4 | 6 | 9;
 export type NumTilesToString = '2' | '3' | '4' | '6' | '9';
@@ -20,19 +32,21 @@ export type TimeGroup = Array<Time>;
 export type TimeGroupCollection = { [key in NumTilesToString] : TimeGroup };
 
 
-export interface MosaicState{
+export interface MosaicFormatting {
   numTiles: NumTiles,
   canvasWidth: number,
   inPoints: TimeGroupCollection,
   copyVideoFromArea: RectCollection,
   drawToCanvasArea: RectGroupCollection,
-  tileAnimEvents: ActionGroupCollection
+  tileAnimEvents: ActionGroupCollection,
 }
 
+export type MosaicState = MosaicFormatting & MosaicPhase;
+
 export const numTilesAllPossibleValues: Array<NumTiles> = [2, 3, 4, 6, 9];
-const numTilesDefault: NumTiles = 3;
+const numTilesDefault: NumTiles = 9;
 const initialState: Partial<MosaicState> = {
-  numTiles: undefined,
+  mosaicPhase: MosaicPhaseEnum.ANIMATION_STOPPED,
   canvasWidth: undefined,
   inPoints: undefined,
   copyVideoFromArea: undefined,
@@ -44,29 +58,33 @@ const mosaicSlice = createSlice({
   name: 'mosaic',
   initialState,
   reducers: {
-    setMosaicVideo (state, action: PayloadAction<{duration: number, width: number, height: number}>) {
-      const { duration, width, height } = action.payload;
-      if (duration && width && height) {
-        state.inPoints = getInPoints(duration);
-        state.copyVideoFromArea = getCopyVideoFromArea(width, height);
-        state.tileAnimEvents = getTileAnimEvents();
-        state.canvasWidth = width; //375; //width > window.innerWidth ? window.innerWidth : width;
-        state.drawToCanvasArea = getDrawToCanvasArea(state.canvasWidth, state.canvasWidth);
-        state.numTiles = numTilesDefault;
-      }
+    setMosaicPhase (state, action: PayloadAction<MosaicPhase>) {
+      state.mosaicPhase = action.payload.mosaicPhase;
+    },
+    setMosaicFormatting (state, action: PayloadAction<{duration: number, videoWidth: number, canvasWidth: number}>) {
+      const { duration, videoWidth, canvasWidth } = action.payload;
+      state.inPoints = getInPoints(duration);
+      state.copyVideoFromArea = getCopyVideoFromArea(videoWidth, videoWidth);
+      state.tileAnimEvents = getTileAnimEvents();
+      state.canvasWidth = canvasWidth;
+      state.drawToCanvasArea = getDrawToCanvasArea(state.canvasWidth, state.canvasWidth);
+      state.numTiles = numTilesDefault;
     },
     setNumTiles (state, action: PayloadAction<NumTiles>) {
       const numTiles = action.payload;
       state.numTiles = numTiles;
+      state.mosaicPhase = MosaicPhaseEnum.NUMTILES_UPDATED;
     }
   }
 });
 
 export const {
-  setMosaicVideo,
+  setMosaicPhase,
+  setMosaicFormatting,
   setNumTiles
 } = mosaicSlice.actions;
 
-export type SetMosaicVideo = ReturnType<typeof setMosaicVideo>;
-
+export type SetMosaicPhase = ReturnType<typeof setMosaicPhase>;
+export type SetMosaicFormatting = ReturnType<typeof setMosaicFormatting>;
+export type SetNumTiles = ReturnType<typeof setNumTiles>;
 export default mosaicSlice.reducer;
