@@ -20,7 +20,7 @@ import loadingAnim from 'assets/images/loading_200x200.gif';
 import 'features/uploadVideo/uploadVideo.css';
 
 ///// TEST VALUES ///////
-const isTesting: boolean = false;
+const isTesting: boolean = true;
 const testAssetID: string = 'test-video';
 const testAssetDuration: number = 8.0;
 
@@ -102,7 +102,7 @@ export const UploadVideo: React.FC = () => {
   }
   
   return (
-    <div>
+    <div style={{position: 'absolute', width: '100vw', top: `0px`, zIndex: 5, opacity: 0.9}}>
       {uploadPhase === UploadPhaseEnum.PROMPT &&
       <div className='uploadVideo_flex-container'>
         <div className="uploadVideo_button_wrapper">

@@ -38,8 +38,7 @@ export const MosaicTiles: React.FC= () => {
         mosaicTiles.forEach(tile => tile.clearAnimation());
         canvasRef.current.getContext('2d')?.clearRect(0, 0, canvasWidth, canvasWidth);
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.ANIMATION_STOPPED}));
-        //dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.DEBUG_PAUSE}));
-        
+
         break;
       case MosaicPhaseEnum.ANIMATION_STOPPED:
         const newMosaicTiles: Array<MosaicTile> = [];
@@ -87,7 +86,7 @@ export const MosaicTiles: React.FC= () => {
 
 
   return(
-		  <div style={{position: 'relative', top: `-${window.innerWidth + 4}px`}}>
+		  <div style={{position: 'absolute', top: `0px`}}>
         <canvas
           ref={canvasRef}
           width={window.innerWidth}
