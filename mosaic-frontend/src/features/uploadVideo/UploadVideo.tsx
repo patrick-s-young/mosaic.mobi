@@ -20,7 +20,7 @@ import loadingAnim from 'assets/images/loading_200x200.gif';
 import 'features/uploadVideo/uploadVideo.css';
 
 ///// TEST VALUES ///////
-const isTesting: boolean = true;
+const isTesting: boolean = false;
 const testAssetID: string = 'test-video';
 const testAssetDuration: number = 8.0;
 
