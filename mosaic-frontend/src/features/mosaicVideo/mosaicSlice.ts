@@ -7,6 +7,7 @@ import {
 }  from 'features/mosaicVideo/helpers';
 
 export enum MosaicPhaseEnum {
+  WAITING_FOR_VIDEO,
   NUMTILES_UPDATED,
   ANIMATION_STOPPED,
   TILES_UPDATED,
@@ -46,7 +47,7 @@ export type MosaicState = MosaicFormatting & MosaicPhase;
 export const numTilesAllPossibleValues: Array<NumTiles> = [2, 3, 4, 6, 9];
 const numTilesDefault: NumTiles = 9;
 const initialState: Partial<MosaicState> = {
-  mosaicPhase: MosaicPhaseEnum.ANIMATION_STOPPED,
+  mosaicPhase: MosaicPhaseEnum.WAITING_FOR_VIDEO,
   canvasWidth: undefined,
   inPoints: undefined,
   copyVideoFromArea: undefined,
@@ -69,6 +70,7 @@ const mosaicSlice = createSlice({
       state.canvasWidth = canvasWidth;
       state.drawToCanvasArea = getDrawToCanvasArea(state.canvasWidth, state.canvasWidth);
       state.numTiles = numTilesDefault;
+      state.mosaicPhase = MosaicPhaseEnum.ANIMATION_STOPPED;
     },
     setNumTiles (state, action: PayloadAction<NumTiles>) {
       const numTiles = action.payload;

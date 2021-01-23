@@ -6,6 +6,7 @@
   align-items: center; /* align items horizontally, in this case */
   height: 100vw; /* for demo purposes */
   background-color: rgb(255, 255, 255); /* for demo purposes */
+
 }
 
 .uploadVideo_loading-animation {
