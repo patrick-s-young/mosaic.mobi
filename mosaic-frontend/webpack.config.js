@@ -38,7 +38,10 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({ template: './src/index.html' })
+    new HtmlWebpackPlugin({
+      template: './src/index.html',
+      favicon: './src/assets/favicons/favicon.ico'
+    })
   ],
   devServer: {
     contentBase: path.join(__dirname, 'src/assets')
