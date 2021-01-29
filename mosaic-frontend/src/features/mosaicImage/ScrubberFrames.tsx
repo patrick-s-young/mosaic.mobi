@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from 'app/rootReducer';
 import type { ScrubberState } from 'features/mosaicImage/scrubberSlice';
-import 'features/mosaicImage/scrubberStyles.css';
+import 'features/mosaicImage/scrubberFrames.css';
 
 interface ScrubberFramesProps {
   width: number
