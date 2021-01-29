@@ -1,7 +1,7 @@
 {
-  "name": "express-server",
+  "name": "mosaic-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Express.js server for the 'mosaic' web app",
   "main": "./dist/server.js",
   "scripts": {
     "start": "npm run build:live",

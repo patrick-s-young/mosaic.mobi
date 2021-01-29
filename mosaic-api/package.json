@@ -1,7 +1,7 @@
 {
-  "name": "mosaic-ffmpeg-api",
-  "version": "1.0.0",
-  "description": "",
+  "name": "mosaic-api",
+  "version": "1.4.0",
+  "description": "FFmpeg/Express.js video rendering api for the 'mosaic' web app",
   "main": "./dist/server.js",
   "scripts": {
     "start": "npm run build:live",

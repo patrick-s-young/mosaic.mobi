@@ -1,7 +1,7 @@
 {
-  "name": "mosaic-ui",
+  "name": "mosaic-frontend",
   "version": "1.0.0",
-  "description": "React client for Mosaic video editing web app",
+  "description": "React client for for the 'mosaic' web app",
   "main": "index.js",
   "scripts": {
     "bundle": "webpack",

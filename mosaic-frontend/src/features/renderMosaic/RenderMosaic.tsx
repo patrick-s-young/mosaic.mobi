@@ -33,7 +33,7 @@ export const RenderMosaic: React.FC = () => {
   }
 
   return (
-    <div>
+    <div style={{position: 'absolute', width: '100vw', top: `0px`, zIndex: 5, opacity: 0.9}}>
       {renderPhase === RenderPhaseEnum.RENDER_PROMPT &&
       <div className='renderMosaic_flex-container'>
         <div className="renderMosaic_button_wrapper">
@@ -53,3 +53,5 @@ export const RenderMosaic: React.FC = () => {
     </div>
   )
 }
+
+ 

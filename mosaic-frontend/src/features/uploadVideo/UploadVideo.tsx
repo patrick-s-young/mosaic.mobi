@@ -1,63 +1,101 @@
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setVideoDuration, setVideoIsUploaded, setVideoIsPreloaded, setImagesArePreloaded, UploadPhaseEnum } from 'features/uploadVideo/uploadSlice';
-import { setNavSection } from 'features/navigation/navSlice';
+// Redux Toolkit
 import type { RootState } from 'app/rootReducer';
+// <App>
+import { setAppPhase, AppPhaseEnum } from 'app/appSlice';
+import type { AppState } from 'app/appSlice';
+// <UploadVideo>
+import { 
+  preloadSequentialImages, 
+  preloadVideo, 
+  uploadFile } from 'utils';
+import { 
+  setVideoSubmitted,
+  setVideoIsUploaded, 
+  setVideoIsPreloaded, 
+  setImagesArePreloaded, 
+  UploadPhaseEnum,
+  setUploadPhase } from 'features/uploadVideo/uploadSlice';
 import type { UploadState } from 'features/uploadVideo/uploadSlice';
-import { preloadSequentialImages, preloadVideo, uploadFile } from 'utils';
-import { loadVideoMetadata } from 'utils/loadVideoMetadata';
-import type { UploadPhase } from 'features/uploadVideo/uploadSlice';
-
 import loadingAnim from 'assets/images/loading_200x200.gif';
 import 'features/uploadVideo/uploadVideo.css';
+// <MosaicTiles>
+import { setMosaicFormatting } from 'features//mosaicVideo/mosaicSlice';
+// <Navigation>
+import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
+
+
 
 ///// TEST VALUES ///////
-const isTesting: boolean = false;
+const isTesting: boolean = true;
 const testAssetID: string = 'test-video';
+const testAssetDuration: number = 8.0;
 
-///////////////////
+///// UploadVideo ///////
 export const UploadVideo: React.FC = () => {
   const dispatch = useDispatch();
-  const { videoIsUploaded, 
-          videoIsPreloaded, 
-          imagesArePreloaded,
-          uploadPhase, 
-          assetID } = useSelector<RootState, UploadState>((state) => state.upload);
+  const { uploadPhase, 
+          assetID, 
+          selectedFile,
+          canvasWidth,
+          uploadDuration,
+          resizedWidth} = useSelector<RootState, UploadState>((state) => state.upload); 
+  console.log(`uploadPhase: ${UploadPhaseEnum[uploadPhase]}\n\n`);
 
-  console.log(`uploadPhase: ${uploadPhase}\n\n`);
 
-  function onSetVideoDuration (duration: number) {
-    dispatch(setVideoDuration({ duration }));
-  }
+  useEffect(() => {
+    switch(uploadPhase) {
+      case UploadPhaseEnum.VIDEO_SUBMITED:
+        dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
+        if ( isTesting ) {
+          dispatch(setVideoIsUploaded({ assetID: testAssetID }));
+        } else {
+          if (selectedFile !== undefined) {
+            uploadFile(selectedFile, '/uploadvideo')
+              .then(assetID => dispatch(setVideoIsUploaded({ assetID })))
+              .catch(error => console.log(error));
+          }
+        }
+        break;
+      case UploadPhaseEnum.VIDEO_UPLOADED:
+        const videoPath = !isTesting ? `/uploads/${assetID}/resized.mov` : `/${testAssetID}/resized.mov`;
+        preloadVideo(videoPath)
+          .then(videoURL => dispatch(setVideoIsPreloaded({ videoURL, canvasWidth: window.innerWidth })))
+          .catch(err => console.log(`ERROR > preloadVideo: ${err}`));
+        break;
+      case UploadPhaseEnum.VIDEO_PRELOADED:
+        preloadSequentialImages({
+          startIdx: 1,
+          endIdx: 20,
+          nameFormat: 'img .jpg',
+          zeroPadding: 3,
+          directoryPath: !isTesting ? `/uploads/${assetID}` : `/${testAssetID}`})
+          .then(imageURLs => dispatch(setImagesArePreloaded({ imageURLs })))
+          .catch(err => console.log(`ERROR > preloadSequentialImages: ${err}`));
+        break;
+      case UploadPhaseEnum.IMAGES_PRELOADED:
+        dispatch(setMosaicFormatting({ duration: uploadDuration, videoWidth: resizedWidth, canvasWidth}));
+        dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.MOSAIC_INITIALIZED}));
+        break;
+      case UploadPhaseEnum.MOSAIC_INITIALIZED:
+        dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.PROMPT}));
+        dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));   
+        dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));  
+        break;
+    }
+  }, [uploadPhase]);
 
-  function onVideoIsUploaded (assetID: string) {
-    dispatch(setVideoIsUploaded({ videoIsUploaded: true, assetID }));
-  }
-
-  function onVideoIsPreloaded (videoURL: string) {
-    dispatch(setVideoIsPreloaded({ videoIsPreloaded: true, videoURL }));
-  }
-
-  function onImagesArePreloaded (imageURLs: Array<string>) {
-    dispatch(setImagesArePreloaded({ imagesArePreloaded: true, imageURLs }));
-    dispatch(setNavSection({navSection: 'Edit Mosaic'}));
-  }
 
   function onFormSubmit (event) {
-
     if (isTesting) {
-      onSetVideoDuration(8); // duration of 'src\assets\test-video\resized.mov'
-      onVideoIsUploaded(testAssetID);
+      dispatch(setVideoSubmitted({ selectedFile: undefined, uploadDuration: testAssetDuration}));
       return;
     }
-
-
     const selectedFile = event.target.files[0];
-    console.log(`_selectedFile: ${selectedFile.name}`);
     const reader = new FileReader();
     reader.onload = function(evt) {
-      console.log(`_evt.target.result: ${evt.target.result}`);
       const blob: Blob = new Blob( [ evt.target.result ], { type: "video/mp4" } );
       const urlCreator = window.URL || window.webkitURL;
       var videoUrl = urlCreator.createObjectURL( blob );
@@ -66,46 +104,16 @@ export const UploadVideo: React.FC = () => {
       video.addEventListener('loadedmetadata', (ev: Event) => {
         const target = ev.currentTarget as HTMLVideoElement;
         console.log(`duration: ${target.duration}`);
-        onSetVideoDuration(target.duration);
         urlCreator.revokeObjectURL(videoUrl);
-        uploadVideoFile(selectedFile);
+        dispatch(setVideoSubmitted({ selectedFile, uploadDuration: target.duration }));
       });
     }
+    // read file to determine if duration is not too long (less than fifteen seconds)
     reader.readAsArrayBuffer(selectedFile);
   }
-
-  function uploadVideoFile (videoFile: File) {
-    uploadFile(videoFile, '/uploadvideo')
-      .then(assetID => onVideoIsUploaded(assetID))
-      .catch(error => console.log(error))
-  }
-
-  useEffect(() => {
-    if (videoIsUploaded && !videoIsPreloaded) {
-      const videoPath = !isTesting ? `/uploads/${assetID}/resized.mov` : `/${testAssetID}/resized.mov`;
-      preloadVideo(videoPath)
-        .then(videoURL => onVideoIsPreloaded(videoURL))
-        .catch(err => console.log(`ERROR: ${err}`));
-    }
-  }, [videoIsPreloaded, videoIsUploaded, assetID]);
-
-  useEffect(() => {
-    if (videoIsUploaded && !imagesArePreloaded) {
-      preloadSequentialImages({
-        startIdx: 1,
-        endIdx: 20,
-        nameFormat: 'img .jpg',
-        zeroPadding: 3,
-        directoryPath: !isTesting ? `/uploads/${assetID}` : `/${testAssetID}`
-      })
-        .then(imageURLs => onImagesArePreloaded(imageURLs))
-        .catch(err => console.log(`ERROR: ${err}`));
-    }
-  }, [imagesArePreloaded, videoIsUploaded, assetID]);
-
-
+  
   return (
-    <div>
+    <div style={{position: 'absolute', width: '100vw', top: `0px`, zIndex: 5, opacity: 0.9}}>
       {uploadPhase === UploadPhaseEnum.PROMPT &&
       <div className='uploadVideo_flex-container'>
         <div className="uploadVideo_button_wrapper">

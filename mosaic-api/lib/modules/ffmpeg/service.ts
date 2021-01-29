@@ -62,8 +62,8 @@ export default class FFmpegService {
     const inputPath  = `${env.getVolumnPath()}/${assetID}/cropped.mov`; 
     const outputPath = `${env.getVolumnPath()}/${assetID}/resized.mov`; 
 
-
-    const filter = `[0:v] scale=${480}:-1 [final]`;
+    // video will be 320x320 to minimize the cpu load on mobile devices
+    const filter = `[0:v] scale=${320}:-1 [final]`;
     console.log(`\n\n\n\n\n`)
     console.log(`\n\nresizeVideo > filter: ${filter}\n\n`);
     console.log(`\n\n\n\n\n`)
