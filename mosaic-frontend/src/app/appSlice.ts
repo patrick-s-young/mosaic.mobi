@@ -1,34 +1,35 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export interface AppState {
-  isLoading: boolean,
-  greeting: string
+export enum AppPhaseEnum {
+  INIT_SESSION,
+  LOADING,
+  NOT_LOADING
 }
 
-const initialState: Partial<AppState> = {
-  isLoading: undefined,
-  greeting: 'Hello World!'
+export interface AppPhase {
+  appPhase: AppPhaseEnum
+}
+
+export type AppState = AppPhase;
+
+const initialState: AppState = {
+  appPhase: AppPhaseEnum.INIT_SESSION
 }
 
 const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
-    setIsLoading (state, action: PayloadAction<boolean>) {
-      state.isLoading = action.payload;
-    },
-    setGreeting (state, action: PayloadAction<string>) {
-      state.greeting = action.payload;
+    setAppPhase (state, action: PayloadAction<AppPhase>) {
+      state.appPhase = action.payload.appPhase;
     }
   }
 });
 
 export const {
-  setIsLoading,
-  setGreeting
+  setAppPhase
 } = appSlice.actions;
 
-export type SetIsLoading = ReturnType<typeof setIsLoading>;
-export type SetGreeting = ReturnType<typeof setGreeting>;
+export type SetAppPhase = ReturnType<typeof setAppPhase>;
 
 export default appSlice.reducer;
