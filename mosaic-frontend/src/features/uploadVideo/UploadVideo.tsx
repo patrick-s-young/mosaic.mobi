@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+// Redux Toolkit
+import type { RootState } from 'app/rootReducer';
+// <App>
+import { setAppPhase, AppPhaseEnum } from 'app/appSlice';
+import type { AppState } from 'app/appSlice';
+// <UploadVideo>
 import { 
   preloadSequentialImages, 
   preloadVideo, 
@@ -13,14 +19,17 @@ import {
   UploadPhaseEnum,
   setUploadPhase } from 'features/uploadVideo/uploadSlice';
 import type { UploadState } from 'features/uploadVideo/uploadSlice';
-import { setMosaicFormatting } from 'features//mosaicVideo/mosaicSlice';
-import { setNavSection } from 'features/navigation/navSlice';
-import type { RootState } from 'app/rootReducer';
 import loadingAnim from 'assets/images/loading_200x200.gif';
 import 'features/uploadVideo/uploadVideo.css';
+// <MosaicTiles>
+import { setMosaicFormatting } from 'features//mosaicVideo/mosaicSlice';
+// <Navigation>
+import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
+
+
 
 ///// TEST VALUES ///////
-const isTesting: boolean = false;
+const isTesting: boolean = true;
 const testAssetID: string = 'test-video';
 const testAssetDuration: number = 8.0;
 
@@ -39,6 +48,7 @@ export const UploadVideo: React.FC = () => {
   useEffect(() => {
     switch(uploadPhase) {
       case UploadPhaseEnum.VIDEO_SUBMITED:
+        dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
         if ( isTesting ) {
           dispatch(setVideoIsUploaded({ assetID: testAssetID }));
         } else {
@@ -71,7 +81,8 @@ export const UploadVideo: React.FC = () => {
         break;
       case UploadPhaseEnum.MOSAIC_INITIALIZED:
         dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.PROMPT}));
-        dispatch(setNavSection({navSection: 'Edit Mosaic'}));      
+        dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));   
+        dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));  
         break;
     }
   }, [uploadPhase]);

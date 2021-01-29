@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ScrubberFrames from 'features/mosaicImage/ScrubberFrames';
-import 'features/mosaicImage/scrubberStyles.css';
+import 'features/mosaicImage/scrubber.css';
 import type { UploadState } from 'features/uploadVideo/uploadSlice';
 import type { RootState } from 'app/rootReducer';
 import { useSelector } from 'react-redux';

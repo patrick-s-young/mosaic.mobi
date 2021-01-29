@@ -1,29 +1,35 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type NavSection = 'Upload Video' | 'Edit Mosaic' | 'Render Mosaic';
-
-export interface NavState {
-  navSection: NavSection
+export enum NavPhaseEnum {
+  UPLOAD,
+  EDIT,
+  DOWNLOAD
 }
 
+export interface NavPhase {
+  navPhase: NavPhaseEnum
+}
+
+export type NavState = NavPhase;
+
 const initialState: NavState = {
-  navSection: 'Upload Video'
+  navPhase: NavPhaseEnum.UPLOAD
 }
 
 const navSlice = createSlice ({
   name: 'nav',
   initialState,
   reducers: {
-    setNavSection (state, action: PayloadAction<NavState>) {
-      state.navSection = action.payload.navSection;
+    setNavPhase (state, action: PayloadAction<NavPhase>) {
+      state.navPhase = action.payload.navPhase;
     }
   }
 });
 
 export const {
-  setNavSection
+  setNavPhase
 } = navSlice.actions;
 
-export type SetNavSection = ReturnType <typeof setNavSection>;
+export type SetNavPhase = ReturnType <typeof setNavPhase>;
 
 export default navSlice.reducer;

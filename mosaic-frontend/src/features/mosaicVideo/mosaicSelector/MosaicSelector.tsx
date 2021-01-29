@@ -8,14 +8,18 @@ import Button from 'components/Button';
 import { v1 as uuid } from 'uuid';
 import 'features/mosaicVideo/mosaicSelector/mosaicSelector.css'
 
-export const MosaicSelector: React.FC = () => {
+export interface MosaicSelectorProps {
+  pauseInput: boolean
+}
+
+export const MosaicSelector: React.FC<MosaicSelectorProps> = ({ pauseInput }) => {
   const dispatch = useDispatch();
   const { numTiles } = useSelector<RootState, MosaicState>(
 		(state) => state.mosaic as MosaicState
   );
 
   const onClickHandler = (newStateValue: NumTiles) => {
-     dispatch(setNumTiles(newStateValue));
+    if (!pauseInput) dispatch(setNumTiles(newStateValue));
   }
 
   return (
@@ -24,7 +28,7 @@ export const MosaicSelector: React.FC = () => {
           <Button 
             onClickCallback={onClickHandler}
             stateValue={button.stateValue}
-            isEnabled={button.stateValue !== numTiles}
+            isEnabled={button.stateValue !== numTiles || pauseInput === true}
             imagePath={button.imagePath}
             className={button.className}
             altText={button.altText}
