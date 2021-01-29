@@ -5,8 +5,11 @@ import type { CurrentScrubberFrame, ScrubberState } from 'features/mosaicImage/s
 import type { RootState } from 'app/rootReducer';
 import 'features/mosaicImage/scrubberSlider/scrubberSlider.css';
 
+export interface ScrubberSliderProps {
+  pauseInput: boolean
+}
 
-const ScrubberSlider: React.FC = () => {
+const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ pauseInput }) => {
   const dispatch = useDispatch();
   const { currentScrubberFrame, scrubberFramesMax } = useSelector<RootState, ScrubberState>(
     (state) => state.scrubber
@@ -18,12 +21,13 @@ const ScrubberSlider: React.FC = () => {
   return (
     <div style={{ marginTop: '8px'}}>
       <input 
+        disabled={pauseInput}
         type='range'
         min='0'
         max={scrubberFramesMax - 1} 
         step='1'
         defaultValue={currentScrubberFrame} 
-        className='scrubberSlider_input' 
+        className={pauseInput ? 'scrubberSlider_disabled' : 'scrubberSlider'} 
         onChange={onSlideHandler}
       />
     </div>
