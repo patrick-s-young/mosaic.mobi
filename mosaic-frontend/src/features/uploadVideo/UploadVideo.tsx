@@ -29,7 +29,7 @@ import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
 
 
 ///// TEST VALUES ///////
-const isTesting: boolean = true;
+const isTesting: boolean = false;
 const testAssetID: string = 'test-video';
 const testAssetDuration: number = 8.0;
 
