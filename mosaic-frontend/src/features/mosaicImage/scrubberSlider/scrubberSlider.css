@@ -1,8 +1,15 @@
+.scrubberSlider_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
 
 .scrubberSlider {
   -webkit-appearance: none;
-  width: 88vw;
-  margin-left: 6vw; 
+  width: 88%;
   height: 20px;
   border-radius: 2px;  
   border-style: inset;
@@ -18,8 +25,8 @@
   height: 40px;
   border-radius: 5px; 
   border-style: inset;
-  border-color: #fd8a07;
-  background: #fd8a07;
+  border-color: #fd8907;
+  background: #fd8907;;
   cursor: pointer;  
 
 }
@@ -39,11 +46,11 @@
   thumb disabled
 */
 
-
+/* chrome */
 .scrubberSlider_disabled {
   -webkit-appearance: none;
-  width: 88vw;
-  margin-left: 6vw; 
+  width: 88%;
+  margin-left: 6%; 
   height: 20px;
   border-radius: 2px;  
   border-style: inset;
@@ -64,6 +71,7 @@
   cursor: pointer;  
 
 }
+/* chrome ^^ */
 
 .scrubberSlider_disabled::-moz-range-thumb {
   width: 40px;
