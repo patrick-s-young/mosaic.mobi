@@ -1,33 +1,36 @@
+.uploadVideo_container {
+  position: absolute; 
+  margin-top: 0px;
+  z-index: 5;
+  opacity: 0.9;
+  background-color: #ffffff;
+}
 
 .uploadVideo_flex-container {
   display: flex; /* establish flex container */
   flex-direction: column; /* make main-axis vertical */
   justify-content: center; /* align items vertically, in this case */
   align-items: center; /* align items horizontally, in this case */
-  height: 100vw; /* for demo purposes */
+  height: 100%; /* for demo purposes */
   background-color: rgb(255, 255, 255); /* for demo purposes */
-
-}
-
-.uploadVideo_loading-animation {
-  width: 200px;
-  margin: 0px;
-  text-align: center;
 }
 
 .uploadVideo_button_wrapper {
   font-family: 'Veranda', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
 .uploadVideo_button_label {
-  padding: 10vw 10vw;
+  padding: 10% 10%;
   font-size: x-large;
   font-weight: 600;
   font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   background-color: #fd8907;
   border-radius: 3px;
   color: #fff;
-  margin-right: 8px;
 }
 
 .uploadVideo_button_label input[type=file] {
@@ -43,6 +46,16 @@
     cursor: inherit;
     display: block;
 }
+
+
+.uploadVideo_loading-animation {
+  width: 200px;
+  margin: 0px;
+  text-align: center;
+}
+
+
+
 
 
 

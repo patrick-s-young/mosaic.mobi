@@ -22,7 +22,7 @@ import type { UploadState } from 'features/uploadVideo/uploadSlice';
 import loadingAnim from 'assets/images/loading_200x200.gif';
 import 'features/uploadVideo/uploadVideo.css';
 // <MosaicTiles>
-import { setMosaicFormatting } from 'features//mosaicVideo/mosaicSlice';
+import { setMosaicFormatting } from 'features/mosaicVideo/mosaicSlice';
 // <Navigation>
 import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
 
@@ -34,12 +34,17 @@ const testAssetID: string = 'test-video';
 const testAssetDuration: number = 8.0;
 
 ///// UploadVideo ///////
-export const UploadVideo: React.FC = () => {
+
+export interface UploadVideoProps {
+  displaySize: { width: number, height: number }
+}
+
+export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize }) => {
   const dispatch = useDispatch();
+  const { canvasWidth } = useSelector<RootState, AppState>((state) => state.app);
   const { uploadPhase, 
           assetID, 
           selectedFile,
-          canvasWidth,
           uploadDuration,
           resizedWidth} = useSelector<RootState, UploadState>((state) => state.upload); 
   console.log(`uploadPhase: ${UploadPhaseEnum[uploadPhase]}\n\n`);
@@ -62,7 +67,7 @@ export const UploadVideo: React.FC = () => {
       case UploadPhaseEnum.VIDEO_UPLOADED:
         const videoPath = !isTesting ? `/uploads/${assetID}/resized.mov` : `/${testAssetID}/resized.mov`;
         preloadVideo(videoPath)
-          .then(videoURL => dispatch(setVideoIsPreloaded({ videoURL, canvasWidth: window.innerWidth })))
+          .then(videoURL => dispatch(setVideoIsPreloaded({ videoURL })))
           .catch(err => console.log(`ERROR > preloadVideo: ${err}`));
         break;
       case UploadPhaseEnum.VIDEO_PRELOADED:
@@ -113,16 +118,14 @@ export const UploadVideo: React.FC = () => {
   }
   
   return (
-    <div style={{position: 'absolute', width: '100vw', top: `0px`, zIndex: 5, opacity: 0.9}}>
+    <div className='uploadVideo_container' style={{ width: displaySize.width, height: displaySize.height }}>
       {uploadPhase === UploadPhaseEnum.PROMPT &&
-      <div className='uploadVideo_flex-container'>
         <div className="uploadVideo_button_wrapper">
           <label className="uploadVideo_button_label">
             Upload Video
             <input type="file" className="file-submit" name="myFile" onChange={onFormSubmit}></input>
           </label>
         </div>
-      </div>
       }
       {uploadPhase !== UploadPhaseEnum.PROMPT &&
         <div className='uploadVideo_flex-container'>
