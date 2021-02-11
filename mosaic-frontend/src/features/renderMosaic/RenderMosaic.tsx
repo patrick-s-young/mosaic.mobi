@@ -1,17 +1,28 @@
 import * as React from 'react';
+// Redux
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from 'app/rootReducer';
+// <RenderMosaic>
+import 'features/renderMosaic/renderMosaic.css';
+import loadingAnim from 'assets/images/loading_200x200.gif';
+// Slices 
 import type { UploadState } from 'features/uploadVideo/uploadSlice';
 import type { MosaicState } from 'features/mosaicVideo/mosaicSlice';
 import type { ScrubberState } from 'features/mosaicImage/scrubberSlice';
-import { RenderPhaseEnum, RenderState, setRenderPhase, resetRenderPhase } from 'features/renderMosaic/renderSlice';
-import loadingAnim from 'assets/images/loading_200x200.gif';
-import 'features/renderMosaic/renderMosaic.css';
-
+import { 
+  RenderPhaseEnum, 
+  RenderState, 
+  setRenderPhase } from 'features/renderMosaic/renderSlice';
+// render request and download services
 const axios = require('axios');
 const FileDownload = require('js-file-download');
 
-export const RenderMosaic: React.FC = () => {
+export interface RenderMosaicProps {
+  displaySize: { width: number, height: number }
+}
+
+
+export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize }) => {
   const dispatch = useDispatch();
   const { assetID } = useSelector<RootState, UploadState>((state) => state.upload);
   const { numTiles } = useSelector<RootState, Partial<MosaicState>>((state) => state.mosaic);
@@ -33,7 +44,7 @@ export const RenderMosaic: React.FC = () => {
   }
 
   return (
-    <div style={{position: 'absolute', width: '100vw', top: `0px`, zIndex: 5, opacity: 0.9}}>
+    <div className='renderMosaic_container' style={{ width: displaySize.width, height: displaySize.height }}>
       {renderPhase === RenderPhaseEnum.RENDER_PROMPT &&
       <div className='renderMosaic_flex-container'>
         <div className="renderMosaic_button_wrapper">
