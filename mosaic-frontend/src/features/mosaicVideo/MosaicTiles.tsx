@@ -89,8 +89,8 @@ export const MosaicTiles: React.FC= () => {
 		  <div style={{position: 'absolute', top: `0px`}}>
         <canvas
           ref={canvasRef}
-          width={window.innerWidth}
-          height={window.innerWidth}
+          width={canvasWidth}
+          height={canvasWidth}
         />
       </div>
   );
