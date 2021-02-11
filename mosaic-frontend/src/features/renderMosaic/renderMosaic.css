@@ -1,25 +1,37 @@
+.renderMosaic_container {
+  position: absolute; 
+  margin-top: 0px;
+  z-index: 5;
+  opacity: 0.9;
+  background-color: #ffffff;
+}
 
 .renderMosaic_flex-container {
   display: flex; /* establish flex container */
   flex-direction: column; /* make main-axis vertical */
   justify-content: center; /* align items vertically, in this case */
   align-items: center; /* align items horizontally, in this case */
-  height: 100vw; /* for demo purposes */
+  height: 100%; /* for demo purposes */
   background-color: rgb(255, 255, 255); /* for demo purposes */
 }
 
 .renderMosaic_loading-animation {
   width: 200px;
-  margin: 0px;
+  margin: auto;
   text-align: center;
 }
 
 .renderMosaic_button_wrapper {
   font-family: 'Veranda', sans-serif;
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
 .renderMosaic_button_label {
-  padding: 10vw 10vw;
+  padding: 10% 10%;
   font-size: x-large;
   font-weight: 600;
   font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;

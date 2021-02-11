@@ -1,12 +1,17 @@
 import * as React from 'react';
-import ScrubberFrames from 'features/mosaicImage/ScrubberFrames';
-import 'features/mosaicImage/scrubber.css';
-import type { UploadState } from 'features/uploadVideo/uploadSlice';
-import type { RootState } from 'app/rootReducer';
+// Redux
 import { useSelector } from 'react-redux';
+import type { RootState } from 'app/rootReducer';
+import type { UploadState } from 'features/uploadVideo/uploadSlice';
+import type { AppState } from 'app/appSlice';
+// <Scrubber>
+import 'features/mosaicImage/scrubber.css';
+// <ScrubberFrames>
+import ScrubberFrames from 'features/mosaicImage/ScrubberFrames';
 
 const Scrubber: React.FC = () => {
-  const { imageURLs, canvasWidth } = useSelector<RootState, UploadState>((state) => state.upload);
+  const { imageURLs } = useSelector<RootState, UploadState>((state) => state.upload);
+  const { canvasWidth } = useSelector<RootState, AppState>((state) => state.app);
 
   return (
     <div className='scrubber-container'>

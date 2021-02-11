@@ -8,15 +8,15 @@
 }
 
 .navigation_button_default {
-  width: 32vw;
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
-  filter: grayscale(100%); 
+  filter: grayscale(100%);
 }
 
 .navigation_button_hilite {
-  width: 32vw;
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;

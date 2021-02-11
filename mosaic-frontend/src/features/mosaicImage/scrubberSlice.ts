@@ -1,24 +1,26 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type CurrentScrubberFrame = number;
+
 export interface ScrubberState {
   currentScrubberFrame: CurrentScrubberFrame,
   scrubberFramesMax: number,
   canvasWidth: number
 }
+
 const scrubberFramesMaxDefault: number = 20;
 export const initialState: ScrubberState = {
   scrubberFramesMax: scrubberFramesMaxDefault,
   currentScrubberFrame: Math.floor(scrubberFramesMaxDefault / 2),
   canvasWidth: 0
 }
+
 const scrubberSlice = createSlice({
   name: 'scrubber',
   initialState,
   reducers: {
-    setScrubberCanvasWidth (state, action: PayloadAction<number>) {
-      const width = action.payload;
-      state.canvasWidth = width > window.innerWidth ? window.innerWidth : width;
+    setScrubberCanvasWidth (state, action: PayloadAction<{canvasWidth: number}>) {
+      state.canvasWidth = action.payload.canvasWidth;
     },
     setCurrentScrubberFrame (state, action: PayloadAction<CurrentScrubberFrame>) {
       state.currentScrubberFrame = action.payload;

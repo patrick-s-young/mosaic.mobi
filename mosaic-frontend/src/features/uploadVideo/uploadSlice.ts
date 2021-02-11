@@ -37,10 +37,6 @@ export interface UploadVideoResized {
   resizedWidth: number
 }
 
-export interface UploadCanvasWidth {
-  canvasWidth: number
-}
-
 export type UploadState = 
     UploadPhase 
   & UploadAssetID 
@@ -49,7 +45,6 @@ export type UploadState =
   & UploadSelectedFile
   & UploadImageURLs
   & UploadVideoResized
-  & UploadCanvasWidth
 
 const initialState: UploadState = {
   uploadPhase: UploadPhaseEnum.PROMPT,
@@ -58,8 +53,7 @@ const initialState: UploadState = {
   uploadDuration: 0,
   videoURL: '',
   imageURLs: [],
-  resizedWidth: 320, // make dynamically linked to video meta data of resized.mov
-  canvasWidth: 0
+  resizedWidth: 320 // make dynamically linked to video meta data of resized.mov
 }
 
 const uploadSlice = createSlice ({
@@ -78,9 +72,8 @@ const uploadSlice = createSlice ({
       state.assetID = action.payload.assetID;
       state.uploadPhase = UploadPhaseEnum.VIDEO_UPLOADED;
     },
-    setVideoIsPreloaded (state, action: PayloadAction<UploadVideoURL & UploadCanvasWidth>) {
+    setVideoIsPreloaded (state, action: PayloadAction<UploadVideoURL>) {
       state.videoURL = action.payload.videoURL;
-      state.canvasWidth = action.payload.canvasWidth;
       state.uploadPhase = UploadPhaseEnum.VIDEO_PRELOADED;
     },
     setImagesArePreloaded (state, action: PayloadAction<UploadImageURLs>) {

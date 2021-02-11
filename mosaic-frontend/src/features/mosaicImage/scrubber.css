@@ -1,6 +1,4 @@
 .scrubber-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 1;
+  position: absolute;
+  margin-top: 0px;
 }
