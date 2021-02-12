@@ -77,12 +77,12 @@ const App: React.FC = () => {
               pauseInput={appPhase === AppPhaseEnum.INIT_SESSION || navPhase !== NavPhaseEnum.EDIT}
             />
           </div>
-          <div className='navigation' style={ deviceProfile.navigation }>
+
             <Navigation 
+              width={deviceProfile.navigation.width}
+              height={deviceProfile.navigation.height} 
               pauseInput={appPhase === AppPhaseEnum.INIT_SESSION || appPhase === AppPhaseEnum.LOADING}
             />
-          </div>
-
       </DevicePreview>
     </div>
   );
