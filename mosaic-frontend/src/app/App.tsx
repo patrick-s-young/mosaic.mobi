@@ -49,17 +49,16 @@ const App: React.FC = () => {
   return (
     <div>
         <DevicePreview>
+          <RenderMosaic 
+              displaySize={deviceProfile.popOver}
+              isActive={navPhase === NavPhaseEnum.DOWNLOAD}
+          />
+          <UploadVideo 
+              displaySize={deviceProfile.popOver}
+              isActive={navPhase === NavPhaseEnum.UPLOAD}
+          />
           <div className='video-area' style={ deviceProfile.videoArea } >
-            { navPhase === NavPhaseEnum.UPLOAD &&
-                <UploadVideo 
-                  displaySize={deviceProfile.videoArea}
-                />
-            }
-            { navPhase === NavPhaseEnum.DOWNLOAD && 
-                <RenderMosaic 
-                  displaySize={deviceProfile.videoArea}
-                />
-            } 
+
             { mosaicPhase !== MosaicPhaseEnum.WAITING_FOR_VIDEO &&
               <>
                 <Scrubber />
@@ -83,6 +82,7 @@ const App: React.FC = () => {
               pauseInput={appPhase === AppPhaseEnum.INIT_SESSION || appPhase === AppPhaseEnum.LOADING}
             />
           </div>
+
       </DevicePreview>
     </div>
   );

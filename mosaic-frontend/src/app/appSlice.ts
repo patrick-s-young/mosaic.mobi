@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface DeviceProfile {
   name: string
+  popOver: { width: number, height: number }
   videoArea: { width: number, height: number }
   scrubberSlider:  { width: number, height: number }
   mosaicSelector:  { width: number, height: number }
@@ -31,6 +32,7 @@ const initialState: AppState = {
   deviceProfiles: [
     {
       name: 'iPhone XR',
+      popOver: { width: 414, height: 564 },
       videoArea: { width: 414, height: 414 },
       scrubberSlider: { width: 414, height: 90 },
       mosaicSelector: { width: 414, height: 72 },
