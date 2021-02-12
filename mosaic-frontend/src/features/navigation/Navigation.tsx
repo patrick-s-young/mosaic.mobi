@@ -1,39 +1,43 @@
 import * as React from 'react';
+// Redux
 import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from 'app/rootReducer';
+// Slices
 import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
 import type { NavState } from 'features/navigation/navSlice';
-import { v1 as uuid } from 'uuid';
-import type { RootState } from 'app/rootReducer';
-import Button from 'components/Button';
-import navigationConfig from 'features/navigation/navigation.config.ts';
-import 'features/navigation/navigation.css';
+// Material-UI
+import { Tab, Tabs } from '@material-ui/core';
 
 export interface NavigationProps {
+  width: number
+  height: number
   pauseInput: boolean
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ pauseInput }) => {
+export const Navigation: React.FC<NavigationProps> = ({ 
+  width,
+  height,
+  pauseInput }) => {
+
   const dispatch = useDispatch();
   const { navPhase } = useSelector<RootState, NavState>((state) => state.nav);
 
-  const onClickHandler = (newStateValue: NavPhaseEnum) => {
-    if (!pauseInput) dispatch(setNavPhase({navPhase: newStateValue}));
-  }
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: NavPhaseEnum) => {
+    if (!pauseInput) dispatch(setNavPhase({navPhase: newValue}));
+  };
 
   return (
-    <div className='navigation_flex-container'>
-      { navigationConfig().map((button) =>
-          <Button 
-            onClickCallback={onClickHandler}
-            stateValue={button.stateValue}
-            isEnabled={button.stateValue !== navPhase}
-            imagePath={button.imagePath}
-            className={button.className}
-            altText={button.altText}
-            key={uuid()}
-          />)
-      }
+    <div style={{ width }}>
+      <Tabs
+        value={navPhase}
+        onChange={handleChange}
+        indicatorColor="primary"
+        textColor="primary"
+      >
+        <Tab value={NavPhaseEnum.UPLOAD} style={{ minWidth: width / 3 }} label="UPLOAD" />
+        <Tab value={NavPhaseEnum.EDIT} style={{ minWidth: width / 3 }} label="EDIT" />
+        <Tab value={NavPhaseEnum.DOWNLOAD} style={{ minWidth: width / 3 }} label="SAVE" />
+      </Tabs>
     </div>
-  )
-
+  );
 }
