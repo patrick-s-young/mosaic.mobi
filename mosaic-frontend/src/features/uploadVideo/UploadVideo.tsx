@@ -20,7 +20,6 @@ import {
   setUploadPhase } from 'features/uploadVideo/uploadSlice';
 import type { UploadState } from 'features/uploadVideo/uploadSlice';
 import loadingAnim from 'assets/images/loading_200x200.gif';
-import 'features/uploadVideo/uploadVideo.css';
 // <MosaicTiles>
 import { setMosaicFormatting } from 'features/mosaicVideo/mosaicSlice';
 // <Navigation>
