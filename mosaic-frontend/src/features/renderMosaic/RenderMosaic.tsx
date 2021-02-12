@@ -11,8 +11,10 @@ import {
   RenderPhaseEnum, 
   RenderState, 
   setRenderPhase } from 'features/renderMosaic/renderSlice';
+// Material-UI
+import { Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 // <RenderMosaic>
-import 'features/renderMosaic/renderMosaic.css';
 import loadingAnim from 'assets/images/loading_200x200.gif';
 // <PopOver>
 import PopOver from 'components/PopOver';
@@ -20,13 +22,30 @@ import PopOver from 'components/PopOver';
 const axios = require('axios');
 const FileDownload = require('js-file-download');
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    position: 'absolute', 
+    marginTop: '0px',
+    opacity: 0.95,
+    backgroundColor: '#ffffff',
+    zIndex: 20
+  },
+  centerScreen: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%'
+  }
+}));
+
 export interface RenderMosaicProps {
   displaySize: { width: number, height: number }
   isActive: boolean
 }
 
-
 export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const { assetID } = useSelector<RootState, UploadState>((state) => state.upload);
   const { numTiles } = useSelector<RootState, Partial<MosaicState>>((state) => state.mosaic);
@@ -49,35 +68,35 @@ export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActiv
   }
 
   return (
-
-      <PopOver
-        width={`${displaySize.width}px`}
-        height={`${displaySize.height}px`}
-        showTop={`0px`}
-        hideTop={`${displaySize.height}px`}
-        isActive={isActive}
-      >
-        <div className='renderMosaic_container' style={{ width: displaySize.width, height: displaySize.height }}>
-          {renderPhase === RenderPhaseEnum.RENDER_PROMPT &&
-          <div className='renderMosaic_flex-container'>
-            <div className="renderMosaic_button_wrapper">
-              <div className="renderMosaic_button_label" onClick={() => onClickHandler(assetID)}>
-                Save Video
-              </div>
+    <PopOver
+      width={`${displaySize.width}px`}
+      height={`${displaySize.height}px`}
+      showTop={`0px`}
+      hideTop={`${displaySize.height}px`}
+      isActive={isActive}
+    >
+      <div className={classes.container} style={{ width: displaySize.width, height: displaySize.height }}>
+        {
+          renderPhase === RenderPhaseEnum.RENDER_PROMPT &&
+            <div className={classes.centerScreen}>
+              <Button
+                variant='outlined'
+                size='large'
+                onClick={() => onClickHandler(assetID)}
+              >
+              SAVE VIDEO
+              </Button>
             </div>
-          </div>
-          }     
-          {renderPhase === RenderPhaseEnum.RENDERING &&
-            <div className='renderMosaic_flex-container'>
-              <div className='renderMosaic_loading-animation'>
-                <img src={loadingAnim}  />
-              </div>
-          </div>
-          }   
+        }     
+        {
+          renderPhase === RenderPhaseEnum.RENDERING &&
+            <div className={classes.centerScreen}>
+              <img src={loadingAnim}  />
+            </div>
+        }   
         </div>
-      </PopOver>
- 
-  )
+    </PopOver>
+  );
 }
 
  

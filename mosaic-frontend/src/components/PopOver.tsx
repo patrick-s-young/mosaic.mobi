@@ -31,7 +31,7 @@ const PopOver: React.FC<PopOverProps> = ({
       overflow: 'hidden',
       marginTop: '0',
       width,  
-      height, 
+      height,
       display: 'block' }}
     >
     <animated.div

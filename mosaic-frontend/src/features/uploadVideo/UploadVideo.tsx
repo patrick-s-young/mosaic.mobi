@@ -27,14 +27,39 @@ import { setMosaicFormatting } from 'features/mosaicVideo/mosaicSlice';
 import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
 // <PopOver>
 import PopOver from 'components/PopOver';
+// Material-UI
+import { Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 
 
 ///// TEST VALUES ///////
 const isTesting: boolean = false;
 const testAssetID: string = 'test-video';
 const testAssetDuration: number = 8.0;
+//////////////////////////
+///////////////////////////
 
-///// UploadVideo ///////
+
+const useStyles = makeStyles((theme) => ({
+  container: {
+    position: 'absolute', 
+    marginTop: '0px',
+    opacity: 0.95,
+    backgroundColor: '#ffffff',
+    zIndex: 20
+  },
+  centerScreen: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%'
+  },
+  input: {
+    display: 'none',
+  }
+}));
+
 
 export interface UploadVideoProps {
   displaySize: { width: number, height: number }
@@ -42,6 +67,7 @@ export interface UploadVideoProps {
 }
 
 export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const { canvasWidth } = useSelector<RootState, AppState>((state) => state.app);
   const { uploadPhase, 
@@ -127,21 +153,33 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
       hideTop={`${displaySize.height}px`}
       isActive={isActive}
     >
-      <div className='uploadVideo_container' style={{ width: displaySize.width, height: displaySize.height }}>
-        {uploadPhase === UploadPhaseEnum.PROMPT &&
-          <div className="uploadVideo_button_wrapper">
-            <label className="uploadVideo_button_label">
-              Upload Video
-              <input type="file" className="file-submit" name="myFile" onChange={onFormSubmit}></input>
-            </label>
-          </div>
+      <div className={classes.container} style={{ width: displaySize.width, height: displaySize.height }}>
+        {
+          uploadPhase === UploadPhaseEnum.PROMPT &&
+            <div className={classes.centerScreen}>
+              <input
+                accept="video/*"
+                className={classes.input}
+                id="contained-button-file"
+                type="file"
+                onChange={onFormSubmit}
+              />
+              <label htmlFor="contained-button-file">
+                <Button               
+                  variant='outlined'
+                  size='large'
+                  component='span'
+                > 
+                  Upload
+                </Button>
+              </label>
+            </div>
         }
-        {uploadPhase !== UploadPhaseEnum.PROMPT &&
-          <div className='uploadVideo_flex-container'>
-          <div className='uploadVideo_loading-animation'>
-            <img src={loadingAnim}  alt='Loading..please wait'/>
-          </div>
-        </div>
+        {
+          uploadPhase !== UploadPhaseEnum.PROMPT &&
+            <div className={classes.centerScreen}>
+              <img src={loadingAnim}  />
+            </div>
         }
       </div>
     </PopOver>
