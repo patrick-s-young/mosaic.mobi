@@ -25,7 +25,8 @@ import 'features/uploadVideo/uploadVideo.css';
 import { setMosaicFormatting } from 'features/mosaicVideo/mosaicSlice';
 // <Navigation>
 import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
-
+// <PopOver>
+import PopOver from 'components/PopOver';
 
 
 ///// TEST VALUES ///////
@@ -37,9 +38,10 @@ const testAssetDuration: number = 8.0;
 
 export interface UploadVideoProps {
   displaySize: { width: number, height: number }
+  isActive: boolean
 }
 
-export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize }) => {
+export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
   const dispatch = useDispatch();
   const { canvasWidth } = useSelector<RootState, AppState>((state) => state.app);
   const { uploadPhase, 
@@ -118,22 +120,30 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize }) => {
   }
   
   return (
-    <div className='uploadVideo_container' style={{ width: displaySize.width, height: displaySize.height }}>
-      {uploadPhase === UploadPhaseEnum.PROMPT &&
-        <div className="uploadVideo_button_wrapper">
-          <label className="uploadVideo_button_label">
-            Upload Video
-            <input type="file" className="file-submit" name="myFile" onChange={onFormSubmit}></input>
-          </label>
+    <PopOver
+      width={`${displaySize.width}px`}
+      height={`${displaySize.height}px`}
+      showTop={`0px`}
+      hideTop={`${displaySize.height}px`}
+      isActive={isActive}
+    >
+      <div className='uploadVideo_container' style={{ width: displaySize.width, height: displaySize.height }}>
+        {uploadPhase === UploadPhaseEnum.PROMPT &&
+          <div className="uploadVideo_button_wrapper">
+            <label className="uploadVideo_button_label">
+              Upload Video
+              <input type="file" className="file-submit" name="myFile" onChange={onFormSubmit}></input>
+            </label>
+          </div>
+        }
+        {uploadPhase !== UploadPhaseEnum.PROMPT &&
+          <div className='uploadVideo_flex-container'>
+          <div className='uploadVideo_loading-animation'>
+            <img src={loadingAnim}  alt='Loading..please wait'/>
+          </div>
         </div>
-      }
-      {uploadPhase !== UploadPhaseEnum.PROMPT &&
-        <div className='uploadVideo_flex-container'>
-        <div className='uploadVideo_loading-animation'>
-          <img src={loadingAnim}  alt='Loading..please wait'/>
-        </div>
+        }
       </div>
-      }
-    </div>
-  )
+    </PopOver>
+  );
 }
