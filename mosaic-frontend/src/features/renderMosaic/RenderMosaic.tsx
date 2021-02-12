@@ -6,6 +6,7 @@ import type { RootState } from 'app/rootReducer';
 import type { UploadState } from 'features/uploadVideo/uploadSlice';
 import type { MosaicState } from 'features/mosaicVideo/mosaicSlice';
 import type { ScrubberState } from 'features/mosaicImage/scrubberSlice';
+import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
 import { 
   RenderPhaseEnum, 
   RenderState, 
@@ -43,6 +44,7 @@ export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActiv
 
   function onFileDownload (blob: Blob) {
     dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
+    dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
     FileDownload(blob, 'mosaic_render.mov');
   }
 
