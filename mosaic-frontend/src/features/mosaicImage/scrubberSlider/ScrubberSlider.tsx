@@ -2,40 +2,74 @@ import * as React from 'react';
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from 'app/rootReducer';
-// scrubberSlice
+// Slice
 import { setCurrentScrubberFrame } from 'features/mosaicImage/scrubberSlice';
 import type { CurrentScrubberFrame, ScrubberState } from 'features/mosaicImage/scrubberSlice';
-// styling
-import 'features/mosaicImage/scrubberSlider/scrubberSlider.css';
+// Material-UI
+import { Slider } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+
+const useStyles = makeStyles({
+  centerScreen: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    backgroundColor: 'white'
+  },
+  slider: {
+    width: '90%',
+    "& .MuiSlider-thumb": {
+      width:24,
+      height: 24,
+      marginTop: -12,
+      marginLeft: -12
+    },
+    "& .MuiSlider-valueLabel": {
+      left: 'calc(-50% + 8px)',
+      top: -30
+    }
+  }
+});
 
 export interface ScrubberSliderProps {
-  pauseInput: boolean
+  width: number
+  height: number
 }
 
-const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ pauseInput }) => {
+const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width, height}) => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const { currentScrubberFrame, scrubberFramesMax } = useSelector<RootState, ScrubberState>(
     (state) => state.scrubber
   );
-  const onSlideHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const tempValue = parseInt(e.target.value) as CurrentScrubberFrame;
-    console.log(`onSlideHander -> tempValue: ${tempValue}`)
-    dispatch(setCurrentScrubberFrame(parseInt(e.target.value) as CurrentScrubberFrame));
+
+  const handleChange = (event: any, newValue: number | number[]) => {
+    dispatch(setCurrentScrubberFrame(newValue as CurrentScrubberFrame));
   };
 
-  console.log(`pauseInput: ${pauseInput}\nscrubberFramesMax: ${scrubberFramesMax}`);
+  function valuetext(value: number) {
+    return `frame ${value}`;
+  }
+
   return (
-    <div className='scrubberSlider_container'>
-      <input 
-        disabled={pauseInput}
-        type='range'
-        min='0'
-        max={scrubberFramesMax - 1} 
-        step='1'
-        defaultValue={currentScrubberFrame} 
-        className={pauseInput ? 'scrubberSlider_disabled' : 'scrubberSlider'} 
-        onChange={onSlideHandler}
-      />
+    <div style={{ width, height }}>
+      <div className={classes.centerScreen}>
+        <Slider
+          value={currentScrubberFrame}
+          getAriaValueText={valuetext}
+          onChange={handleChange}
+          defaultValue={currentScrubberFrame}
+          aria-labelledby="discrete-slider-small-steps"
+          step={1}
+          marks
+          min={0}
+          max={scrubberFramesMax - 1}
+          valueLabelDisplay="auto"
+          className={classes.slider}
+        />
+      </div>
     </div>
   );
 }
