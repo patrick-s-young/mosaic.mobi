@@ -57,8 +57,8 @@ const App: React.FC = () => {
               displaySize={deviceProfile.popOver}
               isActive={navPhase === NavPhaseEnum.UPLOAD}
           />
+          
           <div className='video-area' style={ deviceProfile.videoArea } >
-
             { mosaicPhase !== MosaicPhaseEnum.WAITING_FOR_VIDEO &&
               <>
                 <Scrubber />
@@ -67,22 +67,22 @@ const App: React.FC = () => {
             }
           </div>
           
-          <div className='scrubber-slider' style={ deviceProfile.scrubberSlider }>
-            <ScrubberSlider 
-              pauseInput={appPhase === AppPhaseEnum.INIT_SESSION || navPhase !== NavPhaseEnum.EDIT}
-            />
-          </div>
+          <ScrubberSlider 
+            width={deviceProfile.scrubberSlider.width}
+            height={deviceProfile.scrubberSlider.height} 
+          />
+
           <div className='mosaic-selector' style={ deviceProfile.mosaicSelector }>
             <MosaicSelector 
               pauseInput={appPhase === AppPhaseEnum.INIT_SESSION || navPhase !== NavPhaseEnum.EDIT}
             />
           </div>
 
-            <Navigation 
-              width={deviceProfile.navigation.width}
-              height={deviceProfile.navigation.height} 
-              pauseInput={appPhase === AppPhaseEnum.INIT_SESSION || appPhase === AppPhaseEnum.LOADING}
-            />
+          <Navigation 
+            width={deviceProfile.navigation.width}
+            height={deviceProfile.navigation.height} 
+            pauseInput={appPhase === AppPhaseEnum.INIT_SESSION || appPhase === AppPhaseEnum.LOADING}
+          />
       </DevicePreview>
     </div>
   );
