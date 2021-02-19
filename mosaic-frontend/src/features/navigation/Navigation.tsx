@@ -7,6 +7,17 @@ import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
 import type { NavState } from 'features/navigation/navSlice';
 // Material-UI
 import { Tab, Tabs } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+
+const useStyles = makeStyles({
+  centerScreen: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%'
+  }
+});
 
 export interface NavigationProps {
   width: number
@@ -18,7 +29,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   width,
   height,
   pauseInput }) => {
-
+  const classes = useStyles();
   const dispatch = useDispatch();
   const { navPhase } = useSelector<RootState, NavState>((state) => state.nav);
 
@@ -27,7 +38,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   };
 
   return (
-    <div style={{ width }}>
+    <div className={classes.centerScreen}  style={{ width, height }}>
       <Tabs
         value={navPhase}
         onChange={handleChange}
