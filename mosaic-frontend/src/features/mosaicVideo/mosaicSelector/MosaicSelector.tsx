@@ -3,39 +3,57 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'app/rootReducer';
 import { setNumTiles } from 'features/mosaicVideo';
 import type { MosaicState, NumTiles } from 'features/mosaicVideo';
-import mosaicSelectroConfig from 'features/mosaicVideo/mosaicSelector/mosaicSelector.config';
-import Button from 'components/Button';
-import { v1 as uuid } from 'uuid';
-import 'features/mosaicVideo/mosaicSelector/mosaicSelector.css'
+// Material-UI
+import { Tab, Tabs } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import { TwoTilesIcon, ThreeTilesIcon, FourTilesIcon, SixTilesIcon, NineTilesIcon} from 'features/mosaicVideo/mosaicSelector/mosaicSelectorIcons';
+
+const useStyles = makeStyles({
+  root: {
+    zIndex: 10
+  },
+  centerScreen: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+  }
+});
 
 export interface MosaicSelectorProps {
-  pauseInput: boolean
+  width: number,
+  height: number
 }
 
-export const MosaicSelector: React.FC<MosaicSelectorProps> = ({ pauseInput }) => {
+export const MosaicSelector: React.FC<MosaicSelectorProps> = ({ width, height }) => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const { numTiles } = useSelector<RootState, MosaicState>(
 		(state) => state.mosaic as MosaicState
   );
 
-  const onClickHandler = (newStateValue: NumTiles) => {
-    if (!pauseInput) dispatch(setNumTiles(newStateValue));
-  }
+  const handleChange = (event: React.ChangeEvent<{}>, newValue: NumTiles) => {
+    dispatch(setNumTiles(newValue));
+  };
 
   return (
-    <div className='mosaicSelector_flex-container'>
-      { mosaicSelectroConfig().map((button) =>
-          <Button 
-            onClickCallback={onClickHandler}
-            stateValue={button.stateValue}
-            isEnabled={button.stateValue !== numTiles || pauseInput === true}
-            imagePath={button.imagePath}
-            className={button.className}
-            altText={button.altText}
-            key={uuid()}
-          />)
-      }
-    </div>
+    <div className={classes.centerScreen} style={{ width, height }}>
+      <Tabs
+        value={numTiles}
+        onChange={handleChange}
+        indicatorColor="primary"
+        textColor="primary"
+        aria-label="icon tabs example"
+        className={classes.root}
+      >
+        <Tab icon={<TwoTilesIcon fontSize='large' />} value={2} style={{ minWidth: width / 5 }} aria-label="two-tile mosaic" />
+        <Tab icon={<ThreeTilesIcon fontSize='large' />} value={3} style={{ minWidth: width / 5 }} aria-label="three-tile mosaic" />
+        <Tab icon={<FourTilesIcon fontSize='large' />} value={4} style={{ minWidth: width / 5 }} aria-label="four-tile mosaic" />
+        <Tab icon={<SixTilesIcon fontSize='large' />} value={6} style={{ minWidth: width / 5 }} aria-label="six-tile mosaic" />
+        <Tab icon={<NineTilesIcon fontSize='large' />} value={9} style={{ minWidth: width / 5 }} aria-label="nine-tile mosaic" />
+      </Tabs>
+  </div>
   );
 }
 
