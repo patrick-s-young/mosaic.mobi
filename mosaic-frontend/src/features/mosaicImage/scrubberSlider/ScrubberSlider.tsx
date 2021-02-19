@@ -15,8 +15,7 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100%',
-    backgroundColor: 'white'
+    height: '100%'
   },
   slider: {
     width: '90%',
