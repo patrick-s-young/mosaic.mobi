@@ -34,15 +34,15 @@ const PopOver: React.FC<PopOverProps> = ({
       height,
       display: 'block' }}
     >
-    <animated.div
-      style={{
-        ...slideProps,
-        position: 'absolute',
-        display: 'block'
-      }}
-    >
-      {children}
-    </animated.div>
+      <animated.div
+        style={{
+          ...slideProps,
+          position: 'absolute',
+          display: 'block'
+        }}
+      >
+        {children}
+      </animated.div>
     </div>
   );
 }

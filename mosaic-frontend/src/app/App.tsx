@@ -72,11 +72,12 @@ const App: React.FC = () => {
             height={deviceProfile.scrubberSlider.height} 
           />
 
-          <div className='mosaic-selector' style={ deviceProfile.mosaicSelector }>
-            <MosaicSelector 
-              pauseInput={appPhase === AppPhaseEnum.INIT_SESSION || navPhase !== NavPhaseEnum.EDIT}
-            />
-          </div>
+ 
+          <MosaicSelector 
+            width={deviceProfile.scrubberSlider.width}
+            height={deviceProfile.scrubberSlider.height} 
+          />
+
 
           <Navigation 
             width={deviceProfile.navigation.width}

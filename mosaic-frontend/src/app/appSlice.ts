@@ -32,7 +32,7 @@ const initialState: AppState = {
   deviceProfiles: [
     {
       name: 'iPhone XR',
-      popOver: { width: 414, height: 564 },
+      popOver: { width: 414, height: 580 },
       videoArea: { width: 414, height: 414 },
       scrubberSlider: { width: 414, height: 90 },
       mosaicSelector: { width: 414, height: 72 },
