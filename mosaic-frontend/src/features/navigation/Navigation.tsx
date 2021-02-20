@@ -8,6 +8,7 @@ import type { NavState } from 'features/navigation/navSlice';
 // Material-UI
 import { Tab, Tabs } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import { SaveAlt, MovieCreation, VideoCall } from '@material-ui/icons';
 
 const useStyles = makeStyles({
   centerScreen: {
@@ -45,9 +46,9 @@ export const Navigation: React.FC<NavigationProps> = ({
         indicatorColor="primary"
         textColor="primary"
       >
-        <Tab value={NavPhaseEnum.UPLOAD} style={{ minWidth: width / 3 }} label="UPLOAD" />
-        <Tab value={NavPhaseEnum.EDIT} style={{ minWidth: width / 3 }} label="EDIT" />
-        <Tab value={NavPhaseEnum.DOWNLOAD} style={{ minWidth: width / 3 }} label="SAVE" />
+        <Tab icon={<VideoCall fontSize='large' />} value={NavPhaseEnum.UPLOAD} style={{ minWidth: width / 3 }} label="UPLOAD" />
+        <Tab icon={<MovieCreation fontSize='large' />} value={NavPhaseEnum.EDIT} style={{ minWidth: width / 3 }} label="EDIT" />
+        <Tab icon={<SaveAlt fontSize='large' />} value={NavPhaseEnum.DOWNLOAD} style={{ minWidth: width / 3 }} label="SAVE" />
       </Tabs>
     </div>
   );
