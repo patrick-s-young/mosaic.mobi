@@ -28,6 +28,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - mosaic-volume:/var/lib/video
+      - ./assets/330055:/var/lib/video/330055
     networks:
       - mosaic-network
 
@@ -37,6 +38,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - mosaic-volume:/var/lib/video
+      - ./assets/330055:/var/lib/video/330055
     networks:
       - mosaic-network
 

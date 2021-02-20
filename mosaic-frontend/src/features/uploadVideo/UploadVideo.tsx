@@ -154,7 +154,7 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
     >
       <div className={classes.container} style={{ width: displaySize.width, height: displaySize.height }}>
         {
-          uploadPhase === UploadPhaseEnum.PROMPT &&
+          uploadPhase === UploadPhaseEnum.PROMPT || uploadPhase === UploadPhaseEnum.VIDEO_UPLOADED &&
             <div className={classes.centerScreen}>
               <input
                 accept="video/*"
