@@ -27,7 +27,7 @@ AppPhase
 & { deviceIndex: number }
 
 const initialState: AppState = {
-  appPhase: AppPhaseEnum.INIT_SESSION,
+  appPhase: AppPhaseEnum.LOADING,
   deviceIndex: 0,
   deviceProfiles: [
     {

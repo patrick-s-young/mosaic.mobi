@@ -47,10 +47,10 @@ export type UploadState =
   & UploadVideoResized
 
 const initialState: UploadState = {
-  uploadPhase: UploadPhaseEnum.PROMPT,
+  uploadPhase: UploadPhaseEnum.VIDEO_UPLOADED,
   selectedFile: undefined,
-  assetID: '',
-  uploadDuration: 0,
+  assetID: '330055',
+  uploadDuration: 8.0,
   videoURL: '',
   imageURLs: [],
   resizedWidth: 320 // make dynamically linked to video meta data of resized.mov
