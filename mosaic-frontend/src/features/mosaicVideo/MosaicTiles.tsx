@@ -33,12 +33,16 @@ export const MosaicTiles: React.FC= () => {
   useEffect(() => {
     console.log(`MosaicTiles > useEffect > mosaicPhase: ${MosaicPhaseEnum[mosaicPhase]}`);
     switch(mosaicPhase) {
+      case MosaicPhaseEnum.CANCEL_ANIMATION:
+        cancelAnimationFrame(frameIDRef.current);
+        mosaicTiles.forEach(tile => tile.clearAnimation());
+        canvasRef.current.getContext('2d')?.clearRect(0, 0, canvasWidth, canvasWidth);
+        break;
       case MosaicPhaseEnum.NUMTILES_UPDATED:
         cancelAnimationFrame(frameIDRef.current);
         mosaicTiles.forEach(tile => tile.clearAnimation());
         canvasRef.current.getContext('2d')?.clearRect(0, 0, canvasWidth, canvasWidth);
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.ANIMATION_STOPPED}));
-
         break;
       case MosaicPhaseEnum.ANIMATION_STOPPED:
         const newMosaicTiles: Array<MosaicTile> = [];
