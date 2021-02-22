@@ -13,13 +13,16 @@ const Scrubber: React.FC = () => {
   const { imageURLs } = useSelector<RootState, UploadState>((state) => state.upload);
   const { canvasWidth } = useSelector<RootState, AppState>((state) => state.app);
 
+  console.log(`imageURLs.length: ${imageURLs.length}`)
   return (
     <div className='scrubber-container'>
-      <ScrubberFrames
-        width={canvasWidth}
-        height={canvasWidth}
-        imageArr={imageURLs}
-      />
+      { imageURLs.length > 0 &&
+        <ScrubberFrames
+          width={canvasWidth}
+          height={canvasWidth}
+          imageArr={imageURLs}
+        />
+      }
     </div>
   );
 }
