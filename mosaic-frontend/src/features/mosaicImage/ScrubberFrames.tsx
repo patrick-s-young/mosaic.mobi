@@ -17,7 +17,7 @@ const ScrubberFrames: React.FC<ScrubberFramesProps> = ({
 	height,
 	imageArr
 }) => {
-	const { currentScrubberFrame } = useSelector<RootState, ScrubberState>(
+	const { currentScrubberFrame, videoUploadCount } = useSelector<RootState, ScrubberState>(
     (state) => state.scrubber
 	);
 
@@ -27,7 +27,7 @@ const ScrubberFrames: React.FC<ScrubberFramesProps> = ({
 		if (imgRef.current !== null) {
 			imgRef.current.src = imageArr[currentScrubberFrame];
 		}
-	}, [currentScrubberFrame]);
+	}, [currentScrubberFrame, videoUploadCount]);
 
 	return(
 		<div className='scrubberFrames-container'>

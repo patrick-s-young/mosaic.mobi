@@ -7,7 +7,7 @@ export type DevicePreviewProps = {
 
 const DevicePreview: React.FC<DevicePreviewProps> = ({ children }) => {
   return (
-    <div style={{ padding: '2%', marginLeft: '300px'}}>
+    <div style={{ padding: '2%', marginLeft: '200px'}}>
         <img src={iPhone_XR} style={{ position: 'absolute'}} id='device-png'/>
         <div style={{ position: 'absolute', marginTop: '132px', marginLeft: '35px', backgroundColor: 'white'}}>
           {children}
