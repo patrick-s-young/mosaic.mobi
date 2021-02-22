@@ -21,7 +21,7 @@ import {
 import type { UploadState } from 'features/uploadVideo/uploadSlice';
 import loadingAnim from 'assets/images/loading_200x200.gif';
 // <MosaicTiles>
-import { setMosaicFormatting } from 'features/mosaicVideo/mosaicSlice';
+import { setMosaicFormatting, setMosaicPhase, MosaicPhaseEnum } from 'features/mosaicVideo/mosaicSlice';
 // <Navigation>
 import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
 // <PopOver>
@@ -29,6 +29,8 @@ import PopOver from 'components/PopOver';
 // Material-UI
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+// scrubberSlice
+import { setVideoUploadCount } from 'features/mosaicImage/scrubberSlice';
 
 
 ///// TEST VALUES ///////
@@ -92,6 +94,7 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
         }
         break;
       case UploadPhaseEnum.VIDEO_UPLOADED:
+        dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.CANCEL_ANIMATION }));
         const videoPath = !isTesting ? `/uploads/${assetID}/resized.mov` : `/${testAssetID}/resized.mov`;
         preloadVideo(videoPath)
           .then(videoURL => dispatch(setVideoIsPreloaded({ videoURL })))
@@ -109,6 +112,7 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
         break;
       case UploadPhaseEnum.IMAGES_PRELOADED:
         dispatch(setMosaicFormatting({ duration: uploadDuration, videoWidth: resizedWidth, canvasWidth}));
+        dispatch(setVideoUploadCount({increment: 1}));
         dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.MOSAIC_INITIALIZED}));
         break;
       case UploadPhaseEnum.MOSAIC_INITIALIZED:
@@ -154,7 +158,7 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
     >
       <div className={classes.container} style={{ width: displaySize.width, height: displaySize.height }}>
         {
-          uploadPhase === UploadPhaseEnum.PROMPT || uploadPhase === UploadPhaseEnum.VIDEO_UPLOADED &&
+          uploadPhase === UploadPhaseEnum.PROMPT &&
             <div className={classes.centerScreen}>
               <input
                 accept="video/*"
