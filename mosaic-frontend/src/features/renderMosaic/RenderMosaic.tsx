@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from 'app/rootReducer';
@@ -11,6 +12,8 @@ import {
   RenderPhaseEnum, 
   RenderState, 
   setRenderPhase } from 'features/renderMosaic/renderSlice';
+// api
+import { renderMosaic } from 'api';
 // Material-UI
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
@@ -50,21 +53,24 @@ export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActiv
   const { assetID } = useSelector<RootState, UploadState>((state) => state.upload);
   const { numTiles } = useSelector<RootState, Partial<MosaicState>>((state) => state.mosaic);
   const { currentScrubberFrame } = useSelector<RootState, ScrubberState>((state) => state.scrubber);
-  const { renderPhase } = useSelector<RootState, RenderState>((state) => state.render);
+  const { renderPhase, renderBlob } = useSelector<RootState, RenderState>((state) => state.render);
 
-  function onClickHandler (assetID: string) {
-    dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDERING }));
-    axios({
-     url: `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${currentScrubberFrame}`, 
-     method: 'GET',
-      responseType: 'blob'
-    }).then((response) => onFileDownload(response.data));
-  }
+  useEffect(() => {
+    switch(renderPhase) {
+      case RenderPhaseEnum.RENDERING:
+        // 
+        break;
+      case RenderPhaseEnum.READY_TO_SAVE:
+        dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
+        dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
+        FileDownload(renderBlob, 'mosaic_render.mov');
+        break;
+    }
+  }, [renderPhase]);
 
-  function onFileDownload (blob: Blob) {
-    dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
-    dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
-    FileDownload(blob, 'mosaic_render.mov');
+  function onClickHandler () {
+    const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${currentScrubberFrame}`;
+    dispatch(renderMosaic(renderUrl));
   }
 
   return (
@@ -82,7 +88,7 @@ export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActiv
               <Button
                 variant='outlined'
                 size='large'
-                onClick={() => onClickHandler(assetID)}
+                onClick={onClickHandler}
               >
               SAVE VIDEO
               </Button>

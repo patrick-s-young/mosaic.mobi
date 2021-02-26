@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { renderMosaic } from 'api';
 
 export enum RenderPhaseEnum {
   RENDER_PROMPT,
   RENDERING,
-  SAVE_PROMPT
+  READY_TO_SAVE
 }
 
 export interface RenderPhase {
@@ -37,6 +38,20 @@ const renderSlice = createSlice ({
       console.log(`renderSlice.ts > setRenderBlob`);
       state.renderBlob = action.payload.renderBlob;
     }
+  },
+  extraReducers: builder => {
+    builder.addCase(renderMosaic.rejected, (state, action) => {
+      console.log(`renderMosaic.rejected > action.payload: ${action.payload}`);
+    })
+    builder.addCase(renderMosaic.pending, (state, action) => {
+      console.log(`renderMosaic.pending > action.payload: ${action.payload}`);
+      state.renderPhase = RenderPhaseEnum.RENDERING;
+    })
+    builder.addCase(renderMosaic.fulfilled, (state, action) => {
+      console.log(`renderMosaic.fulfilled > action.payload.renderBlob: ${action.payload.renderBlob}`);
+      state.renderBlob = action.payload.renderBlob;
+      state.renderPhase = RenderPhaseEnum.READY_TO_SAVE;
+    }) 
   }
 });
 
