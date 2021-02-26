@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+
+  proxy:
+    depends_on: 
+      - frontend
+    image: patricksyoung/mosaic-proxy:1.2
+    ports:
+      - '80:80'
+    networks:
+      - mosaic-network
+
+  frontend:
+    build:
+      context: ./mosaic-frontend
+      dockerfile: Dockerfile
+    networks:
+      - mosaic-network
+
+  backend:
+    image: patricksyoung/mosaic-backend:1.2
+    depends_on:
+      - api
+    volumes:
+      - mosaic-volume:/var/lib/video
+      - ./assets/330055:/var/lib/video/330055
+    networks:
+      - mosaic-network
+
+  api:
+    image: patricksyoung/mosaic-api:1.5
+    volumes:
+      - mosaic-volume:/var/lib/video
+      - ./assets/330055:/var/lib/video/330055
+    networks:
+      - mosaic-network
+
+volumes:
+  mosaic-volume:
+
+networks:
+  mosaic-network:
+    driver: bridge # a user defined bridge is required; the default bridge network doesn't support name resolution
+

@@ -1,4 +1,12 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { 
+  createSlice, 
+  PayloadAction
+} from '@reduxjs/toolkit';
+import { 
+  preUploadValidation,
+  uploadUserVideo,
+  preloadUserVideo,
+  preloadSequentialImages } from 'api';
 
 export enum UploadPhaseEnum {
   PROMPT,
@@ -67,34 +75,69 @@ const uploadSlice = createSlice ({
       state.uploadDuration = action.payload.uploadDuration;
       state.selectedFile = action.payload.selectedFile;
       state.uploadPhase = UploadPhaseEnum.VIDEO_SUBMITED;
-    },
-    setVideoIsUploaded (state, action: PayloadAction<UploadAssetID>) {
+    }
+  },
+  extraReducers: builder => {
+    // Step 1: confirm user video is within 30 second duration limit
+    builder.addCase(preUploadValidation.rejected, (state, action) => {
+      console.log(`preUploadValidation.rejected > action.payload: ${action.payload}`);
+    })
+    builder.addCase(preUploadValidation.pending, (state, action) => {
+      console.log(`preUploadValidation.pending > action.payload: ${action.payload}`);
+    })
+    builder.addCase(preUploadValidation.fulfilled, (state, action) => {
+      console.log(`preUploadValidation.fulfilled > action.payload.uploadDuration: ${action.payload.uploadDuration}`);
+      console.log(`preUploadValidation.fulfilled > action.payload.selectedFile: ${action.payload.selectedFile}`);
+      state.uploadDuration = action.payload.uploadDuration;
+      state.selectedFile = action.payload.selectedFile;
+      state.uploadPhase = UploadPhaseEnum.VIDEO_SUBMITED;
+    }) 
+    // Step 2: upload user video
+    builder.addCase(uploadUserVideo.rejected, (state, action) => {
+      console.log(`uploadUserVideo.rejected > action.payload: ${action.payload}`);
+    })
+    builder.addCase(uploadUserVideo.pending, (state, action) => {
+      console.log(`uploadUserVideo.pending > action.payload: ${action.payload}`);
+    })
+    builder.addCase(uploadUserVideo.fulfilled, (state, action) => {
+      console.log(`uploadVideo.fulfilled > action.payload.assetID: ${action.payload.assetID}`);
       state.assetID = action.payload.assetID;
       state.uploadPhase = UploadPhaseEnum.VIDEO_UPLOADED;
-    },
-    setVideoIsPreloaded (state, action: PayloadAction<UploadVideoURL>) {
+    })
+    // Step 3: preload user video to allow auto play in mobile browsers
+    builder.addCase(preloadUserVideo.rejected, (state, action) => {
+      console.log(`preloadUserVideo.rejected > action.payload: ${action.payload}`);
+    })
+    builder.addCase(preloadUserVideo.pending, (state, action) => {
+      console.log(`preloadUserVideo.pending > action.payload: ${action.payload}`);
+    })
+    builder.addCase(preloadUserVideo.fulfilled, (state, action) => {
+      console.log(`preloadUserVideo.fulfilled > action.payload.assetID: ${action.payload.videoURL}`);
       state.videoURL = action.payload.videoURL;
       state.uploadPhase = UploadPhaseEnum.VIDEO_PRELOADED;
-    },
-    setImagesArePreloaded (state, action: PayloadAction<UploadImageURLs>) {
+    })
+    // Step 4: preload sequential images exported from user video
+    builder.addCase(preloadSequentialImages.rejected, (state, action) => {
+      console.log(`preloadSequentialImages.rejected > action.payload: ${action.payload}`);
+    })
+    builder.addCase(preloadSequentialImages.pending, (state, action) => {
+      console.log(`preloadSequentialImages.pending > action.payload: ${action.payload}`);
+    })
+    builder.addCase(preloadSequentialImages.fulfilled, (state, action) => {
+      console.log(`preloadSequentialImages.fulfilled > action.payload.imageURLs: ${action.payload.imageURLs}`);
       state.imageURLs = action.payload.imageURLs;
       state.uploadPhase = UploadPhaseEnum.IMAGES_PRELOADED;
-    }   
+    })
   }
 });
 
+
 export const {
   setVideoSubmitted,
-  setVideoIsUploaded,
-  setVideoIsPreloaded,
-  setImagesArePreloaded,
   setUploadPhase
 } = uploadSlice.actions;
 
 export type SetVideoSubmitted = ReturnType <typeof setVideoSubmitted>;
-export type SetVideoIsUploaded = ReturnType <typeof setVideoIsUploaded>;
-export type SetVideoIsPreloaded = ReturnType <typeof setVideoIsPreloaded>;
-export type SetImagesArePreloaded = ReturnType <typeof setImagesArePreloaded>;
 export type SetUploadPhase = ReturnType <typeof setUploadPhase>;
 
 export default uploadSlice.reducer;

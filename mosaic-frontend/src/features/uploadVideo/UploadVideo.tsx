@@ -8,16 +8,14 @@ import { setAppPhase, AppPhaseEnum } from 'app/appSlice';
 import type { AppState } from 'app/appSlice';
 // <UploadVideo>
 import { 
-  preloadSequentialImages, 
-  preloadVideo, 
-  uploadFile } from 'utils';
-import { 
-  setVideoSubmitted,
-  setVideoIsUploaded, 
-  setVideoIsPreloaded, 
-  setImagesArePreloaded, 
   UploadPhaseEnum,
   setUploadPhase } from 'features/uploadVideo/uploadSlice';
+// api
+import { 
+  preUploadValidation,
+  uploadUserVideo,
+  preloadUserVideo,
+  preloadSequentialImages } from 'api';
 import type { UploadState } from 'features/uploadVideo/uploadSlice';
 import loadingAnim from 'assets/images/loading_200x200.gif';
 // <MosaicTiles>
@@ -31,14 +29,6 @@ import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 // scrubberSlice
 import { setVideoUploadCount } from 'features/mosaicImage/scrubberSlice';
-
-
-///// TEST VALUES ///////
-const isTesting: boolean = false;
-const testAssetID: string = 'test-video';
-const testAssetDuration: number = 8.0;
-//////////////////////////
-///////////////////////////
 
 
 const useStyles = makeStyles((theme) => ({
@@ -83,32 +73,14 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
     switch(uploadPhase) {
       case UploadPhaseEnum.VIDEO_SUBMITED:
         dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
-        if ( isTesting ) {
-          dispatch(setVideoIsUploaded({ assetID: testAssetID }));
-        } else {
-          if (selectedFile !== undefined) {
-            uploadFile(selectedFile, '/uploadvideo')
-              .then(assetID => dispatch(setVideoIsUploaded({ assetID })))
-              .catch(error => console.log(error));
-          }
-        }
+        if (selectedFile !== undefined) dispatch(uploadUserVideo(selectedFile));
         break;
       case UploadPhaseEnum.VIDEO_UPLOADED:
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.CANCEL_ANIMATION }));
-        const videoPath = !isTesting ? `/uploads/${assetID}/resized.mov` : `/${testAssetID}/resized.mov`;
-        preloadVideo(videoPath)
-          .then(videoURL => dispatch(setVideoIsPreloaded({ videoURL })))
-          .catch(err => console.log(`ERROR > preloadVideo: ${err}`));
+        dispatch(preloadUserVideo(`/uploads/${assetID}/resized.mov`));
         break;
       case UploadPhaseEnum.VIDEO_PRELOADED:
-        preloadSequentialImages({
-          startIdx: 1,
-          endIdx: 20,
-          nameFormat: 'img .jpg',
-          zeroPadding: 3,
-          directoryPath: !isTesting ? `/uploads/${assetID}` : `/${testAssetID}`})
-          .then(imageURLs => dispatch(setImagesArePreloaded({ imageURLs })))
-          .catch(err => console.log(`ERROR > preloadSequentialImages: ${err}`));
+        dispatch(preloadSequentialImages(assetID));
         break;
       case UploadPhaseEnum.IMAGES_PRELOADED:
         dispatch(setMosaicFormatting({ duration: uploadDuration, videoWidth: resizedWidth, canvasWidth}));
@@ -123,31 +95,10 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
     }
   }, [uploadPhase]);
 
-
   function onFormSubmit (event) {
-    if (isTesting) {
-      dispatch(setVideoSubmitted({ selectedFile: undefined, uploadDuration: testAssetDuration}));
-      return;
-    }
-    const selectedFile = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      const blob: Blob = new Blob( [ evt.target.result ], { type: "video/mp4" } );
-      const urlCreator = window.URL || window.webkitURL;
-      var videoUrl = urlCreator.createObjectURL( blob );
-      var video = document.createElement('video');
-      video.src = videoUrl;
-      video.addEventListener('loadedmetadata', (ev: Event) => {
-        const target = ev.currentTarget as HTMLVideoElement;
-        console.log(`duration: ${target.duration}`);
-        urlCreator.revokeObjectURL(videoUrl);
-        dispatch(setVideoSubmitted({ selectedFile, uploadDuration: target.duration }));
-      });
-    }
-    // read file to determine if duration is not too long (less than fifteen seconds)
-    reader.readAsArrayBuffer(selectedFile);
+    dispatch(preUploadValidation(event));
   }
-  
+
   return (
     <PopOver
       width={`${displaySize.width}px`}
