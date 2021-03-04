@@ -10,6 +10,8 @@ import {
 
 export enum UploadPhaseEnum {
   PROMPT,
+  VIDEO_TOO_LONG,
+  VIDEO_UPLOADING,
   VIDEO_SUBMITED,
   VIDEO_UPLOADED,
   VIDEO_PRELOADED,
@@ -53,6 +55,7 @@ export type UploadState =
   & UploadSelectedFile
   & UploadImageURLs
   & UploadVideoResized
+  & { statusMessage: string }
 
 const initialState: UploadState = {
   uploadPhase: UploadPhaseEnum.VIDEO_UPLOADED,
@@ -61,7 +64,8 @@ const initialState: UploadState = {
   uploadDuration: 8.0,
   videoURL: '',
   imageURLs: [],
-  resizedWidth: 320 // make dynamically linked to video meta data of resized.mov
+  resizedWidth: 320, // make dynamically linked to video meta data of resized.mov
+  statusMessage: ''
 }
 
 const uploadSlice = createSlice ({
@@ -89,14 +93,19 @@ const uploadSlice = createSlice ({
       console.log(`preUploadValidation.fulfilled > action.payload.uploadDuration: ${action.payload.uploadDuration}`);
       console.log(`preUploadValidation.fulfilled > action.payload.selectedFile: ${action.payload.selectedFile}`);
       state.uploadDuration = action.payload.uploadDuration;
-      state.selectedFile = action.payload.selectedFile;
-      state.uploadPhase = UploadPhaseEnum.VIDEO_SUBMITED;
+      if (state.uploadDuration > 15) {
+        state.uploadPhase = UploadPhaseEnum.VIDEO_TOO_LONG;
+      } else {
+        state.selectedFile = action.payload.selectedFile;
+        state.uploadPhase = UploadPhaseEnum.VIDEO_SUBMITED;
+      }
     }) 
     // Step 2: upload user video
     builder.addCase(uploadUserVideo.rejected, (state, action) => {
       console.log(`uploadUserVideo.rejected > action.payload: ${action.payload}`);
     })
     builder.addCase(uploadUserVideo.pending, (state, action) => {
+      state.statusMessage = 'Uploading and optimizing video. This may take 10-15 seconds (production vers will be faster)';
       console.log(`uploadUserVideo.pending > action.payload: ${action.payload}`);
     })
     builder.addCase(uploadUserVideo.fulfilled, (state, action) => {

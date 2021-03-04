@@ -17,39 +17,65 @@ import {
   preloadUserVideo,
   preloadSequentialImages } from 'api';
 import type { UploadState } from 'features/uploadVideo/uploadSlice';
-import loadingAnim from 'assets/images/loading_200x200.gif';
 // <MosaicTiles>
 import { setMosaicFormatting, setMosaicPhase, MosaicPhaseEnum } from 'features/mosaicVideo/mosaicSlice';
 // <Navigation>
 import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
-// <PopOver>
+// Components
 import PopOver from 'components/PopOver';
+import SlideInOut from 'components/SlideInOut';
 // Material-UI
-import { Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { Button, Paper } from '@material-ui/core';
+import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
+import { Warning, LibraryAdd, CloudUpload } from '@material-ui/icons';
+import CircularProgress from '@material-ui/core/CircularProgress';
 // scrubberSlice
 import { setVideoUploadCount } from 'features/mosaicImage/scrubberSlice';
 
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    position: 'absolute', 
-    marginTop: '0px',
-    opacity: 0.95,
-    backgroundColor: '#ffffff',
-    zIndex: 20
-  },
-  centerScreen: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%'
-  },
-  input: {
-    display: 'none',
-  }
-}));
+const useStyles = makeStyles((theme: Theme) => 
+  createStyles({
+    container: {
+      position: 'absolute', 
+      marginTop: '0px',
+      opacity: 0.98,
+      backgroundColor: '#fff',
+      zIndex: 20
+    },
+    centerScreen: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100%'
+    },
+    input: {
+      display: 'none',
+    },
+    redHeadline: {
+      color: '#800'
+    },
+    promptHeadline: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      ...theme.typography.h5
+    },
+    promptBody: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      '& > *': {
+        padding: theme.spacing(1)
+      },
+      margin: theme.spacing(4),
+      padding: theme.spacing(1)
+    }
+  })
+);
+
 
 
 export interface UploadVideoProps {
@@ -65,7 +91,7 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
           assetID, 
           selectedFile,
           uploadDuration,
-          resizedWidth} = useSelector<RootState, UploadState>((state) => state.upload); 
+          resizedWidth } = useSelector<RootState, UploadState>((state) => state.upload); 
   console.log(`uploadPhase: ${UploadPhaseEnum[uploadPhase]}\n\n`);
 
 
@@ -108,9 +134,17 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
       isActive={isActive}
     >
       <div className={classes.container} style={{ width: displaySize.width, height: displaySize.height }}>
-        {
-          uploadPhase === UploadPhaseEnum.PROMPT &&
-            <div className={classes.centerScreen}>
+        <div className={classes.centerScreen}>
+
+          <SlideInOut 
+            isActive={uploadPhase === UploadPhaseEnum.PROMPT}
+            enter={`${0.2 * displaySize.height}px`}
+            exit={`${displaySize.height}px`}
+          >
+            <Paper className={classes.promptBody}>
+              <div className={classes.promptHeadline}><LibraryAdd style={{ fontSize: 24 }}/> Add Video</div>
+              <div>Add a video from your photo library that is fifteen seconds or less.</div>
+              <div>
               <input
                 accept="video/*"
                 className={classes.input}
@@ -121,20 +155,60 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
               <label htmlFor="contained-button-file">
                 <Button               
                   variant='outlined'
-                  size='large'
                   component='span'
                 > 
                   Upload
                 </Button>
               </label>
             </div>
-        }
-        {
-          uploadPhase !== UploadPhaseEnum.PROMPT &&
-            <div className={classes.centerScreen}>
-              <img src={loadingAnim}  />
+            </Paper>
+          </SlideInOut>
+          
+
+          <SlideInOut 
+            isActive={uploadPhase === UploadPhaseEnum.VIDEO_SUBMITED || uploadPhase === UploadPhaseEnum.VIDEO_UPLOADING || uploadPhase === UploadPhaseEnum.VIDEO_UPLOADED ||  uploadPhase === UploadPhaseEnum.VIDEO_PRELOADED || uploadPhase === UploadPhaseEnum.IMAGES_PRELOADED || uploadPhase === UploadPhaseEnum.MOSAIC_INITIALIZED }
+            enter={`${0.2 * displaySize.height}px`}
+            exit={`${displaySize.height}px`}
+          >
+            <Paper className={classes.promptBody}>
+              <div className={classes.promptHeadline}><CloudUpload style={{ fontSize: 26}}/>Video Uploading</div>
+              <div>Your video is being uploaded and optimized for your mobile device. This process usually takes ten to fifteen seconds.</div>
+              <div>
+                <CircularProgress />
+              </div>
+            </Paper>
+          </SlideInOut>
+
+
+          <SlideInOut 
+            isActive={uploadPhase === UploadPhaseEnum.VIDEO_TOO_LONG}
+            enter={`${0.2 * displaySize.height}px`}
+            exit={`${displaySize.height}px`}
+          >
+            <Paper className={classes.promptBody}>
+              <div className={classes.promptHeadline}><span className={classes.redHeadline}><Warning style={{ fontSize: 26}}/>Video Too Long</span></div>
+              <div>The duration of your video is {Number(uploadDuration).toFixed(2)} seconds long. Please upload a video that is fifteen seconds or less.</div>
+              <div>
+              <input
+                accept="video/*"
+                className={classes.input}
+                id="contained-button-file"
+                type="file"
+                onChange={onFormSubmit}
+              />
+              <label htmlFor="contained-button-file">
+                <Button               
+                  variant='outlined'
+                  component='span'
+                > 
+                  Upload
+                </Button>
+              </label>
             </div>
-        }
+            </Paper>
+          </SlideInOut>
+        </div>
+
       </div>
     </PopOver>
   );
