@@ -7,18 +7,20 @@ import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
 import type { NavState } from 'features/navigation/navSlice';
 // Material-UI
 import { Tab, Tabs } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import { SaveAlt, MovieCreation, VideoCall } from '@material-ui/icons';
 
-const useStyles = makeStyles({
-  centerScreen: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%'
-  }
-});
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    centerScreen: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100%'
+    }
+  })
+);
 
 export interface NavigationProps {
   width: number
@@ -43,8 +45,6 @@ export const Navigation: React.FC<NavigationProps> = ({
       <Tabs
         value={navPhase}
         onChange={handleChange}
-        indicatorColor="primary"
-        textColor="primary"
       >
         <Tab icon={<VideoCall fontSize='large' />} value={NavPhaseEnum.UPLOAD} style={{ minWidth: width / 3 }} label="UPLOAD" />
         <Tab icon={<MovieCreation fontSize='large' />} value={NavPhaseEnum.EDIT} style={{ minWidth: width / 3 }} label="EDIT" />

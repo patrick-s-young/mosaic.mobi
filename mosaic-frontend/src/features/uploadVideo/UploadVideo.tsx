@@ -36,10 +36,10 @@ import { setVideoUploadCount } from 'features/mosaicImage/scrubberSlice';
 const useStyles = makeStyles((theme: Theme) => 
   createStyles({
     container: {
-      position: 'absolute', 
+      position: 'absolute',
+      backgroundColor: theme.palette.common.white, 
       marginTop: '0px',
       opacity: 0.98,
-      backgroundColor: '#fff',
       zIndex: 20
     },
     centerScreen: {
@@ -52,10 +52,11 @@ const useStyles = makeStyles((theme: Theme) =>
     input: {
       display: 'none',
     },
-    redHeadline: {
-      color: '#800'
+    alertHeadline: {
+      color: theme.palette.secondary.dark,
     },
     promptHeadline: {
+      color: theme.palette.primary.dark,
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'center',
@@ -186,7 +187,7 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
             exit={`${displaySize.height}px`}
           >
             <Paper className={classes.promptBody}>
-              <div className={classes.promptHeadline}><span className={classes.redHeadline}><Warning style={{ fontSize: 26}}/>Video Too Long</span></div>
+              <div className={classes.promptHeadline}><span className={classes.alertHeadline}><Warning style={{ fontSize: 26}}/>Video Too Long</span></div>
               <div>The duration of your video is {Number(uploadDuration).toFixed(2)} seconds long. Please upload a video that is fifteen seconds or less.</div>
               <div>
               <input
