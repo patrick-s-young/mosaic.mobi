@@ -30,6 +30,7 @@ import { RenderMosaic } from 'features/renderMosaic/RenderMosaic';
 import DevicePreview from '../devTools/devicePreview/DevicePreview';
 
 
+
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const { navPhase } = useSelector<RootState, NavState>((state) => state.nav);
@@ -40,7 +41,6 @@ const App: React.FC = () => {
 
   // initialize sreen resolution-dependent values
   useEffect(() => {
-    //document.body.style.background = `url(${backgroundImage})`;
     const canvasWidth: number = deviceProfile.videoArea.width; //| undefined = document.getElementById('canvasWidth_reference')?.clientWidth;
     dispatch(setCanvasWidth({ canvasWidth }));
     dispatch(setScrubberCanvasWidth({ canvasWidth }));
@@ -58,7 +58,7 @@ const App: React.FC = () => {
               isActive={navPhase === NavPhaseEnum.UPLOAD}
           />
           
-          <div className='video-area' style={ deviceProfile.videoArea } >
+          <div style={ deviceProfile.videoArea } >
             { mosaicPhase !== MosaicPhaseEnum.WAITING_FOR_VIDEO &&
               <>
                 <Scrubber />

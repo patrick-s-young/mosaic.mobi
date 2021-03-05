@@ -5,7 +5,7 @@ import { setNumTiles } from 'features/mosaicVideo';
 import type { MosaicState, NumTiles } from 'features/mosaicVideo';
 // Material-UI
 import { Tab, Tabs } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { TwoTilesIcon, ThreeTilesIcon, FourTilesIcon, SixTilesIcon, NineTilesIcon} from 'features/mosaicVideo/mosaicSelector/mosaicSelectorIcons';
 
 const useStyles = makeStyles({
@@ -42,8 +42,6 @@ export const MosaicSelector: React.FC<MosaicSelectorProps> = ({ width, height })
       <Tabs
         value={numTiles}
         onChange={handleChange}
-        indicatorColor="primary"
-        textColor="primary"
         aria-label="icon tabs example"
         className={classes.root}
       >

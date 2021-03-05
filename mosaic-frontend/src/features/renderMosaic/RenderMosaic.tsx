@@ -28,9 +28,9 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
       position: 'absolute', 
+      backgroundColor: theme.palette.common.white, 
       marginTop: '0px',
       opacity: 0.95,
-      backgroundColor: '#ffffff',
       zIndex: 20
     },
     centerScreen: {
@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%'
     },
     promptHeadline: {
+      color: theme.palette.primary.dark,
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'center',

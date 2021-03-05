@@ -7,7 +7,7 @@ import { setCurrentScrubberFrame } from 'features/mosaicImage/scrubberSlice';
 import type { CurrentScrubberFrame, ScrubberState } from 'features/mosaicImage/scrubberSlice';
 // Material-UI
 import { Slider } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
   centerScreen: {
