@@ -3,6 +3,7 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from 'app/rootReducer';
 // Slices 
+import { setAppPhase, AppPhaseEnum } from 'app/appSlice';
 import type { UploadState } from 'features/uploadVideo/uploadSlice';
 import type { MosaicState } from 'features/mosaicVideo/mosaicSlice';
 import type { ScrubberState } from 'features/mosaicImage/scrubberSlice';
@@ -79,12 +80,14 @@ export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActiv
   function onRenderVideo () {
     const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${currentScrubberFrame}`;
     dispatch(renderMosaic(renderUrl));
+    dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
   }
 
   function onSaveVideo () {
     FileDownload(renderBlob, 'mosaic_render.mov');
     dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
     dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
+    dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));
   }
 
   return (

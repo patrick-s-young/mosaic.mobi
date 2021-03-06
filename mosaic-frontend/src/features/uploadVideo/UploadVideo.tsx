@@ -99,8 +99,10 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
   useEffect(() => {
     switch(uploadPhase) {
       case UploadPhaseEnum.VIDEO_SUBMITED:
-        dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
-        if (selectedFile !== undefined) dispatch(uploadUserVideo(selectedFile));
+        if (selectedFile !== undefined) {
+          dispatch(uploadUserVideo(selectedFile));
+          dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
+        }
         break;
       case UploadPhaseEnum.VIDEO_UPLOADED:
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.CANCEL_ANIMATION }));
