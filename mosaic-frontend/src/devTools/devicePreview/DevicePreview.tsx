@@ -1,7 +1,9 @@
 import * as React from 'react';
 import iPhone_XR from '../../assets/device-preview/iPhone_XR_mock_414x712.png';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
-import { Paper, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
+
+const isMobile = require('is-mobile');
 
 const useStyles = makeStyles((theme: Theme) => 
   createStyles({
@@ -29,6 +31,15 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(2),
       padding: theme.spacing(1),
       ...theme.typography.h6
+    },
+    mobileMessage: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '100%',
+      margin: theme.spacing(2),
+      textAlign: 'center'
     }
   })
 );
@@ -39,25 +50,40 @@ export type DevicePreviewProps = {
 
 const DevicePreview: React.FC<DevicePreviewProps> = ({ children }) => {
   const classes = useStyles();
+
+
   return (
-    <div className={classes.root}>
-      <Grid container spacing={4}>
+    <div>
 
-        <Grid item xs={4} className={classes.gridLeft}>
+      { isMobile() === false && 
+        <div className={classes.root}>
+          <Grid container spacing={4}>
+            <Grid item xs={4} className={classes.gridLeft}>
 
+                <div className={classes.headline}>mosaic.mobi</div>
+                <div>coming soon to a phone near you.</div>
+
+            </Grid>
+            <Grid item xs={8}>
+                    <img src={iPhone_XR} style={{ position: 'absolute'}} id='device-png'/>
+                    <div style={{ position: 'absolute', marginTop: '132px', marginLeft: '35px'}} className={classes.appContainer}>
+                      {children}
+                    </div>
+            </Grid>
+          </Grid>
+        </div>
+      }
+
+      { isMobile() && 
+
+        <div className={classes.mobileMessage}>
             <div className={classes.headline}>mosaic.mobi</div>
-            <div>coming soon to a phone near you.</div>
+            <div >coming soon to a phone near you.</div>
+            <div style={{ lineHeight: '1.6'}}>-</div>
+            <div >for a preview, view mosiac.mobi in a desktop browswer.</div>
+        </div>
+      }
 
-        </Grid>
-
-        <Grid item xs={8}>
-                <img src={iPhone_XR} style={{ position: 'absolute'}} id='device-png'/>
-                <div style={{ position: 'absolute', marginTop: '132px', marginLeft: '35px'}} className={classes.appContainer}>
-                  {children}
-                </div>
-        </Grid>
-
-      </Grid>
     </div>
   );
 }
