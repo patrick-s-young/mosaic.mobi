@@ -80,7 +80,7 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ children }) => {
             <div className={classes.headline}>mosaic.mobi</div>
             <div >coming soon to a phone near you.</div>
             <div style={{ lineHeight: '1.6'}}>-</div>
-            <div >for a preview, view mosiac.mobi in a desktop browswer.</div>
+            <div >for a preview, view mosiac.mobi in a desktop browser.</div>
         </div>
       }
 
