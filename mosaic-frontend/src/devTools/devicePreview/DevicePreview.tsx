@@ -50,7 +50,7 @@ export type DevicePreviewProps = {
 
 const DevicePreview: React.FC<DevicePreviewProps> = ({ children }) => {
   const classes = useStyles();
-
+  const iPhoneXR: boolean = window.screen.width === 414 && window.screen.height === 896;
 
   return (
     <div>
@@ -74,7 +74,13 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ children }) => {
         </div>
       }
 
-      { isMobile() && 
+      { isMobile() && iPhoneXR && 
+          <div className={classes.appContainer}>
+            {children}
+          </div>
+      }
+
+      { isMobile() && !iPhoneXR && 
 
         <div className={classes.mobileMessage}>
             <div className={classes.headline}>mosaic.mobi</div>
