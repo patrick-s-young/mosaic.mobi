@@ -59,6 +59,12 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       margin: theme.spacing(4),
       padding: theme.spacing(1)
+    },
+    promptButtonsContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      width: '80%',
+      justifyContent: 'space-evenly',
     }
   })
 );
@@ -90,6 +96,12 @@ export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActiv
     dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));
   }
 
+  const onCancel = () => {
+    dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
+    dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
+    dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));
+  }
+
   return (
     <PopOver
       width={`${displaySize.width}px`}
@@ -109,12 +121,19 @@ export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActiv
             <Paper className={classes.promptBody}>
               <div className={classes.promptHeadline}><AccessTime style={{ fontSize: 24 }}/> Render Video</div>
               <div>The mosaic video rendering process takes place in the cloud and usually requires ten to fifteen seconds.</div>
-              <div>
+              <div className={classes.promptButtonsContainer}>
                 <Button
                   variant='outlined'
                   onClick={onRenderVideo}
                 >
                 RENDER VIDEO
+                </Button>
+
+                <Button
+                  variant='outlined'
+                  onClick={onCancel}
+                >
+                  Cancel
                 </Button>
             </div>
             </Paper>
@@ -142,12 +161,19 @@ export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActiv
             <Paper className={classes.promptBody}>
               <div className={classes.promptHeadline}><CloudDownload style={{ fontSize: 24 }}/> Save Video</div>
               <div>Your mosaic video is ready to save to your device. If you don't have the option to save to your photo library, save to files first and then add it to your photos.</div>
-              <div>
+              <div className={classes.promptButtonsContainer}>
                 <Button
                   variant='outlined'
                   onClick={onSaveVideo}
                 >
                 SAVE VIDEO
+                </Button>
+
+                <Button
+                  variant='outlined'
+                  onClick={onCancel}
+                >
+                  Cancel
                 </Button>
             </div>
             </Paper>

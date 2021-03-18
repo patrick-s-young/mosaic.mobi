@@ -73,6 +73,12 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       margin: theme.spacing(4),
       padding: theme.spacing(1)
+    },
+    promptButtonsContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      width: '80%',
+      justifyContent: 'space-evenly',
     }
   })
 );
@@ -128,6 +134,11 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
     dispatch(preUploadValidation(event));
   }
 
+  const onCancel = () => {
+    dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.PROMPT}));
+    dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));   
+  }
+
   return (
     <PopOver
       width={`${displaySize.width}px`}
@@ -147,23 +158,30 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
             <Paper className={classes.promptBody}>
               <div className={classes.promptHeadline}><LibraryAdd style={{ fontSize: 24 }}/> Add Video</div>
               <div>Add a video from your photo library that is fifteen seconds or less.</div>
-              <div>
-              <input
-                accept="video/*"
-                className={classes.input}
-                id="contained-button-file"
-                type="file"
-                onChange={onFormSubmit}
-              />
-              <label htmlFor="contained-button-file">
-                <Button               
+              <div className={classes.promptButtonsContainer}>
+                <input
+                  accept="video/*"
+                  className={classes.input}
+                  id="contained-button-file"
+                  type="file"
+                  onChange={onFormSubmit}
+                />
+                <label htmlFor="contained-button-file">
+                  <Button               
+                    variant='outlined'
+                    component='span'
+                  > 
+                    Upload
+                  </Button>
+                </label>
+    
+                <Button
                   variant='outlined'
-                  component='span'
-                > 
-                  Upload
+                  onClick={onCancel}
+                >
+                  Cancel
                 </Button>
-              </label>
-            </div>
+              </div>
             </Paper>
           </SlideInOut>
           
@@ -191,23 +209,30 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
             <Paper className={classes.promptBody}>
               <div className={classes.promptHeadline}><span className={classes.alertHeadline}><Warning style={{ fontSize: 26}}/>Video Too Long</span></div>
               <div>The duration of your video is {Number(uploadDuration).toFixed(2)} seconds long. Please upload a video that is fifteen seconds or less.</div>
-              <div>
-              <input
-                accept="video/*"
-                className={classes.input}
-                id="contained-button-file"
-                type="file"
-                onChange={onFormSubmit}
-              />
-              <label htmlFor="contained-button-file">
-                <Button               
+              <div className={classes.promptButtonsContainer}>
+                <input
+                  accept="video/*"
+                  className={classes.input}
+                  id="contained-button-file"
+                  type="file"
+                  onChange={onFormSubmit}
+                />
+                <label htmlFor="contained-button-file">
+                  <Button               
+                    variant='outlined'
+                    component='span'
+                  > 
+                    Upload
+                  </Button>
+                </label>
+    
+                <Button
                   variant='outlined'
-                  component='span'
-                > 
-                  Upload
+                  onClick={onCancel}
+                >
+                  Cancel
                 </Button>
-              </label>
-            </div>
+              </div>
             </Paper>
           </SlideInOut>
         </div>
