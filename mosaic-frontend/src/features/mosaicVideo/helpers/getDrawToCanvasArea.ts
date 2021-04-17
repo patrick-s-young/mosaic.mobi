@@ -1,11 +1,11 @@
 import { numTilesAllPossibleValues } from 'features/mosaicVideo/mosaicSlice';
 import type { RectGroupCollection } from 'features/mosaicVideo/mosaicSlice';
 
-interface GetDrawToViewPort {
+interface GetDrawToCanvasArea {
   (videoWidth: number, videoHeight: number): RectGroupCollection
 } 
 
-export const getDrawToViewPort: GetDrawToViewPort = (videoWidth, videoHeight) => {
+export const getDrawToCanvasArea: GetDrawToCanvasArea = (videoWidth, videoHeight) => {
   // hard-coded ratios for calculating width/height of canvas area to be drawn to
   const tileSize: { [key: string] : {width: number, height: number } } = {
     2: { width: videoWidth / 2, height: videoHeight},
@@ -19,8 +19,8 @@ export const getDrawToViewPort: GetDrawToViewPort = (videoWidth, videoHeight) =>
   numTilesAllPossibleValues.forEach(numTiles => { 
     drawToCanvasArea[numTiles] = rowCol[numTiles].map(({ row, col }) => {
       return {
-        originX: col * tileSize[numTiles].width, 
-        originY: row * tileSize[numTiles].height, 
+        x: col * tileSize[numTiles].width, 
+        y: row * tileSize[numTiles].height, 
         width: tileSize[numTiles].width, 
         height: tileSize[numTiles].height       
       }});

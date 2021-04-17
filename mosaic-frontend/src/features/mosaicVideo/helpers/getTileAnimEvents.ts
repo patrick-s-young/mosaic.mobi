@@ -174,8 +174,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
         { time: 1750,   action: 'fadeOut'},
         { time: 4250,   action: 'fadeIn'},
         { time: 5750,   action: 'fadeOut'},
-        { time: 11600,  action: 'fadeIn'},
-        { time: 13100,  action: 'fadeOut'},
+        { time: 10500,  action: 'fadeIn'},
+        { time: 12000,  action: 'fadeOut'},
         { time: 16000,  action: 'wait'}
       ],
       [ // row: 0, col: 1
@@ -183,8 +183,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
         { time: 2500,   action: 'fadeOut'},
         { time: 7250,   action: 'fadeIn'},
         { time: 8750,   action: 'fadeOut'},
-        { time: 11600,  action: 'fadeIn'},
-        { time: 13100,  action: 'fadeOut'},
+        { time: 10750,  action: 'fadeIn'},
+        { time: 12250,  action: 'fadeOut'},
         { time: 16000,  action: 'wait'}
       ],
       [ // row: 0, col: 2
@@ -192,8 +192,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
         { time: 2000,   action: 'fadeOut'},
         { time: 5000,   action: 'fadeIn'},
         { time: 6500,   action: 'fadeOut'},
-        { time: 11600,  action: 'fadeIn'},
-        { time: 13100,  action: 'fadeOut'},
+        { time: 10250,  action: 'fadeIn'},
+        { time: 11750,  action: 'fadeOut'},
         { time: 16000,  action: 'wait'}
       ],
       [ // row: 1, col: 0
@@ -201,8 +201,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
         { time: 3000,   action: 'fadeOut'},
         { time: 5500,   action: 'fadeIn'},
         { time: 7000,   action: 'fadeOut'},
-        { time: 11600,  action: 'fadeIn'},
-        { time: 13100,  action: 'fadeOut'},
+        { time: 11250,  action: 'fadeIn'},
+        { time: 12750,  action: 'fadeOut'},
         { time: 16000,  action: 'wait'}
       ],
       [ // row: 1, col: 1
@@ -210,8 +210,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
         { time: 2750,   action: 'fadeOut'},
         { time: 7500,   action: 'fadeIn'},
         { time: 9000,   action: 'fadeOut'},
-        { time: 11600,  action: 'fadeIn'},
-        { time: 13100,  action: 'fadeOut'},
+        { time: 11500,  action: 'fadeIn'},
+        { time: 13000,  action: 'fadeOut'},
         { time: 16000,  action: 'wait'}
       ],
       [ // row: 1, col: 2
@@ -219,8 +219,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
         { time: 3500,   action: 'fadeOut'},
         { time: 6250,   action: 'fadeIn'},
         { time: 7750,   action: 'fadeOut'},
-        { time: 11600,  action: 'fadeIn'},
-        { time: 13100,  action: 'fadeOut'},
+        { time: 11725,  action: 'fadeIn'},
+        { time: 13250,  action: 'fadeOut'},
         { time: 16000,  action: 'wait'}
       ],
       [ // row: 2, col: 0
@@ -228,8 +228,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
         { time: 3250,   action: 'fadeOut'},
         { time: 4750,   action: 'fadeIn'},
         { time: 6250,   action: 'fadeOut'},
-        { time: 11600,  action: 'fadeIn'},
-        { time: 13100,  action: 'fadeOut'},
+        { time: 12000,  action: 'fadeIn'},
+        { time: 13500,  action: 'fadeOut'},
         { time: 16000,  action: 'wait'}
       ],
       [ // row: 2, col: 1
@@ -237,8 +237,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
         { time: 3750,   action: 'fadeOut'},
         { time: 8250,   action: 'fadeIn'},
         { time: 9750,   action: 'fadeOut'},
-        { time: 11600,  action: 'fadeIn'},
-        { time: 13100,  action: 'fadeOut'},
+        { time: 12250,  action: 'fadeIn'},
+        { time: 13750,  action: 'fadeOut'},
         { time: 16000,  action: 'wait'}
       ],
       [ // row: 2, col: 1
@@ -246,8 +246,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
         { time: 4000,   action: 'fadeOut'},
         { time: 5000,   action: 'fadeIn'},
         { time: 6500,   action: 'fadeOut'},
-        { time: 11600,  action: 'fadeIn'},
-        { time: 13100,  action: 'fadeOut'},
+        { time: 12500,  action: 'fadeIn'},
+        { time: 14000,  action: 'fadeOut'},
         { time: 16000,  action: 'wait'}
       ]
     ]
