@@ -2,8 +2,8 @@ import { createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 import {
   getInPoints,
   getTileAnimEvents,
-  getDrawToCanvasArea,
-  getCopyVideoFromArea
+  getDrawToViewPort,
+  getCopyVideoFromUvs
 }  from 'features/mosaicVideo/helpers';
 
 export enum MosaicPhaseEnum {
@@ -22,7 +22,7 @@ export interface MosaicPhase {
 
 export type NumTiles = 2 | 3 | 4 | 6 | 9;
 export type NumTilesToString = '2' | '3' | '4' | '6' | '9';
-export type Rect = { x: number, y: number, width: number, height: number };
+export type Rect = { originX: number, originY: number, width: number, height: number };
 export type RectGroup = Array<Rect>;
 export type RectGroupCollection = { [key in NumTilesToString] : RectGroup };
 export type RectCollection = { [key in NumTilesToString]: Rect }
@@ -32,14 +32,14 @@ export type ActionGroupCollection = { [key in NumTilesToString] : ActionGroup };
 export type Time = number;
 export type TimeGroup = Array<Time>;
 export type TimeGroupCollection = { [key in NumTilesToString] : TimeGroup };
-
+export type UvsCollection = { [key in NumTilesToString]: Array<number> };
 
 export interface MosaicFormatting {
   numTiles: NumTiles,
   canvasWidth: number,
   inPoints: TimeGroupCollection,
-  copyVideoFromArea: RectCollection,
-  drawToCanvasArea: RectGroupCollection,
+  copyVideoFromUvs: UvsCollection,
+  drawToViewPort: RectGroupCollection,
   tileAnimEvents: ActionGroupCollection,
 }
 
@@ -47,12 +47,14 @@ export type MosaicState = MosaicFormatting & MosaicPhase;
 
 export const numTilesAllPossibleValues: Array<NumTiles> = [2, 3, 4, 6, 9];
 const numTilesDefault: NumTiles = 9;
+
 const initialState: Partial<MosaicState> = {
   mosaicPhase: MosaicPhaseEnum.WAITING_FOR_VIDEO,
+  numTiles: numTilesDefault,
   canvasWidth: undefined,
   inPoints: undefined,
-  copyVideoFromArea: undefined,
-  drawToCanvasArea: undefined,
+  copyVideoFromUvs: undefined,
+  drawToViewPort: undefined,
   tileAnimEvents: undefined
 }
 
@@ -66,10 +68,10 @@ const mosaicSlice = createSlice({
     setMosaicFormatting (state, action: PayloadAction<{duration: number, videoWidth: number, canvasWidth: number}>) {
       const { duration, videoWidth, canvasWidth } = action.payload;
       state.inPoints = getInPoints(duration);
-      state.copyVideoFromArea = getCopyVideoFromArea(videoWidth, videoWidth);
+      state.copyVideoFromUvs = getCopyVideoFromUvs();
       state.tileAnimEvents = getTileAnimEvents();
       state.canvasWidth = canvasWidth;
-      state.drawToCanvasArea = getDrawToCanvasArea(state.canvasWidth, state.canvasWidth);
+      state.drawToViewPort = getDrawToViewPort(1, 1);
       state.numTiles = numTilesDefault;
       state.mosaicPhase = MosaicPhaseEnum.ANIMATION_STOPPED;
     },
