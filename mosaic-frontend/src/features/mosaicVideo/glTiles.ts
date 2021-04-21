@@ -3,9 +3,10 @@ const VERTEX_SHADER = `
 attribute vec2 position;
 attribute vec2 uv;
 varying vec2 texCoords;
+uniform vec2 translation;
 
 void main() {
-  gl_Position = vec4(position * vec2(1, -1), 0, 1.0);
+  gl_Position = vec4((position + translation) * vec2(1, -1) , 0, 1.0);
   texCoords = uv;
 }`;
 
@@ -17,18 +18,9 @@ uniform float opacity;
 
 void main() {
   gl_FragColor = vec4(texture2D(textureSampler, texCoords).rgb, opacity);
+  gl_FragColor.rgb *= gl_FragColor.a;
 }`;
 
-//const POSITIONS = new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]);
-const POSITIONS = new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]);
-//const UVS = new Float32Array([0, 1, 0, 0, 1, 0, 1, 1]);
-//const UVS = new Float32Array([0, 1, 0, 0, 0.5, 0, 0.5, 1]);
-/*const UVS = new Float32Array([0, 0, // lower left
-                              0, 1, // upper left
-                              0.5, 1,   // upper right
-                              0.5, 0]); // lower right
-                              */
-const INDEX = new Uint16Array([0, 1, 2, 0, 2, 3]);
 
 class UniformInfo {
   type: GLenum;
@@ -38,69 +30,103 @@ class UniformInfo {
 export class GlTiles {
   canvas: HTMLCanvasElement;
   context: WebGLRenderingContext;
+  translation: Float32Array;
 
+  private positionArray: Float32Array;
+  private elementArray: Uint16Array;
   private UVS: Float32Array;
-  private textureId: WebGLTexture;
+  //private textureId: WebGLTexture;
+  private textureIdArr: Array<WebGLTexture>;
+  private numTiles: number;
   private programId: WebGLProgram;
   private vertShader: string;
   private fragShader: string;  
   private uniformLocations: Map<string, UniformInfo>;
   private dirtyProgram: boolean;
 
-  constructor (canvas: HTMLCanvasElement, uvs: Float32Array) {
+  ///////////////
+  // CONSTRUCTOR
+  constructor (
+    canvas: HTMLCanvasElement, 
+    uvs: Float32Array,
+    positionArray: Float32Array,
+    elementArray: Uint16Array,
+    numTiles: number
+    ) {
     this.UVS = uvs;
     this.canvas = canvas;
-    const context = this.canvas.getContext('webgl', { premultipliedAlpha: false });
+    this.positionArray = positionArray;
+    this.elementArray = elementArray;
+    this.numTiles = numTiles;
 
+    const context = this.canvas.getContext('webgl');
     if (context === null) {
       throw new Error(`Couldn't get a WebGL context`);
     }
-
     const gl: WebGLRenderingContext = context as WebGLRenderingContext;
     this.context = gl;
-    const textureId = gl.createTexture();
 
-    if (textureId === null) {
-      throw new Error('Error getting texture ID');
+    this.textureIdArr = new Array<WebGLTexture>();
+    for (let tile = 0; tile < this.numTiles; tile++) {
+      const textureId = gl.createTexture();
+      if (textureId === null) {
+        throw new Error('Error getting textureId_1');
+      }
+      this.textureIdArr.push(textureId);
     }
 
-    this.textureId = textureId;
     this.programId = 0
-
     this.vertShader = VERTEX_SHADER;
     this.fragShader = FRAGMENT_SHADER;
-
     this.uniformLocations = new Map();
-
-    this.bindBuffers(INDEX, POSITIONS, this.UVS);
-
-    gl.clearColor(1, 1, 1, 1);
-
+    this.bindBuffers(this.elementArray, this.positionArray, this.UVS);
+    gl.clearColor(1, 1, 1, 0);
     this.dirtyProgram = true;
-
-
   }
 
-  setUvs (uvs: Float32Array) {
+  setNumTiles (
+    numTiles: number,
+    uvs: Float32Array,
+    positionArray: Float32Array
+    ) {
+    console.log(`in setNumTiles`);
+    this.positionArray = positionArray;
     this.UVS = uvs;
-    this.bindBuffers(INDEX, POSITIONS, this.UVS);
+
+    for (let texIdx = 0; texIdx < this.numTiles; texIdx++) {
+      this.context.deleteTexture(this.textureIdArr[texIdx]);
+    }
+
+    this.numTiles = numTiles;
+    this.textureIdArr = new Array<WebGLTexture>();
+    for (let texIdx = 0; texIdx < this.numTiles; texIdx++) {
+      const textureId = this.context.createTexture();
+      if (textureId === null) {
+        throw new Error('Error getting textureId');
+      }
+      this.textureIdArr.push(textureId);
+    }
+
+    this.bindBuffers(this.elementArray, this.positionArray, this.UVS);
   }
 
   drawImage (
     video: HTMLVideoElement, 
     opacity: number, 
-    viewPort: { originX: number, originY: number, width: number, height: number }
+    translation: Array<number>,
+    textureIndex: number
     ) {
 
     this.setUniform('opacity', opacity);
-    this.setVideoFrame(video);
-    this.render(viewPort);
+    this.setUniform('translation', new Float32Array(translation))
+    this.setVideoFrame(video, textureIndex);
+    this.render();
   }
 
-  setVideoFrame (video: HTMLVideoElement) {
+  setVideoFrame (video: HTMLVideoElement, textureIndex: number) {
     const gl = this.context;
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.textureId);
+    gl.bindTexture(gl.TEXTURE_2D, this.textureIdArr[textureIndex]);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
     // gl.generateMipmap(gl.TEXTURE_2D);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -110,23 +136,14 @@ export class GlTiles {
 
   }
 
-  render(viewPort: {originX: number, originY: number, width: number, height: number}) {
+  render() {
     const gl = this.context;
 
     if (this.dirtyProgram) {
       this.createProgram();
     }
 
-    //gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-    const originX: number = viewPort.originX * gl.drawingBufferWidth;
-    const originY: number = viewPort.originY * gl.drawingBufferHeight;
-    const viewPortWidth: number = viewPort.width * gl.drawingBufferWidth;
-    const viewPortHeight: number = viewPort.height * gl.drawingBufferHeight;
-    //console.log(`viewPortHeight: ${viewPortHeight}`);
-
-    gl.viewport(originX, originY, viewPortWidth, viewPortHeight);
-    //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
     gl.flush();
   }
