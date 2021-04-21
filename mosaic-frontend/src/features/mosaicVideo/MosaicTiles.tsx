@@ -11,7 +11,7 @@ import type { UploadState } from 'features/uploadVideo/uploadSlice';
 import type { RootState } from 'app/rootReducer';
 import 'features/mosaicVideo/mosaicTiles.css';
 
-
+const elementArray = [0, 1, 2, 0, 2, 3];
 
 export const MosaicTiles: React.FC= () => {
   /// DEBUG
@@ -32,7 +32,8 @@ export const MosaicTiles: React.FC= () => {
     inPoints,
     copyVideoFromUvs,
     tileAnimEvents,
-    drawToViewPort,
+    tileTranslation,
+    tileVertices,
     canvasWidth,
     numTiles } = useSelector<RootState, MosaicState>((state) => state.mosaic as MosaicState);
 
@@ -56,19 +57,29 @@ export const MosaicTiles: React.FC= () => {
       case MosaicPhaseEnum.ANIMATION_STOPPED:
         const newMosaicTiles: Array<VideoTex> = [];
         if (glTilesRef.current === undefined) {
-          glTilesRef.current = new GlTiles(canvasRef.current, new Float32Array(copyVideoFromUvs[numTiles]));
+          glTilesRef.current = new GlTiles(
+            canvasRef.current, 
+            new Float32Array(copyVideoFromUvs[numTiles]),
+            new Float32Array(tileVertices[numTiles]),
+            new Uint16Array(elementArray),
+            numTiles
+          );
         } else {
           console.log('UPDATE UVS')
-          glTilesRef.current.setUvs(new Float32Array(copyVideoFromUvs[numTiles]));
+          glTilesRef.current.setNumTiles (
+            numTiles,
+            new Float32Array(copyVideoFromUvs[numTiles]),
+            new Float32Array(tileVertices[numTiles])
+          );
         }
         for (let tileIndex = 0; tileIndex < numTiles; tileIndex++) {
           const newMosaicTile = new VideoTex(videoURL); //Object.create(mosaicTile);
           newMosaicTile.setAttributes(
             inPoints[numTiles][tileIndex],
             tileAnimEvents[numTiles][tileIndex],
-            drawToViewPort[numTiles][tileIndex]
+            tileTranslation[numTiles][tileIndex],
+            tileIndex
           );
-        
           newMosaicTiles.push(newMosaicTile);
         }
         setMosaicTiles(newMosaicTiles);
@@ -100,7 +111,8 @@ export const MosaicTiles: React.FC= () => {
           glTiles.drawImage(
             mosaicTile.video, 
             mosaicTile.fadeOpacity, 
-            mosaicTile.viewPort);
+            mosaicTile.translation,
+            mosaicTile.tileIndex);
         }
       });
       frameIDRef.current = requestAnimationFrame(step);
