@@ -3,13 +3,12 @@ export class VideoTex {
   nextEventTime: number;
   currentEventAction: string = 'WAIT';
   updateVideoTex: () => void;
-  private fadeDuration: number = 500;
   fadeOpacity: number;
-  viewPort: {originX: number, originY: number, width: number, height: number};
+  translation: Array<number>;
+  tileIndex: number;
   video: HTMLVideoElement;
+  private fadeDuration: number = 500;
   private fadeStartTime: number;
-
-  //private textureTranslate: Array<number> = [0.5, 0.0];
   private inPoint: number;
   private tileAnimEvents: Array<{time: number, action: string}>;
   private maxEventIndex: number;
@@ -28,18 +27,15 @@ export class VideoTex {
 
   setAttributes (
     inPoint: number, 
-    tileAnimEvents: Array<{time: number, action: string}>, 
-    viewPort: { originX: number, originY: number, width: number, height: number }) {
+    tileAnimEvents: Array<{time: number, action: string}>,
+    translation: Array<number>,
+    tileIndex: number
+    ) {
     this.inPoint = inPoint;
     this.tileAnimEvents = tileAnimEvents;
     this.maxEventIndex = tileAnimEvents.length;
-    this.viewPort = viewPort;
-    console.log(`in setAttributes`);
-    console.log(`
-      this.inPoint: ${this.inPoint}
-      this.tileAnimEvents: ${this.tileAnimEvents}
-      this.viewPort.originX: ${this.viewPort.originX}
-    `)
+    this.translation = translation;
+    this.tileIndex = tileIndex;
   }
 
   initAnimation () {
