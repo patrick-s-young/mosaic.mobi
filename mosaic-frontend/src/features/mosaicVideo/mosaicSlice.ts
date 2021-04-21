@@ -70,7 +70,7 @@ const mosaicSlice = createSlice({
     setMosaicFormatting (state, action: PayloadAction<{duration: number, videoWidth: number, canvasWidth: number}>) {
       const { duration, videoWidth, canvasWidth } = action.payload;
       state.inPoints = getInPoints(duration);
-      state.copyVideoFromArea = getCopyVideoFromArea(videoWidth, videoWidth);
+      state.copyVideoFromUvs = getCopyVideoFromUvs();
       state.tileAnimEvents = getTileAnimEvents();
       state.canvasWidth = canvasWidth;
       state.numTiles = numTilesDefault;
