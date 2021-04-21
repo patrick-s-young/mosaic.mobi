@@ -2,8 +2,9 @@ import { createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 import {
   getInPoints,
   getTileAnimEvents,
-  getDrawToViewPort,
-  getCopyVideoFromUvs
+  getCopyVideoFromUvs,
+  tileTranslation,
+  tileVertices
 }  from 'features/mosaicVideo/helpers';
 
 export enum MosaicPhaseEnum {
@@ -33,14 +34,17 @@ export type Time = number;
 export type TimeGroup = Array<Time>;
 export type TimeGroupCollection = { [key in NumTilesToString] : TimeGroup };
 export type UvsCollection = { [key in NumTilesToString]: Array<number> };
+export type TileVertices = { [key in NumTilesToString] : Array<number> };
+export type TileTranslation = { [key in NumTilesToString] : Array<Array<number>> };
 
 export interface MosaicFormatting {
   numTiles: NumTiles,
   canvasWidth: number,
   inPoints: TimeGroupCollection,
   copyVideoFromUvs: UvsCollection,
-  drawToViewPort: RectGroupCollection,
   tileAnimEvents: ActionGroupCollection,
+  tileTranslation: TileTranslation,
+  tileVertices: TileVertices
 }
 
 export type MosaicState = MosaicFormatting & MosaicPhase;
@@ -53,9 +57,9 @@ const initialState: Partial<MosaicState> = {
   numTiles: numTilesDefault,
   canvasWidth: undefined,
   inPoints: undefined,
-  copyVideoFromUvs: undefined,
-  drawToViewPort: undefined,
-  tileAnimEvents: undefined
+  tileAnimEvents: undefined,
+  tileTranslation,
+  tileVertices
 }
 
 const mosaicSlice = createSlice({
@@ -71,7 +75,6 @@ const mosaicSlice = createSlice({
       state.copyVideoFromUvs = getCopyVideoFromUvs();
       state.tileAnimEvents = getTileAnimEvents();
       state.canvasWidth = canvasWidth;
-      state.drawToViewPort = getDrawToViewPort(1, 1);
       state.numTiles = numTilesDefault;
       state.mosaicPhase = MosaicPhaseEnum.ANIMATION_STOPPED;
     },
