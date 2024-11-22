@@ -5,19 +5,19 @@ services:
   proxy:
     depends_on: 
       - frontend
-    image: patricksyoung/mosaic-proxy:1.1
+    image: patricksyoung/mosaic-proxy:2.0
     ports:
       - '80:80'
     networks:
       - mosaic-network
 
   frontend:
-    image: patricksyoung/mosaic-frontend:latest
+    image: patricksyoung/mosaic-frontend:2.0
     networks:
       - mosaic-network
 
   backend:
-    image: patricksyoung/mosaic-backend:1.1
+    image: patricksyoung/mosaic-backend:2.0
     depends_on:
       - api
     volumes:
@@ -26,7 +26,7 @@ services:
       - mosaic-network
 
   api:
-    image: patricksyoung/mosaic-api:1.4
+    image: patricksyoung/mosaic-api:2.0
     volumes:
       - mosaic-volume:/var/lib/video
     networks:
