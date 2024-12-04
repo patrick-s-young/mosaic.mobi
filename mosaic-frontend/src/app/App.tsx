@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from 'app/rootReducer';
 // <App>
 import { AppPhaseEnum, setCanvasWidth } from 'app/appSlice';
-import type { AppState, DeviceProfile } from 'app/appSlice';
+import type { AppState } from 'app/appSlice';
 import 'app/app.css';
 // <Navigation>
 import { Navigation } from 'features/navigation'; 
@@ -28,20 +28,17 @@ import { MosaicSelector } from 'features/mosaicVideo';
 import { RenderMosaic } from 'features/renderMosaic/RenderMosaic';
 // <DevicePreview>
 import DevicePreview from '../devTools/devicePreview/DevicePreview';
-
-
+import { appDimensions } from 'app/app.config';
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const { navPhase } = useSelector<RootState, NavState>((state) => state.nav);
   const { mosaicPhase } = useSelector<RootState, MosaicState>((state) => state.mosaic as MosaicState);
-  const { appPhase, deviceProfiles, deviceIndex } = useSelector<RootState, AppState>((state) => state.app);
-
-  const deviceProfile: DeviceProfile = deviceProfiles[deviceIndex];
+  const { appPhase } = useSelector<RootState, AppState>((state) => state.app);
 
   // initialize sreen resolution-dependent values
   useEffect(() => {
-    const canvasWidth: number = deviceProfile.videoArea.width; //| undefined = document.getElementById('canvasWidth_reference')?.clientWidth;
+    const canvasWidth: number = appDimensions.videoArea.width; //| undefined = document.getElementById('canvasWidth_reference')?.clientWidth;
     dispatch(setCanvasWidth({ canvasWidth }));
     dispatch(setScrubberCanvasWidth({ canvasWidth }));
   }, []);
@@ -50,15 +47,15 @@ const App: React.FC = () => {
     <div>
         <DevicePreview>
           <RenderMosaic 
-              displaySize={deviceProfile.popOver}
+              displaySize={appDimensions.popOver}
               isActive={navPhase === NavPhaseEnum.DOWNLOAD}
           />
           <UploadVideo 
-              displaySize={deviceProfile.popOver}
+              displaySize={appDimensions.popOver}
               isActive={navPhase === NavPhaseEnum.UPLOAD}
           />
           
-          <div style={ deviceProfile.videoArea } >
+          <div style={ appDimensions.videoArea } >
             { mosaicPhase !== MosaicPhaseEnum.WAITING_FOR_VIDEO &&
               <>
                 <Scrubber />
@@ -66,25 +63,33 @@ const App: React.FC = () => {
               </>
             }
           </div>
-          
-          <ScrubberSlider 
-            width={deviceProfile.scrubberSlider.width}
-            height={deviceProfile.scrubberSlider.height} 
-          />
 
- 
-          <MosaicSelector 
-            width={deviceProfile.scrubberSlider.width}
-            height={deviceProfile.scrubberSlider.height} 
-          />
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            boxSizing: 'border-box', 
+            justifyContent: 'flex-start', 
+            alignItems: 'center', 
+            height: appDimensions.uiContainerHeight,
+            padding: '20px 0 20px 0',
+            gap: '20px'
+            }}>
+            <ScrubberSlider 
+              width={appDimensions.scrubberSlider.width}
+              height={appDimensions.scrubberSlider.height} 
+            />
+            <MosaicSelector 
+              width={appDimensions.scrubberSlider.width}
+              height={appDimensions.scrubberSlider.height} 
+            />
+            <Navigation 
+              width={appDimensions.navigation.width}
+              height={appDimensions.navigation.height} 
+              pauseInput={appPhase === AppPhaseEnum.INIT_SESSION || appPhase === AppPhaseEnum.LOADING}
+            />
+          </div>
 
-
-          <Navigation 
-            width={deviceProfile.navigation.width}
-            height={deviceProfile.navigation.height} 
-            pauseInput={appPhase === AppPhaseEnum.INIT_SESSION || appPhase === AppPhaseEnum.LOADING}
-          />
-      </DevicePreview>
+        </DevicePreview>
     </div>
   );
 }
