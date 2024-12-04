@@ -16,8 +16,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%',
+    alignItems: 'center'
   }
 });
 
@@ -38,7 +37,7 @@ export const MosaicSelector: React.FC<MosaicSelectorProps> = ({ width, height })
   };
 
   return (
-    <div className={classes.centerScreen} style={{ width, height }}>
+    <div className={classes.centerScreen} style={{ width }}>
       <Tabs
         value={numTiles}
         onChange={handleChange}

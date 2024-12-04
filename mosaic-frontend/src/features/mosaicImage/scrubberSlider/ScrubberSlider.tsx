@@ -14,8 +14,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%'
+    alignItems: 'center'
   },
   slider: {
     width: '90%',
@@ -53,7 +52,7 @@ const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width, height}) => {
   }
 
   return (
-    <div style={{ width, height }}>
+    <div style={{ width }}>
       <div className={classes.centerScreen}>
         <Slider
           value={currentScrubberFrame}

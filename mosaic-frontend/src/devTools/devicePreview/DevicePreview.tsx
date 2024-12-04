@@ -2,8 +2,7 @@ import * as React from 'react';
 import iPhone_XR from '../../assets/device-preview/iPhone_XR_mock_414x712.png';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
-
-const isMobile = require('is-mobile');
+import isMobile from 'is-mobile';
 
 const useStyles = makeStyles((theme: Theme) => 
   createStyles({
@@ -18,7 +17,8 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%'
     },
     appContainer: {
-      backgroundColor: theme.palette.common.white
+      backgroundColor: theme.palette.common.white,
+      height: window.innerHeight
     },
     headline: {
       color: theme.palette.primary.dark,
@@ -50,12 +50,12 @@ export type DevicePreviewProps = {
 
 const DevicePreview: React.FC<DevicePreviewProps> = ({ children }) => {
   const classes = useStyles();
-  //const iPhoneXR: boolean = window.screen.width === 414 && window.screen.height === 896;
+  const _isMobile = isMobile({ tablet: true});
 
   return (
     <div>
 
-      { isMobile() === false && 
+      { !_isMobile && 
         <div className={classes.root}>
           <Grid container spacing={4}>
             <Grid item xs={4} className={classes.gridLeft}>
@@ -66,7 +66,7 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ children }) => {
             </Grid>
             <Grid item xs={8}>
                     <img src={iPhone_XR} style={{ position: 'absolute'}} id='device-png'/>
-                    <div style={{ position: 'absolute', marginTop: '132px', marginLeft: '35px'}} className={classes.appContainer}>
+                    <div style={{ position: 'absolute', marginTop: '132px', marginLeft: '35px', backgroundColor: 'white'}}>
                       {children}
                     </div>
             </Grid>
@@ -74,12 +74,11 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ children }) => {
         </div>
       }
 
-      { isMobile() &&
+      { _isMobile &&
           <div className={classes.appContainer}>
             {children}
           </div>
       }
-
 
 
     </div>

@@ -16,8 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
-      alignItems: 'center',
-      height: '100%'
+      alignItems: 'center'
     }
   })
 );
@@ -41,7 +40,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   };
 
   return (
-    <div className={classes.centerScreen}  style={{ width, height }}>
+    <div className={classes.centerScreen}  style={{ width }}>
       <Tabs
         value={navPhase}
         onChange={handleChange}
