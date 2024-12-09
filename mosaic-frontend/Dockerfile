@@ -1,7 +1,7 @@
-FROM node:13.12.0-alpine AS build-stage
+FROM node:20-alpine AS build-stage
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 COPY . ./
 RUN npm run build
 FROM nginx:stable-alpine AS production-stage

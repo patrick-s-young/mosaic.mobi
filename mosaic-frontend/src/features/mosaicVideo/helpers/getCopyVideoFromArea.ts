@@ -1,4 +1,4 @@
-import type { RectCollection } from 'features/mosaicVideo/mosaicSlice';
+import type { RectCollection } from '@features/mosaicVideo/mosaicSlice';
 
 export interface GetCopyVideoFromArea {
   (videoWidth: number, videoHeight: number): RectCollection

@@ -1,1 +1,1 @@
-export { Navigation } from 'features/navigation/Navigation';
+export { Navigation } from '@features/navigation/Navigation';

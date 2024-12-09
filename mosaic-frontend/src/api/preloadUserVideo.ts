@@ -3,7 +3,7 @@ import {
 } from '@reduxjs/toolkit';
 
 export const preloadUserVideo = createAsyncThunk(
-  'api/preloadUserVideo',
+  '@api/preloadUserVideo',
   async (filePath: string) => {
     const response = await fetch(filePath, { method: 'GET' });
     const videoBlob = await response.blob();

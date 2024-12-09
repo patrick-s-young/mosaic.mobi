@@ -1,7 +1,7 @@
 import { 
   createAsyncThunk
 } from '@reduxjs/toolkit';
-const axios = require('axios');
+import axios from 'axios';
 
 export const renderMosaic = createAsyncThunk(
   'render/renderMosaic',

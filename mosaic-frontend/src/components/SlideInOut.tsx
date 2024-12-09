@@ -1,7 +1,7 @@
-import React from 'react';
 import { useSpring, animated } from 'react-spring';
 
 export interface SlideInOutProps {
+  children: React.ReactNode
   isActive: boolean
   enter: string
   exit: string

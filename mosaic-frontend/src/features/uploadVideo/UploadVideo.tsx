@@ -2,35 +2,37 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Redux Toolkit
-import type { RootState } from 'app/rootReducer';
+import type { RootState } from '@app/rootReducer';
 // <App>
-import { setAppPhase, AppPhaseEnum } from 'app/appSlice';
-import type { AppState } from 'app/appSlice';
+import { setAppPhase, AppPhaseEnum } from '@app/appSlice';
+import type { AppState } from '@app/appSlice';
 // <UploadVideo>
 import { 
   UploadPhaseEnum,
-  setUploadPhase } from 'features/uploadVideo/uploadSlice';
+  setUploadPhase } from '@features/uploadVideo/uploadSlice';
 // api
 import { 
   preUploadValidation,
   uploadUserVideo,
   preloadUserVideo,
-  preloadSequentialImages } from 'api';
-import type { UploadState } from 'features/uploadVideo/uploadSlice';
+  preloadSequentialImages 
+} from '@api/index';
+import type { UploadState } from '@features/uploadVideo/uploadSlice';
 // <MosaicTiles>
-import { setMosaicFormatting, setMosaicPhase, MosaicPhaseEnum } from 'features/mosaicVideo/mosaicSlice';
+import { setMosaicFormatting, setMosaicPhase, MosaicPhaseEnum } from '@features/mosaicVideo/mosaicSlice';
 // <Navigation>
-import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
+import { setNavPhase, NavPhaseEnum } from '@features/navigation/navSlice';
 // Components
-import PopOver from 'components/PopOver';
-import SlideInOut from 'components/SlideInOut';
+import PopOver from '@components/PopOver';
+import SlideInOut from '@components/SlideInOut';
 // Material-UI
 import { Button, Paper } from '@material-ui/core';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import { Warning, LibraryAdd, CloudUpload } from '@material-ui/icons';
 import CircularProgress from '@material-ui/core/CircularProgress';
 // scrubberSlice
-import { setVideoUploadCount } from 'features/mosaicImage/scrubberSlice';
+import { setVideoUploadCount } from '@features/mosaicImage/scrubberSlice';
+import type { AppDispatch } from '@app/store';
 
 
 const useStyles = makeStyles((theme: Theme) => 
@@ -92,14 +94,13 @@ export interface UploadVideoProps {
 
 export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { canvasWidth } = useSelector<RootState, AppState>((state) => state.app);
   const { uploadPhase, 
           assetID, 
           selectedFile,
           uploadDuration,
           resizedWidth } = useSelector<RootState, UploadState>((state) => state.upload); 
-  console.log(`uploadPhase: ${UploadPhaseEnum[uploadPhase]}\n\n`);
 
 
   useEffect(() => {
@@ -130,7 +131,7 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
     }
   }, [uploadPhase]);
 
-  function onFormSubmit (event) {
+  function onFormSubmit (event: { target: HTMLInputElement }) {
     dispatch(preUploadValidation(event));
   }
 

@@ -1,29 +1,30 @@
 import * as React from 'react';
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from 'app/rootReducer';
+import type { RootState } from '@app/rootReducer';
+import type { AppDispatch } from '@app/store';
 // Slices 
-import { setAppPhase, AppPhaseEnum } from 'app/appSlice';
-import type { UploadState } from 'features/uploadVideo/uploadSlice';
-import type { MosaicState } from 'features/mosaicVideo/mosaicSlice';
-import type { ScrubberState } from 'features/mosaicImage/scrubberSlice';
-import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
+import { setAppPhase, AppPhaseEnum } from '@app/appSlice';
+import type { UploadState } from '@features/uploadVideo/uploadSlice';
+import type { MosaicState } from '@features/mosaicVideo/mosaicSlice';
+import type { ScrubberState } from '@features/mosaicImage/scrubberSlice';
+import { setNavPhase, NavPhaseEnum } from '@features/navigation/navSlice';
 import { 
   RenderPhaseEnum, 
   RenderState, 
-  setRenderPhase } from 'features/renderMosaic/renderSlice';
+  setRenderPhase } from '@features/renderMosaic/renderSlice';
 // api
-import { renderMosaic } from 'api';
+import { renderMosaic } from '@api/index';
 // Material-UI
 import { Button, Paper } from '@material-ui/core';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { CloudDownload, AccessTime, Cached } from '@material-ui/icons';
 // Components
-import PopOver from 'components/PopOver';
-import SlideInOut from 'components/SlideInOut';
+import PopOver from '@components/PopOver';
+import SlideInOut from '@components/SlideInOut';
 // download service
-const FileDownload = require('js-file-download');
+import FileDownload from 'js-file-download'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -76,7 +77,7 @@ export interface RenderMosaicProps {
 
 export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { assetID } = useSelector<RootState, UploadState>((state) => state.upload);
   const { numTiles } = useSelector<RootState, Partial<MosaicState>>((state) => state.mosaic);
   const { currentScrubberFrame } = useSelector<RootState, ScrubberState>((state) => state.scrubber);
@@ -90,10 +91,12 @@ export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActiv
   }
 
   function onSaveVideo () {
-    FileDownload(renderBlob, 'mosaic_render.mov');
-    dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
-    dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
-    dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));
+    if (renderBlob) {
+      FileDownload(renderBlob, 'mosaic_render.mov');
+      dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
+      dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
+      dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));
+    }
   }
 
   const onCancel = () => {

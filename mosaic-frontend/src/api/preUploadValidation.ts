@@ -3,14 +3,18 @@ import {
 } from '@reduxjs/toolkit';
 
 export const preUploadValidation = createAsyncThunk(
-  'api/preUploadValidation',
-  async (event) => {
+  '@api/preUploadValidation',
+  async (event: { target: HTMLInputElement }) => {
 
-    const selectedFile = event.target.files[0];
-    const uploadDuration = await new Promise<number>((_resolve, reject) => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) {
+      throw new Error('No file selected');
+    }
+    
+    const uploadDuration = await new Promise<number>((_resolve, _reject) => {
       const reader = new FileReader();
       reader.onload = function(evt) {
-        const blob: Blob = new Blob( [ evt.target.result ], { type: "video/mp4" } );
+        const blob: Blob = new Blob([evt.target?.result as ArrayBuffer], { type: "video/mp4" });
         const urlCreator = window.URL || window.webkitURL;
         var videoUrl = urlCreator.createObjectURL( blob );
         var video = document.createElement('video');

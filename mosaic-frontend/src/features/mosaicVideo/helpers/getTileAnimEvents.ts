@@ -1,4 +1,4 @@
-import type { ActionGroupCollection } from 'features/mosaicVideo/mosaicSlice';
+import type { ActionGroupCollection } from '@features/mosaicVideo/mosaicSlice';
 
 interface GetTileAnimEvents {
   (): ActionGroupCollection

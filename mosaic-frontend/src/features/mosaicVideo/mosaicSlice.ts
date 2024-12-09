@@ -1,10 +1,10 @@
-import { createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   getInPoints,
   getTileAnimEvents,
   getDrawToCanvasArea,
   getCopyVideoFromArea
-}  from 'features/mosaicVideo/helpers';
+}  from '@features/mosaicVideo/helpers';
 
 export enum MosaicPhaseEnum {
   WAITING_FOR_VIDEO,

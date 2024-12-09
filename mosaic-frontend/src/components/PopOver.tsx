@@ -1,7 +1,7 @@
-import React from 'react';
-import {useSpring, animated} from 'react-spring';
+import {useSpring, animated } from 'react-spring';
 
 export interface PopOverProps {
+  children: React.ReactNode,
   width: string,
   height: string,
   showTop: string
