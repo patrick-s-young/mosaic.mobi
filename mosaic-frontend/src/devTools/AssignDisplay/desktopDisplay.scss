@@ -1,0 +1,65 @@
+.desktopDisplay {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  padding: 20px 40px;
+
+  > div {
+    box-sizing: border-box;
+    display: flex;
+    width: 100%;
+  }
+
+  ul {
+    list-style-type: circle;
+    li {
+      margin-bottom: 30px;
+    }
+   ul li {
+      list-style-type: square;
+      margin-bottom: 10px;
+    }
+  }
+
+  a {
+    color:#7b1fa2;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  &__title {
+    font-size: 64px;
+    font-weight: 600;
+    color:#7b1fa2
+  }
+
+  &__leftColumn {
+    font-size: 24px;
+    flex-direction: column;
+
+  }
+
+  &__middleColumn {
+    justify-content: center;
+  }
+
+  &__rightColumn {
+    justify-content: flex-end;
+    gap: 40px;
+    > div {
+      color: blue;
+      font-size: 24px;
+      font-weight: 600;
+    }
+  }
+
+
+
+  &__appContainer {
+    position: absolute;
+    margin-top: 132px;
+    margin-left: -14px;
+    background-color: white;
+  }
+}
