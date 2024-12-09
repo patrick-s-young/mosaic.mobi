@@ -3,7 +3,7 @@ import {
 } from '@reduxjs/toolkit';
 
 export const preloadSequentialImages = createAsyncThunk(
-  'api/preloadSequentialImages',
+  '@api/preloadSequentialImages',
   async (assetID: string) => {
       const startIdx = 1;
       const endIdx = 20;

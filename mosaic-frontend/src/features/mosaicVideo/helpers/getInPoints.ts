@@ -1,5 +1,5 @@
-import { numTilesAllPossibleValues } from 'features/mosaicVideo/mosaicSlice';
-import type { TimeGroup, TimeGroupCollection } from 'features/mosaicVideo/mosaicSlice';
+import { numTilesAllPossibleValues } from '@features/mosaicVideo/mosaicSlice';
+import type { TimeGroup, TimeGroupCollection } from '@features/mosaicVideo/mosaicSlice';
 
 interface GetInPoints {
   (duration: number): TimeGroupCollection

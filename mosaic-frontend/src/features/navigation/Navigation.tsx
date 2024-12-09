@@ -1,16 +1,16 @@
 import * as React from 'react';
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from 'app/rootReducer';
+import type { RootState } from '@app/rootReducer';
 // Slices
-import { setNavPhase, NavPhaseEnum } from 'features/navigation/navSlice';
-import type { NavState } from 'features/navigation/navSlice';
+import { setNavPhase, NavPhaseEnum } from '@features/navigation/navSlice';
+import type { NavState } from '@features/navigation/navSlice';
 // Material-UI
 import { Tab, Tabs } from '@material-ui/core';
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { SaveAlt, MovieCreation, VideoCall } from '@material-ui/icons';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     centerScreen: {
       display: 'flex',
@@ -29,13 +29,12 @@ export interface NavigationProps {
 
 export const Navigation: React.FC<NavigationProps> = ({ 
   width,
-  height,
   pauseInput }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { navPhase } = useSelector<RootState, NavState>((state) => state.nav);
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: NavPhaseEnum) => {
+  const handleChange = (_: React.ChangeEvent<{}>, newValue: NavPhaseEnum) => {
     if (!pauseInput) dispatch(setNavPhase({navPhase: newValue}));
   };
 

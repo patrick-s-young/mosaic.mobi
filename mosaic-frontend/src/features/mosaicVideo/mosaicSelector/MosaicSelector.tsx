@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from 'app/rootReducer';
-import { setNumTiles } from 'features/mosaicVideo';
-import type { MosaicState, NumTiles } from 'features/mosaicVideo';
+import { RootState } from '@app/rootReducer';
+import { setNumTiles } from '@features/mosaicVideo';
+import type { MosaicState, NumTiles } from '@features/mosaicVideo';
 // Material-UI
 import { Tab, Tabs } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { TwoTilesIcon, ThreeTilesIcon, FourTilesIcon, SixTilesIcon, NineTilesIcon} from 'features/mosaicVideo/mosaicSelector/mosaicSelectorIcons';
+import { TwoTilesIcon, ThreeTilesIcon, FourTilesIcon, SixTilesIcon, NineTilesIcon} from '@features/mosaicVideo/mosaicSelector/mosaicSelectorIcons';
 
 const useStyles = makeStyles({
   root: {
@@ -21,18 +21,17 @@ const useStyles = makeStyles({
 });
 
 export interface MosaicSelectorProps {
-  width: number,
-  height: number
+  width: number
 }
 
-export const MosaicSelector: React.FC<MosaicSelectorProps> = ({ width, height }) => {
+export const MosaicSelector: React.FC<MosaicSelectorProps> = ({ width }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { numTiles } = useSelector<RootState, MosaicState>(
 		(state) => state.mosaic as MosaicState
   );
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: NumTiles) => {
+  const handleChange = (_: React.ChangeEvent<{}>, newValue: NumTiles) => {
     dispatch(setNumTiles(newValue));
   };
 

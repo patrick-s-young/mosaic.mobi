@@ -1,5 +1,5 @@
-import { numTilesAllPossibleValues } from 'features/mosaicVideo/mosaicSlice';
-import type { RectGroupCollection } from 'features/mosaicVideo/mosaicSlice';
+import { numTilesAllPossibleValues } from '@features/mosaicVideo/mosaicSlice';
+import type { RectGroupCollection } from '@features/mosaicVideo/mosaicSlice';
 
 interface GetDrawToCanvasArea {
   (videoWidth: number, videoHeight: number): RectGroupCollection

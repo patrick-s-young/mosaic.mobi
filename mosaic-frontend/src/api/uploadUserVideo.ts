@@ -1,9 +1,8 @@
-import { 
-  createAsyncThunk
-} from '@reduxjs/toolkit';
+import type { UploadAssetID } from '@features/uploadVideo/uploadSlice';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
 export const uploadUserVideo = createAsyncThunk(
-  'api/uploadUserVideo',
+  '@api/uploadUserVideo',
   async (file: File) => {
     const formData = new FormData();
     formData.append('myFile', file);

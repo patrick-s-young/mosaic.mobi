@@ -6,7 +6,8 @@ import {
   preUploadValidation,
   uploadUserVideo,
   preloadUserVideo,
-  preloadSequentialImages } from 'api';
+  preloadSequentialImages 
+} from '@api/index';
 
 export enum UploadPhaseEnum {
   PROMPT,
@@ -83,10 +84,10 @@ const uploadSlice = createSlice ({
   },
   extraReducers: builder => {
     // Step 1: confirm user video is within 30 second duration limit
-    builder.addCase(preUploadValidation.rejected, (state, action) => {
+    builder.addCase(preUploadValidation.rejected, (_, action) => {
       console.log(`preUploadValidation.rejected > action.payload: ${action.payload}`);
     })
-    builder.addCase(preUploadValidation.pending, (state, action) => {
+    builder.addCase(preUploadValidation.pending, (_, action) => {
       console.log(`preUploadValidation.pending > action.payload: ${action.payload}`);
     })
     builder.addCase(preUploadValidation.fulfilled, (state, action) => {
@@ -101,7 +102,7 @@ const uploadSlice = createSlice ({
       }
     }) 
     // Step 2: upload user video
-    builder.addCase(uploadUserVideo.rejected, (state, action) => {
+    builder.addCase(uploadUserVideo.rejected, (_, action) => {
       console.log(`uploadUserVideo.rejected > action.payload: ${action.payload}`);
     })
     builder.addCase(uploadUserVideo.pending, (state, action) => {
@@ -114,10 +115,10 @@ const uploadSlice = createSlice ({
       state.uploadPhase = UploadPhaseEnum.VIDEO_UPLOADED;
     })
     // Step 3: preload user video to allow auto play in mobile browsers
-    builder.addCase(preloadUserVideo.rejected, (state, action) => {
+    builder.addCase(preloadUserVideo.rejected, (_, action) => {
       console.log(`preloadUserVideo.rejected > action.payload: ${action.payload}`);
     })
-    builder.addCase(preloadUserVideo.pending, (state, action) => {
+    builder.addCase(preloadUserVideo.pending, (_, action) => {
       console.log(`preloadUserVideo.pending > action.payload: ${action.payload}`);
     })
     builder.addCase(preloadUserVideo.fulfilled, (state, action) => {
@@ -126,10 +127,10 @@ const uploadSlice = createSlice ({
       state.uploadPhase = UploadPhaseEnum.VIDEO_PRELOADED;
     })
     // Step 4: preload sequential images exported from user video
-    builder.addCase(preloadSequentialImages.rejected, (state, action) => {
+    builder.addCase(preloadSequentialImages.rejected, (_, action) => {
       console.log(`preloadSequentialImages.rejected > action.payload: ${action.payload}`);
     })
-    builder.addCase(preloadSequentialImages.pending, (state, action) => {
+    builder.addCase(preloadSequentialImages.pending, (_, action) => {
       console.log(`preloadSequentialImages.pending > action.payload: ${action.payload}`);
     })
     builder.addCase(preloadSequentialImages.fulfilled, (state, action) => {

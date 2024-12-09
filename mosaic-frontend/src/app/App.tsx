@@ -2,33 +2,34 @@ import * as React from 'react';
 import { useEffect, } from 'react';
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
-import type { RootState } from 'app/rootReducer';
+import type { RootState } from '@app/rootReducer';
 // <App>
-import { AppPhaseEnum, setCanvasWidth } from 'app/appSlice';
-import type { AppState } from 'app/appSlice';
-import 'app/app.css';
+import { AppPhaseEnum, setCanvasWidth } from '@app/appSlice';
+import type { AppState } from '@app/appSlice';
+import '@app/app.css';
 // <Navigation>
-import { Navigation } from 'features/navigation'; 
-import { NavPhaseEnum } from 'features/navigation/navSlice';
-import type { NavState } from 'features/navigation/navSlice';
+import { Navigation } from '@features/navigation'; 
+import { NavPhaseEnum } from '@features/navigation/navSlice';
+import type { NavState } from '@features/navigation/navSlice';
 // <UploadVideo>
-import { UploadVideo } from 'features/uploadVideo/UploadVideo';
+import { UploadVideo } from '@features/uploadVideo/UploadVideo';
 // <MosaicTiles>
-import type { MosaicState } from 'features/mosaicVideo';
-import { MosaicPhaseEnum } from 'features/mosaicVideo';
-import { MosaicTiles } from 'features/mosaicVideo';
+import type { MosaicState } from '@features/mosaicVideo';
+import { MosaicPhaseEnum } from '@features/mosaicVideo';
+import { MosaicTiles } from '@features/mosaicVideo';
 // <Scrubber>
-import Scrubber from 'features/mosaicImage/Scrubber';
+import Scrubber from '@features/mosaicImage/Scrubber';
 // <ScrubberSlider>
-import ScrubberSlider from 'features/mosaicImage/scrubberSlider/ScrubberSlider';
-import { setScrubberCanvasWidth } from 'features/mosaicImage/scrubberSlice';
+import ScrubberSlider from '@features/mosaicImage/scrubberSlider/ScrubberSlider';
+import { setScrubberCanvasWidth } from '@features/mosaicImage/scrubberSlice';
 // <MosaicSelector>
-import { MosaicSelector } from 'features/mosaicVideo';
+import { MosaicSelector } from '@features/mosaicVideo';
 // <RenderMosaic>
-import { RenderMosaic } from 'features/renderMosaic/RenderMosaic';
+import { RenderMosaic } from '@features/renderMosaic/RenderMosaic';
 // <DevicePreview>
 import DevicePreview from '../devTools/devicePreview/DevicePreview';
-import { appDimensions } from 'app/app.config';
+import { appDimensions } from '@/app/app.config';
+
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -76,11 +77,9 @@ const App: React.FC = () => {
             }}>
             <ScrubberSlider 
               width={appDimensions.scrubberSlider.width}
-              height={appDimensions.scrubberSlider.height} 
             />
             <MosaicSelector 
               width={appDimensions.scrubberSlider.width}
-              height={appDimensions.scrubberSlider.height} 
             />
             <Navigation 
               width={appDimensions.navigation.width}

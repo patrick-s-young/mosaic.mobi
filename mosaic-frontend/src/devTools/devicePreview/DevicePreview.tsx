@@ -61,7 +61,7 @@ const DevicePreview: React.FC<DevicePreviewProps> = ({ children }) => {
             <Grid item xs={4} className={classes.gridLeft}>
 
                 <div className={classes.headline}>mosaic.mobi</div>
-                <div>coming soon to a phone near you.</div>
+                <div>Mobile web app for Instagram-friendly video edits.</div>
 
             </Grid>
             <Grid item xs={8}>

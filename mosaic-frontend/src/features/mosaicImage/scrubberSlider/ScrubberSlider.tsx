@@ -1,10 +1,10 @@
 import * as React from 'react';
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from 'app/rootReducer';
+import type { RootState } from '@app/rootReducer';
 // Slice
-import { setCurrentScrubberFrame } from 'features/mosaicImage/scrubberSlice';
-import type { CurrentScrubberFrame, ScrubberState } from 'features/mosaicImage/scrubberSlice';
+import { setCurrentScrubberFrame } from '@features/mosaicImage/scrubberSlice';
+import type { CurrentScrubberFrame, ScrubberState } from '@features/mosaicImage/scrubberSlice';
 // Material-UI
 import { Slider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -33,17 +33,16 @@ const useStyles = makeStyles({
 
 export interface ScrubberSliderProps {
   width: number
-  height: number
 }
 
-const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width, height}) => {
+const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { currentScrubberFrame, scrubberFramesMax } = useSelector<RootState, ScrubberState>(
     (state) => state.scrubber
   );
 
-  const handleChange = (event: any, newValue: number | number[]) => {
+  const handleChange = (_: any, newValue: number | number[]) => {
     dispatch(setCurrentScrubberFrame(newValue as CurrentScrubberFrame));
   };
 

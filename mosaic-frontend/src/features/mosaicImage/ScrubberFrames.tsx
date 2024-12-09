@@ -1,9 +1,9 @@
 import { useRef, useEffect } from 'react';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import type { RootState } from 'app/rootReducer';
-import type { ScrubberState } from 'features/mosaicImage/scrubberSlice';
-import 'features/mosaicImage/scrubberFrames.css';
+import type { RootState } from '@app/rootReducer';
+import type { ScrubberState } from '@features/mosaicImage/scrubberSlice';
+import '@features/mosaicImage/scrubberFrames.css';
 
 interface ScrubberFramesProps {
   width: number
