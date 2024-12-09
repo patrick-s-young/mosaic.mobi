@@ -27,7 +27,7 @@ import { MosaicSelector } from '@features/mosaicVideo';
 // <RenderMosaic>
 import { RenderMosaic } from '@features/renderMosaic/RenderMosaic';
 // <DevicePreview>
-import DevicePreview from '../devTools/devicePreview/DevicePreview';
+import AssignDisplay from '../devTools/AssignDisplay/AssignDisplay';
 import { appDimensions } from '@/app/app.config';
 
 
@@ -46,7 +46,7 @@ const App: React.FC = () => {
 
   return (
     <div>
-        <DevicePreview>
+        <AssignDisplay>
           <RenderMosaic 
               displaySize={appDimensions.popOver}
               isActive={navPhase === NavPhaseEnum.DOWNLOAD}
@@ -88,7 +88,7 @@ const App: React.FC = () => {
             />
           </div>
 
-        </DevicePreview>
+        </AssignDisplay>
     </div>
   );
 }
