@@ -34,3 +34,11 @@ To update just the UI, run `npm run dev` from the /mosaic-frontend directory. No
 To update the UI with upload and render enabled, run `docker compose -f docker-compose-frontend-dev.yaml up`from the root directory.
 
 To run the containers on Docker Hub, run `docker compose up`from the root directory.
+
+## Author
+
+* **Patrick Young** - [Patrick Young](https://www.linkedin.com/in/patrick-s-young/)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
