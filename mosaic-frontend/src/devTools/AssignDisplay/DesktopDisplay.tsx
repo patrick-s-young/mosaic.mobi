@@ -1,4 +1,3 @@
-import { Grid } from '@material-ui/core';
 import iPhone_XR from '@assets/device-preview/iPhone_XR_mock_414x712.png';
 import './desktopDisplay.scss';
 
