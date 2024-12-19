@@ -65,7 +65,7 @@ export const MosaicTiles: React.FC= () => {
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.TILES_UPDATED }));
         break;
       case MosaicPhaseEnum.TILES_UPDATED:
-        mosaicTilesRef.current.forEach(tile => tile.initAnimation());
+        //mosaicTilesRef.current.forEach(tile => tile.initAnimation());
         startAnimation();
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.ANIMATION_STARTED }));
         break;
@@ -76,6 +76,15 @@ export const MosaicTiles: React.FC= () => {
 
   function startAnimation () {
     console.log('^^^^^^^^^^^^^^^^^startAnimation mosaicTiles', mosaicTilesRef.current);
+    if (mosaicTilesRef.current.every(tile => tile._canPlayThrough) === false) {
+      console.log('MosaicTiles > startAnimation > every tile._canPlayThrough is false');
+      setTimeout(() => {
+        startAnimation();
+      }, 500);
+      return;
+    }
+    console.log('MosaicTiles > startAnimation > every tile._canPlayThrough is true');
+    mosaicTilesRef.current.forEach(tile => tile.initAnimation());
     let beginTime = performance.now();
     function step(timeStamp: DOMHighResTimeStamp) {
       let elapsedTime = timeStamp - beginTime;

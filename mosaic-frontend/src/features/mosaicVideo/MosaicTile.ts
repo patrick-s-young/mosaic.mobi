@@ -16,6 +16,7 @@ export interface MosaicTile {
   nextEventTime: number,
   _nextEventIndex: number,
   _maxEventIndex: number,
+  _canPlayThrough: boolean,
   setVideoSrc: (
     this: MosaicTile, 
     videoSrc: string,
@@ -79,6 +80,7 @@ export const mosaicTile: Partial<MosaicTile> = {
   nextEventTime: undefined,
   _nextEventIndex: undefined,
   _maxEventIndex: undefined,
+  _canPlayThrough: false,
   setVideoSrc(videoSrc) { 
     this._video = document.createElement('video');
     this._video.src = videoSrc;
@@ -86,7 +88,12 @@ export const mosaicTile: Partial<MosaicTile> = {
     this._video.loop = true;
     this._video.muted = true;
     this._video.setAttribute('webkit-playsinline', 'webkit-playsinline');
-    this._video.setAttribute('playsinline', 'playsinline');
+    this._video.setAttribute('playsinline', 'playsinline');    
+    this._canPlayThrough = false;
+    this._video.oncanplaythrough = () => {
+      console.log('MosaicTile > _video.oncanplaythrough');
+      this._canPlayThrough = true;
+    }
   },
   setContext(context) {
     this._context = context;
