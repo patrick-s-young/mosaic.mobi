@@ -17,6 +17,7 @@ export interface MosaicTile {
   _nextEventIndex: number,
   _maxEventIndex: number,
   _canPlayThrough: boolean,
+  _seeking: boolean,
   setVideoSrc: (
     this: MosaicTile, 
     videoSrc: string,
@@ -81,6 +82,7 @@ export const mosaicTile: Partial<MosaicTile> = {
   _nextEventIndex: undefined,
   _maxEventIndex: undefined,
   _canPlayThrough: false,
+  _seeking: true,
   setVideoSrc(videoSrc) { 
     this._video = document.createElement('video');
     this._video.src = videoSrc;
@@ -93,6 +95,12 @@ export const mosaicTile: Partial<MosaicTile> = {
     this._video.oncanplaythrough = () => {
       console.log('MosaicTile > _video.oncanplaythrough');
       this._canPlayThrough = true;
+    }
+    this._video.onseeking = () => {
+      this._seeking = true;
+    }
+    this._video.onseeked = () => {
+      this._seeking = false;
     }
   },
   setContext(context) {
@@ -109,8 +117,8 @@ export const mosaicTile: Partial<MosaicTile> = {
     this.currentEventAction = this._wait;
     this._nextEventIndex = 0;
     this.nextEventTime = this._tileAnimEvents[this._nextEventIndex].time;
+    this._video.pause();
     this._video.currentTime = this._inPoint;
-
   },
   resetAnimation() {
     this._nextEventIndex = 0;
@@ -159,14 +167,17 @@ export const mosaicTile: Partial<MosaicTile> = {
     // this.currentEventAction = this._fadeIn;
   },
   _fadeIn() {
-      const timeElapsed = Date.now() - this._fadeStartTime;
-      this._fadeOpacity = timeElapsed / this._fadeDuration;
-      if (this._fadeOpacity > 1) {
-        this._fadeOpacity = 1;
-        this.currentEventAction = this._drawImage;
-        return;
-      }
-      this._drawImage();
+    if (this._seeking) {
+      return;
+    }
+    const timeElapsed = Date.now() - this._fadeStartTime;
+    this._fadeOpacity = timeElapsed / this._fadeDuration;
+    if (this._fadeOpacity > 1) {
+      this._fadeOpacity = 1;
+      this.currentEventAction = this._drawImage;
+      return;
+    }
+    this._drawImage();
   },
   _initFadeOut() {
     this._fadeStartTime = Date.now();

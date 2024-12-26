@@ -81,8 +81,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
       [ // row: 0, col: 1
         { time: 2000,   action: 'fadeIn'},
         { time: 3500,   action: 'fadeOut'},
-        { time: 6000,   action: 'fadeIn'},
-        { time: 7500,   action: 'fadeOut'},
+        { time: 5000,   action: 'fadeIn'},
+        { time: 6500,   action: 'fadeOut'},
         { time: 8000,   action: 'fadeIn'},
         { time: 9500,   action: 'fadeOut'},
         { time: 12000,  action: 'fadeIn'},
