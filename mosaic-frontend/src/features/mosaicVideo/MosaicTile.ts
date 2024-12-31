@@ -1,72 +1,5 @@
+import type { MosaicTile } from './mosaicTile.interface';
 
-type CopyVideoFromArea =  { x: number, y: number, width: number, height: number };
-type DrawToCanvasArea = { x: number, y: number, width: number, height: number };
-type TileAnimEvents = Array<{ time: number, action: string }>;
-
-export interface MosaicTile {
-  _video: HTMLVideoElement,
-  _context: CanvasRenderingContext2D,
-  _inPoint: number,
-  _copyVideoFromArea: CopyVideoFromArea,
-  _drawToCanvasArea: DrawToCanvasArea,
-  _tileAnimEvents: TileAnimEvents,
-  _fadeStartTime: number,
-  _fadeDuration: number,
-  _fadeOpacity: number,
-  nextEventTime: number,
-  _nextEventIndex: number,
-  _maxEventIndex: number,
-  _canPlayThrough: boolean,
-  _seeking: boolean,
-  setVideoSrc: (
-    this: MosaicTile, 
-    videoSrc: string,
-    ) => void,
-  setContext: (
-    this: MosaicTile,
-    context: CanvasRenderingContext2D
-  ) => void,
-  setAttributes: (
-    this: MosaicTile, 
-    inPoint: number, 
-    copyVideoFromArea: CopyVideoFromArea, 
-    drawToCanvasArea: DrawToCanvasArea, 
-    tileAnimEvents: TileAnimEvents
-    ) => void,
-  initAnimation: (
-    this: MosaicTile
-  ) => void,
-  resetAnimation: (
-    this: MosaicTile
-  ) => void,
-  clearAnimation: (
-    this: MosaicTile
-  ) => void,
-  currentEventAction: (
-    this: MosaicTile
-    ) => void,
-  updateCurrentEventAction: (
-    this: MosaicTile
-  ) => void,
-  _initFadeIn: (
-    this: MosaicTile
-  ) => void,
-  _fadeIn: (
-    this:MosaicTile
-  ) => void,
-  _initFadeOut: (
-    this: MosaicTile
-  ) => void,
-  _fadeOut: (
-    this:MosaicTile
-  ) => void,
-  _drawImage: (
-    this: MosaicTile
-  ) => void,
-  _wait: (
-    this:MosaicTile
-  ) => void
-}
 
 export const mosaicTile: Partial<MosaicTile> = {
   _video: undefined,
@@ -83,17 +16,13 @@ export const mosaicTile: Partial<MosaicTile> = {
   _maxEventIndex: undefined,
   _canPlayThrough: false,
   _seeking: true,
-  setVideoSrc(videoSrc) { 
+  initMosaicTile() {
     this._video = document.createElement('video');
-    this._video.src = videoSrc;
-    this._video.autoplay = true;
     this._video.loop = true;
     this._video.muted = true;
     this._video.setAttribute('webkit-playsinline', 'webkit-playsinline');
-    this._video.setAttribute('playsinline', 'playsinline');    
-    this._canPlayThrough = false;
+    this._video.setAttribute('playsinline', 'playsinline');
     this._video.oncanplaythrough = () => {
-      console.log('MosaicTile > _video.oncanplaythrough');
       this._canPlayThrough = true;
     }
     this._video.onseeking = () => {
@@ -103,21 +32,22 @@ export const mosaicTile: Partial<MosaicTile> = {
       this._seeking = false;
     }
   },
-  setContext(context) {
+  setAttributes({ inPoint, copyVideoFromArea, drawToCanvasArea, tileAnimEvents, videoSrc, context }) {
+    console.log('this._video.src === blank string', this._video.src === '');
+    this._video.src = this._video.src === '' ? videoSrc : this._video.src;
+    this._video.pause();
     this._context = context;
-  },
-  setAttributes(inPoint, copyVideoFromArea, drawToCanvasArea, tileAnimEvents) {
     this._inPoint = inPoint;
     this._copyVideoFromArea = copyVideoFromArea;
     this._drawToCanvasArea = drawToCanvasArea;
     this._tileAnimEvents = tileAnimEvents;
     this._maxEventIndex = this._tileAnimEvents.length;
-  },
-  initAnimation() {
+    this._video.autoplay = true;
+    this._canPlayThrough = false;
+    this._seeking = true;
     this.currentEventAction = this._wait;
     this._nextEventIndex = 0;
     this.nextEventTime = this._tileAnimEvents[this._nextEventIndex].time;
-    this._video.pause();
     this._video.currentTime = this._inPoint;
   },
   resetAnimation() {
@@ -127,8 +57,16 @@ export const mosaicTile: Partial<MosaicTile> = {
   clearAnimation() {
     this.currentEventAction = this._wait;
     this._video.pause();
+    // this._video.removeAttribute('src');
+    // this._video.load();
+  },
+  unloadVideoSrc() {
+    this.currentEventAction = this._wait;
     this._video.removeAttribute('src');
     this._video.load();
+  },
+  isReady() {
+    return this._canPlayThrough && !this._seeking;
   },
   currentEventAction() {},
   updateCurrentEventAction() {
