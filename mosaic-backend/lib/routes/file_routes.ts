@@ -1,4 +1,4 @@
-import {Application, Request, Response } from 'express';
+import {Application } from 'express';
 import { FileController } from '../controllers/fileController';
 import RenderService from '../modules/render/service';
 

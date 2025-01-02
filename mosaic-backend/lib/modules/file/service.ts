@@ -4,22 +4,31 @@ const fs = require('fs');
 
 export default class FileService {
 
-    public uploadVideo (req: Request, res: Response, next: any) {
+    public async uploadVideo (req: Request, res: Response, next: any) {
         const assetID = Date.now();
-
-        const uploadVideoDirectory = `${env.getVolumnPath()}/${assetID}`; 
-        fs.mkdir(uploadVideoDirectory, (err) => {
-          console.log(`uploadVideo: fs.mkdir(${uploadVideoDirectory}) calledback with error: ${err}`)
-        });
-        
         const myFile = req['files'].myFile;
         res.locals.assetID = assetID;
-        //res.locals.filename  = `${assetID}.mov`;
+        const uploadVideoDirectory = `${env.getVolumnPath()}/${assetID}`; 
         const path = `${uploadVideoDirectory}/upload.mov`;
-        console.log(`service.ts : uploadVideo : path: ${path} : `)
+
+        if (!fs.existsSync(uploadVideoDirectory)) {
+          fs.mkdirSync(uploadVideoDirectory);
+        }
+        if (!fs.existsSync(uploadVideoDirectory)) {
+          console.log('make directory error!');
+        } else {
+          console.log('Directory created successfully!');
+        }
+
         myFile.mv(path, (err: string) => {
-            console.log(`uploadVideo : myFile.mv err: ${err}`)
+          if (err) {
+            console.log('File uploaded error!', err);
+            return res.status(500).send(err);
+          } else {
+            console.log('File uploaded successfully!');
             next();
+          }
         });
+
     }
 }

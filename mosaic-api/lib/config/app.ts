@@ -1,5 +1,4 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import multer from 'multer';
 import { FFmpegRoutes } from "../routes/ffmpeg_routes";
 import { CommonRoutes } from "../routes/common_routes";
@@ -22,8 +21,8 @@ class App {
    private config(): void {
       const upload = multer();
       this.app.use(upload.array()); 
-      this.app.use(bodyParser.json());
-      this.app.use(bodyParser.urlencoded({ extended: false }));
+      this.app.use(express.json());
+      this.app.use(express.urlencoded({ extended: false }));
    }
 }
 export default new App().app;

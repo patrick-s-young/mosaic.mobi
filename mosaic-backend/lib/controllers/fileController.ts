@@ -6,7 +6,7 @@ export class FileController {
     private file_service: FileService = new FileService();
 
     public upload_video (req: Request, res: Response, next: any) {
-        console.log(`FileController.ts : upload_video : req.body.assetID: ${req.body.assetID}`);
+        console.log('fileController.ts : upload_video : req:', req);
         this.file_service.uploadVideo(req, res, next);
     }
 }
