@@ -45,12 +45,14 @@ const allPanelSequencesObj =
   }
 
 
-module.exports.createPtsFilter = function (panelCount) {
+export const createPtsFilter = (panelCount) => {
+  console.log('createPtsFilter called with panelCount: ', panelCount)
   const panelSequenceObj = allPanelSequencesObj[panelCount];
   let ptsFilterStr = '';
-  console.log(`in pts.js : ptsFilterStr=${ptsFilterStr}`);
+  console.log('panelSequenceObj',panelSequenceObj);
 
   for (let [panel, startTimes] of Object.entries(panelSequenceObj)) {
+          // @ts-ignore: Object is possibly 'null'.
     startTimes.forEach((startTime, idx) => ptsFilterStr += `[split.${panel}.${idx}] setpts=PTS-STARTPTS+${startTime}/TB [input.${panel}.${idx}]; \n`);
 
   }

@@ -20,12 +20,12 @@ const allOverlayFiltersObj =
 
 
 
-module.exports.createOverlayFilter = function (panelCount, sequenceCount) {
+export const createOverlayFilter = function (panelCount, sequenceCount) {
   let overlayFilterStr = '[bg]';
   let sequenceCounter = 0;
   const overlayFilterArr = allOverlayFiltersObj[panelCount];
   let panelCounter: number = 0;
-  console.log(`overlay.ts >> sequenceCounter: ${sequenceCounter}\overlayFilterStr: ${overlayFilterStr}`);
+  console.log(`overlay.ts >> sequenceCounter: ${sequenceCounter} overlayFilterStr: ${overlayFilterStr}`);
   for (panelCounter = 0; panelCounter < panelCount; panelCounter++) {
     for (sequenceCounter = 0; sequenceCounter < sequenceCount; sequenceCounter++) {
       overlayFilterStr += `[input.${panelCounter}.${sequenceCounter}] overlay=${overlayFilterArr[panelCounter]}`;

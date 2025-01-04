@@ -18,7 +18,7 @@ const allScaleFiltersObj =
   9: ', scale=360:360'
 }
 
-module.exports.createTrimFilter = function (panelCount, trimInterval, preCropStr) {
+export const createTrimFilter = (panelCount, trimInterval, preCropStr) => {
 
   const cropFilterStr = allCropFiltersObj[panelCount];
   const scaleFilterStr = allScaleFiltersObj[panelCount];
