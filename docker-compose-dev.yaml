@@ -4,7 +4,6 @@ services:
     depends_on: 
       - frontend
       - backend
-      - api
     build:
       context: ./mosaic-proxy
       dockerfile: Dockerfile
@@ -30,15 +29,6 @@ services:
     networks:
       - mosaic-network
 
-  api:
-    build:
-      context: ./mosaic-api
-      dockerfile: Dockerfile
-    volumes:
-      - mosaic-volume:/var/lib/video
-      - ./assets/330055:/var/lib/video/330055
-    networks:
-      - mosaic-network
 
 volumes:
   mosaic-volume:

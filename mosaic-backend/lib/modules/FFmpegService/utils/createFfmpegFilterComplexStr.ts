@@ -1,8 +1,10 @@
-const { createPtsFilter } = require('./pts');
-const { createTrimFilter } = require('./trim');
-const { createOverlayFilter } = require('./overlay');
 
-module.exports.createFfmpegFilterComplexStr = function ({
+import { createOverlayFilter } from './overlay';
+import { createPtsFilter } from './ptsFilter';
+import { createTrimFilter } from './trim';
+
+
+export const createFfmpegFilterComplexStr =  ({
   panelCount,
   sequenceCount,
   fadeInToOutDuration,
@@ -12,7 +14,7 @@ module.exports.createFfmpegFilterComplexStr = function ({
   bgFrameStart,
   bgFrameHue,
   preCropStr
-}) {
+}) => {
   let ffmpegFilterComplexStr = '';
 
 

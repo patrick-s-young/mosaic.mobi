@@ -3,10 +3,10 @@
     "target": "es6",
     "module": "commonjs",
     "esModuleInterop": true,
-    "outDir": "dist"
+    "outDir": "dist",
   },
   "include": [
-    "lib/**/*.ts"
+    "lib/**/*.ts", 
   ],
   "exclude": [
     "node_modules"

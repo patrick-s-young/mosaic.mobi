@@ -1,28 +1,18 @@
 
 import express from 'express';
 import * as bodyParser from "body-parser";
-import { FileRoutes } from "../routes/file_routes";
-import { RenderRoutes } from "../routes/render_routes";
-import { CommonRoutes } from "../routes/common_routes";
-import cors from 'cors';
+import { MosaicRoutes } from "../MosaicRoutes";
 const expressFileUpload = require('express-fileupload');
 import env from '../environment';
 
 class App {
-
    public app: express.Application;
-
-   private fileRoutes: FileRoutes = new FileRoutes();
-   private renderRoutes: RenderRoutes = new RenderRoutes();
-   private commonRoutes: CommonRoutes = new CommonRoutes();
+   private mosaicRoutes: MosaicRoutes = new MosaicRoutes();
 
    constructor() {
       this.app = express();
       this.config();
-      this.fileRoutes.route(this.app);
-      this.renderRoutes.route(this.app);
-      this.commonRoutes.route(this.app);
-
+      this.mosaicRoutes.route(this.app);
    }
 
    private config(): void {
