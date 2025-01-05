@@ -8,8 +8,7 @@ https://github.com/user-attachments/assets/e5b8cb93-94c7-41e8-8b78-3eb70b540e53
 
 ## Project Organization
 Mosaic is a docker-based and the project is organized by container:
-- /mosaic-api (FFMpeg)
-- /mosaic-backend (Express)
+- /mosaic-backend (Express + FFmpeg)
 - /mosaic-frontend (React + TypeScript)
 - /mosaic-proxy (nginx reverse proxy)
 
