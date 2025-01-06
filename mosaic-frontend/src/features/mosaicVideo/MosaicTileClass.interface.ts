@@ -21,6 +21,7 @@ export interface MosaicTileClassInterface {
   unloadVideoSrc: () => void;
   isReady: () => boolean;
   updateCurrentEventAction: () => void;
+  initAnimation: () => void;
   _initFadeIn: () => void;
   _fadeIn: () => void;
   _fadeOut: () => void;

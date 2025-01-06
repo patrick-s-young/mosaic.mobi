@@ -46,7 +46,7 @@ class MosaicTileClass implements Partial<MosaicTileClassInterface> {
 
   setAttributes(attributes: Attributes) {
     const { inPoint, copyVideoFromArea, drawToCanvasArea, tileAnimEvents, videoSrc, context } = attributes;
-    this._video.src = this._video.src === '' ? videoSrc : this._video.src;
+    this._video.src = videoSrc;
     this._video.pause();
     this._video.muted = true;
     this._context = context;
@@ -59,23 +59,31 @@ class MosaicTileClass implements Partial<MosaicTileClassInterface> {
     this._canPlayThrough = false;
     this._seeking = true;
     this.currentEventAction = this._wait;
+  }
+
+  initAnimation() {
+    console.log('__________initAnimation called');
+    console.log('initAnimation called');
+    console.log('this._tileAnimEvents', this._tileAnimEvents);
+    this.currentEventAction = this._wait;
     this._nextEventIndex = 0;
     this.nextEventTime = this._tileAnimEvents?.[this._nextEventIndex ?? 0]?.time;
-    this._video.currentTime = this._inPoint;
-
-    console.log('this._drawToCanvasArea', this._drawToCanvasArea);
+    console.log('this._inPoint', this._inPoint);
+    this._video.currentTime = this._inPoint ?? 0;
   }
 
   resetAnimation() {
+    console.log('__________resetAnimation called');
     this._nextEventIndex = 0;
     this.nextEventTime = this._tileAnimEvents?.[this._nextEventIndex]?.time;
   }
 
   clearAnimation() {
+    console.log('__________clearAnimation called');
     this.currentEventAction = this._wait;
     this._video.pause();
-    // this._video.removeAttribute('src');
-    // this._video.load();
+    this._video.removeAttribute('src');
+    this._video.load();
   }
 
   unloadVideoSrc() {
@@ -84,9 +92,6 @@ class MosaicTileClass implements Partial<MosaicTileClassInterface> {
     this._video.load();
   }
 
-  isReady() {
-    return this._canPlayThrough && !this._seeking;
-  }
   currentEventAction() {}
   updateCurrentEventAction() {
     const newCurrentEventAction = this._tileAnimEvents?.[this._nextEventIndex ?? 0]?.action;
@@ -106,23 +111,23 @@ class MosaicTileClass implements Partial<MosaicTileClassInterface> {
   }
 
   _initFadeIn() {
-    this._video.currentTime = this._inPoint ?? 0;
-    this._fadeStartTime = Date.now();
+    console.log('_______________initFadeIn called');
+
     const playPromise = this._video.play();
     if (playPromise !== undefined) {
       playPromise.then(_ => {
         //console.log(`Automatic playback started!`);
+        this._video.currentTime = this._inPoint ?? 0;
+        this._fadeStartTime = Date.now();
         this.currentEventAction = this._fadeIn;
-        // Show playing UI.
       })
       .catch(error => {
         console.log(`Auto-play was prevented by error: ${error}`);
-        // Auto-play was prevented
-        // Show paused UI.
       });
     }
-    ///this._video.play();
-    // this.currentEventAction = this._fadeIn;
+    this._video.play();
+    this._fadeStartTime = Date.now();
+    this.currentEventAction = this._fadeIn;
   }
 
   _fadeIn() {
@@ -139,6 +144,7 @@ class MosaicTileClass implements Partial<MosaicTileClassInterface> {
     this._drawImage();
   }
   _initFadeOut() {
+    console.log('_______________initFadeOut called');
     this._fadeStartTime = Date.now();
     this.currentEventAction = this._fadeOut;
   }
@@ -159,7 +165,10 @@ class MosaicTileClass implements Partial<MosaicTileClassInterface> {
   }
 
   _drawImage() {
-    if (!this._drawToCanvasArea || !this._context || !this._copyVideoFromArea) return;
+    if (!this._drawToCanvasArea || !this._context || !this._copyVideoFromArea) {
+      console.log('_______________return abort drawImage');
+      return;
+    }
     
     this._context.clearRect(
       this._drawToCanvasArea.x, 

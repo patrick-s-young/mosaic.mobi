@@ -16,17 +16,22 @@ const mobileDisplayLogSlice = createSlice ({
   reducers: {
     setLogText (state, action: PayloadAction<MobileDisplayLog>) {
       let logText = state.logText;
-      logText += action.payload.logText + '<br>';
+      logText += action.payload.logText + '<br>_';
       console.log('logText', logText);
       state.logText = logText;
+    },
+    clearLogText (state) {
+      state.logText = '';
     }
   }
 });
 
 export const {
-  setLogText
+  setLogText,
+  clearLogText
 } = mobileDisplayLogSlice.actions;
 
 export type SetLogText = ReturnType <typeof setLogText>;
+export type ClearLogText = ReturnType <typeof clearLogText>;
 
 export default mobileDisplayLogSlice.reducer;
