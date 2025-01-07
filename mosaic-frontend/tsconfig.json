@@ -10,7 +10,8 @@
 			"@features/*": ["src/features/*"],
 			"@utils/*": ["src/utils/*"],
 			"@assets/*": ["src/assets/*"],
-      "@theme/*": ["src/theme/*"]
+      "@theme/*": ["src/theme/*"],
+      "@devTools/*": ["src/devTools/*"]
 		},
   },
   "files": [],

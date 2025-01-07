@@ -1,28 +1,19 @@
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { mosaicTile, setMosaicPhase, MosaicPhaseEnum } from '@features/mosaicVideo';
-import type { MosaicState, MosaicTile } from '@features/mosaicVideo';
+import { setMosaicPhase, MosaicPhaseEnum } from '@features/mosaicVideo';
+import type { MosaicState } from '@features/mosaicVideo';
 import type { UploadState } from '@features/uploadVideo/uploadSlice';
 import type { RootState } from '@app/rootReducer';
+import { setLogText } from '@devTools/MobileDisplayLog/mobileDisplayLog.slice';
 import '@features/mosaicVideo/mosaicTiles.css';
+import MosaicTileClass from '@features/mosaicVideo/MosaicTileClass';
 
-const MOSAIC_TILES = Array.from({length: 9}, 
-  () => {
-    const tile = Object.create(mosaicTile);
-    tile.initMosaicTile();
-    return tile;
-  });
+const ANIMATION_CYCLE_DURATION = 15000;
 
 export const MosaicTiles: React.FC= () => {
-  /// DEBUG
-  const drawCount = useRef(0);
-  drawCount.current += 1;
-  //console.log(`\n\nMosaicTiles > draw ${drawCount.current}`);
-
   const dispatch = useDispatch();
-  const frameIDRef = useRef<number>(0);
-  const animationCycleDuration: number = 15000;
+  const animationFrameIdRef = useRef<number>(0);
   const canvasRef = useRef() as React.MutableRefObject<HTMLCanvasElement>;
   const { videoURL } = useSelector<RootState, UploadState>((state) => state.upload );
   const { 
@@ -33,79 +24,97 @@ export const MosaicTiles: React.FC= () => {
     drawToCanvasArea,
     canvasWidth,
     numTiles } = useSelector<RootState, MosaicState>((state) => state.mosaic as MosaicState);
-    const activeMosaicTilesRef = useRef<Array<MosaicTile>>(MOSAIC_TILES.slice(0, numTiles));
+  //const [ mosaicTiles, setMosaicTiles ] = useState<Array<MosaicTileClass>>([]);
+  const mosaicTilesRef = useRef<Array<MosaicTileClass>>([]);
 
 
+  const cancelAnimation = () => {
+    cancelAnimationFrame(animationFrameIdRef.current);
+    mosaicTilesRef.current.forEach(tile => tile.clearAnimation());
+    canvasRef.current.getContext('2d')?.clearRect(0, 0, canvasWidth, canvasWidth);
+  }
+
+  console.log('mosaicTilesRef', mosaicTilesRef.current);
   useEffect(() => {
-    console.log('//////////////////// mosaicPhase', mosaicPhase);
     switch(mosaicPhase) {
       case MosaicPhaseEnum.CANCEL_ANIMATION:
-        console.log('CANCEL_ANIMATION called');
-        cancelAnimationFrame(frameIDRef.current);
-        //activeMosaicTilesRef.current.forEach(tile => tile.clearAnimation());
-        MOSAIC_TILES.forEach(tile => tile.unloadVideoSrc());
-        canvasRef.current.getContext('2d')?.clearRect(0, 0, canvasWidth, canvasWidth);
+        cancelAnimation();
+        dispatch(setLogText({ logText: 'CANCEL_ANIMATION called' }));
         break;
       case MosaicPhaseEnum.NUMTILES_UPDATED:
-        console.log('NUMTILES_UPDATED called');
-        cancelAnimationFrame(frameIDRef.current);
-        activeMosaicTilesRef.current.forEach(tile => tile.clearAnimation());
-        canvasRef.current.getContext('2d')?.clearRect(0, 0, canvasWidth, canvasWidth);
+        cancelAnimation();
+        dispatch(setLogText({ logText: 'NUMTILES_UPDATED called' }));
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.ANIMATION_STOPPED}));
         break;
       case MosaicPhaseEnum.ANIMATION_STOPPED:
-        console.log('ANIMATION_STOPPED called');
+        const newMosaicTiles: Array<MosaicTileClass> = [];
         for (let tileIndex = 0; tileIndex < numTiles; tileIndex++) {
-          MOSAIC_TILES[tileIndex].setAttributes({
+          const newMosaicTile = new MosaicTileClass();
+          newMosaicTile.setAttributes({
+            videoSrc: videoURL,
+            context: canvasRef.current.getContext('2d') as CanvasRenderingContext2D,
             inPoint: inPoints[numTiles][tileIndex],
             copyVideoFromArea: copyVideoFromArea[numTiles], 
             drawToCanvasArea: drawToCanvasArea[numTiles][tileIndex],
-            tileAnimEvents: tileAnimEvents[numTiles][tileIndex],
-            videoSrc: videoURL,
-            context: canvasRef.current.getContext('2d') as CanvasRenderingContext2D
-          })
+            tileAnimEvents: tileAnimEvents[numTiles][tileIndex]
+          });
+          newMosaicTiles.push(newMosaicTile);
         }
-        activeMosaicTilesRef.current = MOSAIC_TILES.slice(0, numTiles);
-       // mosaicTilesRef.current = newMosaicTiles;
+        console.log('newMosaicTiles', newMosaicTiles);
+        mosaicTilesRef.current = [...newMosaicTiles];
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.TILES_UPDATED }));
+        dispatch(setLogText({ logText: 'ANIMATION_STOPPED called' }));
         break;
       case MosaicPhaseEnum.TILES_UPDATED:
-        //mosaicTilesRef.current.forEach(tile => tile.initAnimation());
+        dispatch(setLogText({ logText: 'TILES_UPDATED called' }));
+        waitUntilAnimationIsReady();
+        break;
+      case MosaicPhaseEnum.ANIMATION_READY:
         startAnimation();
+        dispatch(setLogText({ logText: 'ANIMATION_READY called' }));
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.ANIMATION_STARTED }));
         break;
     }
   }, [mosaicPhase]);
 
 
-
-  function startAnimation () {
-    console.log('^^^^^^^^^^^^^^^^^startAnimation mosaicTiles', activeMosaicTilesRef.current);
-    if (activeMosaicTilesRef.current.every(tile => tile.isReady()) === false) {
+  function waitUntilAnimationIsReady() {
+    dispatch(setLogText({ logText: 'waitUntilAnimationIsReady called' }));
+    if (mosaicTilesRef.current.every(tile => tile._canPlayThrough) === false) {
+      dispatch(setLogText({ logText: 'every tile._canPlayThrough is false' }));
       setTimeout(() => {
-        startAnimation();
-      }, 500);
+        waitUntilAnimationIsReady();
+      }, 250);
       return;
     }
-    console.log('MosaicTiles > startAnimation > tile.isReady');
-  //  activeMosaicTilesRef.current.forEach(tile => tile.initAnimation());
+    dispatch(setLogText({ logText: 'every tile._canPlayThrough is true' }));
+    dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.ANIMATION_READY }));
+  }
+
+
+
+  function startAnimation () {
+    console.log('startAnimation mosaicTiles', mosaicTilesRef.current);
+    mosaicTilesRef.current.forEach(tile => tile.initAnimation());
     let beginTime = performance.now();
     function step(timeStamp: DOMHighResTimeStamp) {
       let elapsedTime = timeStamp - beginTime;
-      if (elapsedTime > animationCycleDuration) {
+
+      if (elapsedTime > ANIMATION_CYCLE_DURATION) {
         beginTime = performance.now();
         elapsedTime = 0;
-        activeMosaicTilesRef.current.forEach((tile) => tile.resetAnimation());
+        mosaicTilesRef.current.forEach((tile) => tile.resetAnimation());
       }
-      activeMosaicTilesRef.current.forEach((mosaicTile) => {
-        if (elapsedTime > mosaicTile.nextEventTime) {
+
+      mosaicTilesRef.current.forEach((mosaicTile) => {
+        if (elapsedTime > (mosaicTile.nextEventTime ?? Infinity)) {
           mosaicTile.updateCurrentEventAction();
         }
-        mosaicTile.currentEventAction();
+        mosaicTile.currentEventAction?.();
       });
-      frameIDRef.current = requestAnimationFrame(step);
+      animationFrameIdRef.current = requestAnimationFrame(step);
     }
-    frameIDRef.current = requestAnimationFrame(step);
+    animationFrameIdRef.current = requestAnimationFrame(step);
   }
 
   return(

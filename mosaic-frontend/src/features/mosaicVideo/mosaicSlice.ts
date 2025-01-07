@@ -12,6 +12,7 @@ export enum MosaicPhaseEnum {
   ANIMATION_STOPPED,
   TILES_UPDATED,
   ANIMATION_STARTED,
+  ANIMATION_READY,
   CANCEL_ANIMATION,
   DEBUG_PAUSE
 }
@@ -46,7 +47,7 @@ export interface MosaicFormatting {
 export type MosaicState = MosaicFormatting & MosaicPhase;
 
 export const numTilesAllPossibleValues: Array<NumTiles> = [2, 3, 4, 6, 9];
-const numTilesDefault: NumTiles = 9;
+const numTilesDefault: NumTiles = 4;
 const initialState: Partial<MosaicState> = {
   mosaicPhase: MosaicPhaseEnum.WAITING_FOR_VIDEO,
   canvasWidth: undefined,

@@ -36,6 +36,7 @@ export const mosaicTile: Partial<MosaicTile> = {
     console.log('this._video.src === blank string', this._video.src === '');
     this._video.src = this._video.src === '' ? videoSrc : this._video.src;
     this._video.pause();
+    this._video.muted = true;
     this._context = context;
     this._inPoint = inPoint;
     this._copyVideoFromArea = copyVideoFromArea;

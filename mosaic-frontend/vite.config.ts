@@ -19,7 +19,8 @@ export default defineConfig({
       '@components': resolve(__dirname, './src/components'),
       '@features': resolve(__dirname, './src/features'),
       '@utils': resolve(__dirname, './src/utils'),
-      '@theme': resolve(__dirname, './src/theme')
+      '@theme': resolve(__dirname, './src/theme'),
+      '@devTools': resolve(__dirname, './src/devTools')
     }
   }
 })

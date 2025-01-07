@@ -5,6 +5,7 @@ import scrubberSlice from '@features/mosaicImage/scrubberSlice';
 import mosaicSlice from '@features/mosaicVideo/mosaicSlice';
 import appSlice from '@app/appSlice';
 import renderSlice from '@features/renderMosaic/renderSlice';
+import mobileDisplayLogSlice from '@devTools/MobileDisplayLog/mobileDisplayLog.slice';
 
 const rootReducer = combineReducers({
   app: appSlice,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
   upload: uploadSlice,
   scrubber: scrubberSlice,
   mosaic: mosaicSlice,
-  render: renderSlice
+  render: renderSlice,
+  mobileDisplayLog: mobileDisplayLogSlice
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
