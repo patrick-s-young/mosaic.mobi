@@ -29,7 +29,7 @@ import { RenderMosaic } from '@features/renderMosaic/RenderMosaic';
 // <DevicePreview>
 import AssignDisplay from '@components/AssignDisplay/AssignDisplay';
 import { appDimensions } from '@/app/app.config';
-import { MobileDisplayLog } from '@devTools/MobileDisplayLog/MobileDisplayLog';
+// import { MobileDisplayLog } from '@devTools/MobileDisplayLog/MobileDisplayLog';
 
 
 const App: React.FC = () => {
@@ -76,7 +76,7 @@ const App: React.FC = () => {
             padding: '20px 0 20px 0',
             gap: '20px'
             }}>
-            <MobileDisplayLog />
+            {/* <MobileDisplayLog /> */}
             <ScrubberSlider 
               width={appDimensions.scrubberSlider.width}
             />

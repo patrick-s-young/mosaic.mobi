@@ -70,12 +70,12 @@ export default class FFmpegService {
     console.log(`resizeVideo outputPath: ${outputPath}`)
 
     // video will be 320x320 to minimize the cpu load on mobile devices
-    const filter = `[0:v] scale=${320}:-1 [final]`;
+    const filter = `[0:v] scale=${320}:-1,fps=24 [final]`;
     console.log(`\n\n\n\n\n`)
     console.log(`\n\nresizeVideo > filter: ${filter}\n\n`);
     console.log(`\n\n\n\n\n`)
   
-    const proc = spawn(ffmpeg.path, ['-i', inputPath, '-filter_complex', filter , '-map', '[final]', '-an', '-y', outputPath]);
+    const proc = spawn(ffmpeg.path, ['-i', inputPath, '-filter_complex', filter , '-g', '12', '-map', '[final]', '-an', '-y', outputPath]);
       // @ts-ignore: Object is possibly 'null'.
     proc.stdout.on('data', function(data) {
       console.log(`resizeVideo > proc.stdout.on('data'): ${data}`);
