@@ -1,3 +1,4 @@
+import { traceEvent } from '@analytics/traceEvent';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -34,19 +35,34 @@ export const MosaicTiles: React.FC= () => {
     canvasRef.current.getContext('2d')?.clearRect(0, 0, canvasWidth, canvasWidth);
   }
 
-  console.log('mosaicTilesRef', mosaicTilesRef.current);
+
   useEffect(() => {
     switch(mosaicPhase) {
       case MosaicPhaseEnum.CANCEL_ANIMATION:
+        traceEvent({  
+          category: 'MosaicTiles',
+          action: 'CANCEL_ANIMATION',
+          label: 'N/A'
+        });
         cancelAnimation();
         dispatch(setLogText({ logText: 'CANCEL_ANIMATION called' }));
         break;
       case MosaicPhaseEnum.NUMTILES_UPDATED:
+        traceEvent({ 
+          category: 'MosaicTiles',
+          action: 'NUMTILES_UPDATED',
+          label: 'N/A'
+        });
         cancelAnimation();
         dispatch(setLogText({ logText: 'NUMTILES_UPDATED called' }));
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.ANIMATION_STOPPED}));
         break;
       case MosaicPhaseEnum.ANIMATION_STOPPED:
+        traceEvent({ 
+          category: 'MosaicTiles',
+          action: 'ANIMATION_STOPPED',
+          label: 'N/A'
+        });
         const newMosaicTiles: Array<MosaicTileClass> = [];
         for (let tileIndex = 0; tileIndex < numTiles; tileIndex++) {
           const newMosaicTile = new MosaicTileClass();
@@ -66,10 +82,20 @@ export const MosaicTiles: React.FC= () => {
         dispatch(setLogText({ logText: 'ANIMATION_STOPPED called' }));
         break;
       case MosaicPhaseEnum.TILES_UPDATED:
+        traceEvent({ 
+          category: 'MosaicTiles',
+          action: 'TILES_UPDATED',
+          label: 'N/A'
+        });
         dispatch(setLogText({ logText: 'TILES_UPDATED called' }));
         waitUntilAnimationIsReady();
         break;
       case MosaicPhaseEnum.ANIMATION_READY:
+        traceEvent({ 
+          category: 'MosaicTiles',
+          action: 'ANIMATION_READY',
+          label: 'N/A'
+        });
         startAnimation();
         dispatch(setLogText({ logText: 'ANIMATION_READY called' }));
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.ANIMATION_STARTED }));
@@ -94,7 +120,6 @@ export const MosaicTiles: React.FC= () => {
 
 
   function startAnimation () {
-    console.log('startAnimation mosaicTiles', mosaicTilesRef.current);
     mosaicTilesRef.current.forEach(tile => tile.initAnimation());
     let beginTime = performance.now();
     function step(timeStamp: DOMHighResTimeStamp) {

@@ -11,7 +11,8 @@
 			"@utils/*": ["src/utils/*"],
 			"@assets/*": ["src/assets/*"],
       "@theme/*": ["src/theme/*"],
-      "@devTools/*": ["src/devTools/*"]
+      "@devTools/*": ["src/devTools/*"],
+      "@analytics/*": ["src/analytics/*"]
 		},
   },
   "files": [],

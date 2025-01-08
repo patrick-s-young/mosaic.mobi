@@ -1,3 +1,5 @@
+import ReactGA from 'react-ga4';
+ReactGA.initialize('G-J0W4FDF6FY'); 
 import * as React from 'react';
 import { useEffect, } from 'react';
 // Redux

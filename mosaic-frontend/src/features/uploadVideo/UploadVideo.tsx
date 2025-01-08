@@ -1,3 +1,4 @@
+import { traceEvent } from '@analytics/traceEvent';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,7 +28,7 @@ import PopOver from '@components/PopOver';
 import SlideInOut from '@components/SlideInOut';
 // Material-UI
 import { Button, Paper } from '@material-ui/core';
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
+import { useStyles } from '@features/uploadVideo/uploadVideo.useStyles';
 import { Warning, LibraryAdd, CloudUpload } from '@material-ui/icons';
 import CircularProgress from '@material-ui/core/CircularProgress';
 // scrubberSlice
@@ -35,62 +36,12 @@ import { setVideoUploadCount } from '@features/mosaicImage/scrubberSlice';
 import type { AppDispatch } from '@app/store';
 
 
-const useStyles = makeStyles((theme: Theme) => 
-  createStyles({
-    container: {
-      position: 'absolute',
-      backgroundColor: theme.palette.common.white, 
-      marginTop: '0px',
-      opacity: 0.98,
-      zIndex: 20
-    },
-    centerScreen: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100%'
-    },
-    input: {
-      display: 'none',
-    },
-    alertHeadline: {
-      color: theme.palette.secondary.dark,
-    },
-    promptHeadline: {
-      color: theme.palette.primary.dark,
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      ...theme.typography.h5
-    },
-    promptBody: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      '& > *': {
-        padding: theme.spacing(1)
-      },
-      margin: theme.spacing(4),
-      padding: theme.spacing(1)
-    },
-    promptButtonsContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      width: '80%',
-      justifyContent: 'space-evenly',
-    }
-  })
-);
-
-
-
 export interface UploadVideoProps {
   displaySize: { width: number, height: number }
   isActive: boolean
 }
+
+
 
 export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
   const classes = useStyles();
@@ -102,28 +53,53 @@ export const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive 
           uploadDuration,
           resizedWidth } = useSelector<RootState, UploadState>((state) => state.upload); 
 
-
+  
   useEffect(() => {
     switch(uploadPhase) {
-      case UploadPhaseEnum.VIDEO_SUBMITED:
+      case UploadPhaseEnum.VIDEO_SUBMITED:    
+        traceEvent({
+          category: 'Upload',
+          action: 'VIDEO_SUBMITED',
+          label: 'N/A'
+        });
         if (selectedFile !== undefined) {
           dispatch(uploadUserVideo(selectedFile));
           dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
         }
         break;
       case UploadPhaseEnum.VIDEO_UPLOADED:
+        traceEvent({
+          category: 'Upload',
+          action: 'VIDEO_UPLOADED:',
+          label: 'N/A'
+        });
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.CANCEL_ANIMATION }));
         dispatch(preloadUserVideo(`/uploads/${assetID}/resized.mov`));
         break;
       case UploadPhaseEnum.VIDEO_PRELOADED:
+        traceEvent({
+          category: 'Upload',
+          action: 'VIDEO_PRELOADED',
+          label: 'N/A'
+        });
         dispatch(preloadSequentialImages(assetID));
         break;
       case UploadPhaseEnum.IMAGES_PRELOADED:
+        traceEvent({
+          category: 'Upload',
+          action: 'IMAGES_PRELOADED',
+          label: 'N/A'
+        });
         dispatch(setMosaicFormatting({ duration: uploadDuration, videoWidth: resizedWidth, canvasWidth}));
         dispatch(setVideoUploadCount({increment: 1}));
         dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.MOSAIC_INITIALIZED}));
         break;
       case UploadPhaseEnum.MOSAIC_INITIALIZED:
+        traceEvent({
+          category: 'Upload',
+          action: 'MOSAIC_INITIALIZED',
+          label: 'N/A'
+        });
         dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.PROMPT}));
         dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));   
         dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));  
