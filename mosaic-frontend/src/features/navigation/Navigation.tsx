@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { traceEvent } from '@analytics/traceEvent';
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@app/rootReducer';
@@ -9,6 +9,12 @@ import type { NavState } from '@features/navigation/navSlice';
 import { Tab, Tabs } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { SaveAlt, MovieCreation, VideoCall } from '@material-ui/icons';
+
+const navPhaseString = {
+  0: 'NAV_PHASE_CHANGED_UPLOAD',
+  1: 'NAV_PHASE_CHANGED_EDIT',
+  2: 'NAV_PHASE_CHANGED_DOWNLOAD'
+}
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -35,6 +41,11 @@ export const Navigation: React.FC<NavigationProps> = ({
   const { navPhase } = useSelector<RootState, NavState>((state) => state.nav);
 
   const handleChange = (_: React.ChangeEvent<{}>, newValue: NavPhaseEnum) => {
+    traceEvent({
+      category: 'Navigation',
+      action: navPhaseString[newValue],
+      label: 'N/A'
+    });
     if (!pauseInput) dispatch(setNavPhase({navPhase: newValue}));
   };
 

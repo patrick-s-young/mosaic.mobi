@@ -20,7 +20,8 @@ export default defineConfig({
       '@features': resolve(__dirname, './src/features'),
       '@utils': resolve(__dirname, './src/utils'),
       '@theme': resolve(__dirname, './src/theme'),
-      '@devTools': resolve(__dirname, './src/devTools')
+      '@devTools': resolve(__dirname, './src/devTools'),
+      '@analytics': resolve(__dirname, './src/analytics')
     }
   }
 })

@@ -1,3 +1,4 @@
+import { traceEvent } from '@analytics/traceEvent';
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@app/rootReducer';
@@ -32,6 +33,11 @@ export const MosaicSelector: React.FC<MosaicSelectorProps> = ({ width }) => {
   );
 
   const handleChange = (_: React.ChangeEvent<{}>, newValue: NumTiles) => {
+    traceEvent({
+      category: 'Mosaic Selector',
+      action: `NUM_TILES CHANGE: ${newValue.toString()}`,
+      label: 'N/A'
+    });
     dispatch(setNumTiles(newValue));
   };
 

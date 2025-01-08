@@ -1,3 +1,4 @@
+import { traceEvent } from '@analytics/traceEvent';
 import * as React from 'react';
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,7 +18,6 @@ import {
 import { renderMosaic } from '@api/index';
 // Material-UI
 import { Button, Paper } from '@material-ui/core';
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { CloudDownload, AccessTime, Cached } from '@material-ui/icons';
 // Components
@@ -25,50 +25,8 @@ import PopOver from '@components/PopOver';
 import SlideInOut from '@components/SlideInOut';
 // download service
 import FileDownload from 'js-file-download'
+import { useStyles } from '@features/renderMosaic/renderMosaic.useStyles';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    container: {
-      position: 'absolute', 
-      backgroundColor: theme.palette.common.white, 
-      marginTop: '0px',
-      opacity: 0.95,
-      zIndex: 20
-    },
-    centerScreen: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100%'
-    },
-    promptHeadline: {
-      color: theme.palette.primary.dark,
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      ...theme.typography.h5
-    },
-    promptBody: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      '& > *': {
-        padding: theme.spacing(1)
-      },
-      margin: theme.spacing(4),
-      padding: theme.spacing(1)
-    },
-    promptButtonsContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      width: '80%',
-      justifyContent: 'space-evenly',
-    }
-  })
-);
 
 export interface RenderMosaicProps {
   displaySize: { width: number, height: number }
@@ -85,6 +43,11 @@ export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActiv
 
 
   function onRenderVideo () {
+    traceEvent({
+      category: 'RenderMosaic',
+      action: 'RENDER_VIDEO',
+      label: 'N/A'
+    });
     const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${currentScrubberFrame}`;
     dispatch(renderMosaic(renderUrl));
     dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
@@ -92,6 +55,11 @@ export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActiv
 
   function onSaveVideo () {
     if (renderBlob) {
+      traceEvent({
+        category: 'RenderMosaic',
+        action: 'SAVE_VIDEO',
+        label: 'N/A'
+      });
       FileDownload(renderBlob, 'mosaic_render.mov');
       dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
       dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
@@ -100,6 +68,11 @@ export const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActiv
   }
 
   const onCancel = () => {
+    traceEvent({
+      category: 'RenderMosaic',
+      action: 'CANCEL_RENDER',
+      label: 'N/A'
+    });
     dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
     dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
     dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));
