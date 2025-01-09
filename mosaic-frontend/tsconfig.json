@@ -7,12 +7,12 @@
 			"@api/*": ["src/api/*"],
 			"@app/*": ["src/app/*"],
 			"@components/*": ["src/components/*"],
-			"@features/*": ["src/features/*"],
 			"@utils/*": ["src/utils/*"],
 			"@assets/*": ["src/assets/*"],
       "@theme/*": ["src/theme/*"],
       "@devTools/*": ["src/devTools/*"],
-      "@analytics/*": ["src/analytics/*"]
+      "@analytics/*": ["src/analytics/*"],
+      "@store/*": ["src/store/*"]
 		},
   },
   "files": [],

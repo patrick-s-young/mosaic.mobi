@@ -17,11 +17,11 @@ export default defineConfig({
       '@api': resolve(__dirname, './src/api'),
       '@assets': resolve(__dirname, './src/assets'),
       '@components': resolve(__dirname, './src/components'),
-      '@features': resolve(__dirname, './src/features'),
       '@utils': resolve(__dirname, './src/utils'),
       '@theme': resolve(__dirname, './src/theme'),
       '@devTools': resolve(__dirname, './src/devTools'),
-      '@analytics': resolve(__dirname, './src/analytics')
+      '@analytics': resolve(__dirname, './src/analytics'),
+      '@store': resolve(__dirname, './src/store')
     }
   }
 })
