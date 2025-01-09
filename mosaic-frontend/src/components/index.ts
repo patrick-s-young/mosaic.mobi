@@ -9,6 +9,7 @@ import MosaicTiles from '@components/MosaicTiles/MosaicTiles';
 import MosaicSelector from '@components/MosaicSelector/MosaicSelector';
 import Scrubber from '@components/Scrubber/Scrubber';
 import ScrubberSlider from '@components/ScrubberSlider/ScrubberSlider';
+import InAppPrompt from '@components/InAppPrompt/InAppPrompt';
 
 export { 
   PopOver, 
@@ -21,5 +22,6 @@ export {
   MosaicTiles,
   MosaicSelector,
   Scrubber,
-  ScrubberSlider
+  ScrubberSlider,
+  InAppPrompt
 };

@@ -17,7 +17,6 @@ const mobileDisplayLogSlice = createSlice ({
     setLogText (state, action: PayloadAction<MobileDisplayLog>) {
       let logText = state.logText;
       logText += action.payload.logText + '<br>_';
-      console.log('logText', logText);
       state.logText = logText;
     },
     clearLogText (state) {
