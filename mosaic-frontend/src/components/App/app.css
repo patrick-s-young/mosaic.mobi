@@ -1,0 +1,21 @@
+html, body, .full_size {
+  height: 100%;
+  margin: 0;
+  background-color: #dcdcdc;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+.app_ui_container {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 20px 0 20px 0;
+  gap: 20px;
+}
