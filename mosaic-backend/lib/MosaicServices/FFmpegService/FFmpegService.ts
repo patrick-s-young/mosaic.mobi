@@ -4,7 +4,7 @@ import ffprobe from 'ffprobe';
 import ffprobeStatic from 'ffprobe-static';
 import { createFfmpegFilterComplexStr } from './utils/createFfmpegFilterComplexStr';
 
-import env from '../../environment';
+import env from '../../Environment';
 import { Request, Response } from 'express';
 
 export default class FFmpegService {
@@ -121,12 +121,11 @@ export default class FFmpegService {
 
 
   public renderMosaic  (req: Request, res: Response, next: any) {
-console.log('+++++ renderMosaic called with res.locals: ', res.locals)
+    console.log('+++++ renderMosaic called with res.locals: ', res.locals)
     const duration = res.locals.videoUpload.duration - 1;
-    const frameInterval = duration / 19;
-    const bgFrameStart = res.locals.currentScrubberFrame * frameInterval;
-
-
+    const frameInterval = duration / 18;
+    const bgFrameStart = (res.locals.currentScrubberFrame - 1) * frameInterval;
+    const inputDuration = res.locals.videoUpload.duration;
     const filterParams = {
       panelCount: res.locals.numTiles,
       sequenceCount: res.locals.numTiles > 4 ? 3 : 4,
@@ -136,7 +135,7 @@ console.log('+++++ renderMosaic called with res.locals: ', res.locals)
       bgFrameStart,
       bgFrameHue: ', hue=s=0.1',
       preCropStr: '',
-      inputDuration: duration,
+      inputDuration
     }
 
     const assetID = res.locals.assetID
