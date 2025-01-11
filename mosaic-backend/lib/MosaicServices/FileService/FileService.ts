@@ -1,4 +1,4 @@
-import env from '../../environment';
+import env from '../../Environment';
 import { Request, Response } from 'express';
 const fs = require('fs');
 

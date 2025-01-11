@@ -1,9 +1,9 @@
 
 import express from 'express';
 import * as bodyParser from "body-parser";
-import { MosaicRoutes } from "../MosaicRoutes";
+import { MosaicRoutes } from "./MosaicRoutes";
 const expressFileUpload = require('express-fileupload');
-import env from '../environment';
+import env from './Environment';
 
 class App {
    public app: express.Application;

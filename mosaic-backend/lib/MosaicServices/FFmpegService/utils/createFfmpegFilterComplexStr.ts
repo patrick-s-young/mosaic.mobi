@@ -31,7 +31,7 @@ export const createFfmpegFilterComplexStr =  ({
 
   ////////////////////////////////////////
   // TRIM, SCALE, CROP, SETPTS, FADE IN, FADE OUT
-  const trimInterval = (inputDuration - fadeInToOutDuration) / (panelCount - 1);
+  let trimInterval = (inputDuration - fadeInToOutDuration) / panelCount ;
   ffmpegFilterComplexStr += createTrimFilter(panelCount, trimInterval, preCropStr);
 
   /////////////////////////////////////////

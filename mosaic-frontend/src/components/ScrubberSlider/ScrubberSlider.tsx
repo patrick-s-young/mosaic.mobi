@@ -1,11 +1,10 @@
+
+import { traceEvent } from '@analytics/traceEvent';
 import * as React from 'react';
-// Redux
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@store/rootReducer';
-// Slice
 import { setCurrentScrubberFrame } from '@components/Scrubber/scrubberSlice';
 import type { CurrentScrubberFrame, ScrubberState } from '@components/Scrubber/scrubberSlice';
-// Material-UI
 import { Slider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -43,6 +42,11 @@ const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width }) => {
   );
 
   const handleChange = (_: any, newValue: number | number[]) => {
+  traceEvent({
+    category: 'ScrubberSlider',
+    action: 'SCRUBBER_FRAME_UPDATED',
+    label: 'Instagram'
+  });
     dispatch(setCurrentScrubberFrame(newValue as CurrentScrubberFrame));
   };
 

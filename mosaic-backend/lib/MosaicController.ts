@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import FileService from './modules/FileService/FileService';
-import FFmpegService from './modules/FFmpegService/FFmpegService';
+import FileService from './MosaicServices/FileService/FileService';
+import FFmpegService from './MosaicServices/FFmpegService/FFmpegService';
 
 export class MosaicController {
   private fileService: FileService = new FileService();

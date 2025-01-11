@@ -27,7 +27,7 @@ export const createTrimFilter = (panelCount, trimInterval, preCropStr) => {
 
   for (; i < panelCount; i++) {
     //trimFilterStr += `[0:v] scale=1080x1080, trim=start=${trimInterval * i}:duration=2, crop=${cropFilterStr}, setpts=PTS-STARTPTS, fade=type=in:start_time=0:duration=0.5:alpha=1, fade=type=out:start_time=1.5:duration=0.45:alpha=1${scaleFilterStr} [trim.${i}];\n`;
-    trimFilterStr += `[0:v] ${preCropStr} trim=start=${trimInterval * i}:duration=2, crop=${cropFilterStr}, setpts=PTS-STARTPTS, fade=type=in:start_time=0:duration=0.5:alpha=1, fade=type=out:start_time=1.5:duration=0.45:alpha=1${scaleFilterStr} [trim.${i}];\n`;
+    trimFilterStr += `[0:v] ${preCropStr} trim=start=${trimInterval * (i + 1)}:duration=2, crop=${cropFilterStr}, setpts=PTS-STARTPTS, fade=type=in:start_time=0:duration=0.5:alpha=1, fade=type=out:start_time=1.5:duration=0.45:alpha=1${scaleFilterStr} [trim.${i}];\n`;
   }     
 
   return trimFilterStr;
