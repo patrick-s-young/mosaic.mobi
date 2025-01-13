@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { defaultMosaic } from '@components/App/app.config';
 import {
   getInPoints,
   getTileAnimEvents,
@@ -47,7 +48,6 @@ export interface MosaicFormatting {
 export type MosaicState = MosaicFormatting & MosaicPhase;
 
 export const numTilesAllPossibleValues: Array<NumTiles> = [2, 3, 4, 6, 9];
-const numTilesDefault: NumTiles = 4;
 const initialState: Partial<MosaicState> = {
   mosaicPhase: MosaicPhaseEnum.WAITING_FOR_VIDEO,
   canvasWidth: undefined,
@@ -71,7 +71,7 @@ const mosaicSlice = createSlice({
       state.tileAnimEvents = getTileAnimEvents();
       state.canvasWidth = canvasWidth;
       state.drawToCanvasArea = getDrawToCanvasArea(state.canvasWidth, state.canvasWidth);
-      state.numTiles = numTilesDefault;
+      state.numTiles = defaultMosaic.numTiles;
       state.mosaicPhase = MosaicPhaseEnum.ANIMATION_STOPPED;
     },
     setNumTiles (state, action: PayloadAction<NumTiles>) {
