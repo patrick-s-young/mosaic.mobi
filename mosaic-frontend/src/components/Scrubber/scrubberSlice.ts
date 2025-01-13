@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { defaultMosaic } from '@components/App/app.config';
 
 export type CurrentScrubberFrame = number;
 
@@ -9,10 +10,9 @@ export interface ScrubberState {
   videoUploadCount: number
 }
 
-const scrubberFramesMaxDefault: number = 20;
 export const initialState: ScrubberState = {
-  scrubberFramesMax: scrubberFramesMaxDefault,
-  currentScrubberFrame: Math.floor(scrubberFramesMaxDefault / 2),
+  scrubberFramesMax: defaultMosaic.scrubberFramesMax,
+  currentScrubberFrame: defaultMosaic.currentScrubberFrame,
   canvasWidth: 0,
   videoUploadCount: 0
 }

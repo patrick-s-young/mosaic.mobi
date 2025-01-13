@@ -1,12 +1,13 @@
 import { 
   createAsyncThunk
 } from '@reduxjs/toolkit';
+import { defaultMosaic } from '@components/App/app.config';
 
 export const preloadSequentialImages = createAsyncThunk(
   '@api/preloadSequentialImages',
   async (assetID: string) => {
       const startIdx = 1;
-      const endIdx = 20;
+      const endIdx = defaultMosaic.scrubberFramesMax;
       const nameFormat = 'img .jpg';
       const zeroPadding = 3;
       const directoryPath = `/uploads/${assetID}`;

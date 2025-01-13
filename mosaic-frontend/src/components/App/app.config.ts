@@ -1,5 +1,5 @@
 import isMobile from 'is-mobile';
-
+import type { NumTiles } from '@components/MosaicTiles/mosaicSlice';
 
 const [width, uiContainerHeight] = isMobile({ tablet: true }) 
   ? [window.innerWidth, window.innerHeight - window.innerWidth] 
@@ -14,4 +14,12 @@ export const appDimensions = {
   mosaicSelector: { width, height: 72 },
   navigation: { width, height: 120 },
   uiContainerHeight
+}
+
+export const defaultMosaic = {
+  assetID: '330055',
+  uploadDuration: 4.6,
+  numTiles: 9 as NumTiles,
+  scrubberFramesMax: 25,
+  currentScrubberFrame: 12
 }

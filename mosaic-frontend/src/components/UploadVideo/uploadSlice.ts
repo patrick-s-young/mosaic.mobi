@@ -8,6 +8,7 @@ import {
   preloadUserVideo,
   preloadSequentialImages 
 } from '@api/index';
+import { defaultMosaic } from '@components/App/app.config';
 
 export enum UploadPhaseEnum {
   PROMPT,
@@ -58,14 +59,16 @@ export type UploadState =
   & UploadVideoResized
   & { statusMessage: string }
 
+const RESIZED_VIDEO_WIDTH_HEIGHT = 320;
+
 const initialState: UploadState = {
   uploadPhase: UploadPhaseEnum.VIDEO_UPLOADED,
   selectedFile: undefined,
-  assetID: '330055',
-  uploadDuration: 8.0,
+  assetID: defaultMosaic.assetID,
+  uploadDuration: defaultMosaic.uploadDuration,
   videoURL: '',
   imageURLs: [],
-  resizedWidth: 320, // make dynamically linked to video meta data of resized.mov
+  resizedWidth: RESIZED_VIDEO_WIDTH_HEIGHT,
   statusMessage: ''
 }
 

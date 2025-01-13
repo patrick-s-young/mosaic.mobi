@@ -174,8 +174,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
         { time: 1750,   action: 'fadeOut'},
         { time: 4250,   action: 'fadeIn'},
         { time: 5750,   action: 'fadeOut'},
-        { time: 10500,  action: 'fadeIn'},
-        { time: 12000,  action: 'fadeOut'},
+        { time: 10250,  action: 'fadeIn'},
+        { time: 11750,  action: 'fadeOut'},
         { time: 16000,  action: 'wait'}
       ],
       [ // row: 0, col: 1
@@ -183,8 +183,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
         { time: 2500,   action: 'fadeOut'},
         { time: 7250,   action: 'fadeIn'},
         { time: 8750,   action: 'fadeOut'},
-        { time: 10750,  action: 'fadeIn'},
-        { time: 12250,  action: 'fadeOut'},
+        { time: 10500,  action: 'fadeIn'},
+        { time: 12000,  action: 'fadeOut'},
         { time: 16000,  action: 'wait'}
       ],
       [ // row: 0, col: 2
@@ -192,8 +192,8 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
         { time: 2000,   action: 'fadeOut'},
         { time: 5000,   action: 'fadeIn'},
         { time: 6500,   action: 'fadeOut'},
-        { time: 10250,  action: 'fadeIn'},
-        { time: 11750,  action: 'fadeOut'},
+        { time: 10750,  action: 'fadeIn'},
+        { time: 12250,  action: 'fadeOut'},
         { time: 16000,  action: 'wait'}
       ],
       [ // row: 1, col: 0
