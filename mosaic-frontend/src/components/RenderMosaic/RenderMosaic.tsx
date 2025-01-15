@@ -6,10 +6,10 @@ import type { RootState } from '@store/rootReducer';
 import type { AppDispatch } from '@store/store';
 // Slices 
 import { setAppPhase, AppPhaseEnum } from '@/components/App/appSlice';
-import type { UploadState } from '@/components/UploadVideo/uploadSlice';
-import type { MosaicState } from '@/components/MosaicTiles/mosaicSlice';
-import type { ScrubberState } from '@/components/Scrubber/scrubberSlice';
-import { setNavPhase, NavPhaseEnum } from '@/components/Navigation/navSlice';
+import type { UploadState } from '@components/UploadVideo/uploadSliceInterace';
+import type { MosaicState } from '@components/MosaicTiles/mosaicSlice';
+import type { ScrubberState } from '@components/Scrubber/scrubberSlice';
+import { setNavPhase, NavPhaseEnum } from '@components/Navigation/navSlice';
 import { 
   RenderPhaseEnum, 
   RenderState, 

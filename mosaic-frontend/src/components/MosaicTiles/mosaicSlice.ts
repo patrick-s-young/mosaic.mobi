@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { defaultMosaic } from '@components/App/app.config';
 import {
   getInPoints,
   getTileAnimEvents,
   getDrawToCanvasArea,
   getCopyVideoFromArea
 }  from '@/components/MosaicTiles/helpers';
+import { defaultVideoConfig } from '@components/App/app.config';
 
 export enum MosaicPhaseEnum {
   WAITING_FOR_VIDEO,
@@ -35,7 +35,6 @@ export type Time = number;
 export type TimeGroup = Array<Time>;
 export type TimeGroupCollection = { [key in NumTilesToString] : TimeGroup };
 
-
 export interface MosaicFormatting {
   numTiles: NumTiles,
   canvasWidth: number,
@@ -48,6 +47,7 @@ export interface MosaicFormatting {
 export type MosaicState = MosaicFormatting & MosaicPhase;
 
 export const numTilesAllPossibleValues: Array<NumTiles> = [2, 3, 4, 6, 9];
+const numTilesDefault: NumTiles = defaultVideoConfig.numTiles as NumTiles;
 const initialState: Partial<MosaicState> = {
   mosaicPhase: MosaicPhaseEnum.WAITING_FOR_VIDEO,
   canvasWidth: undefined,
@@ -71,7 +71,7 @@ const mosaicSlice = createSlice({
       state.tileAnimEvents = getTileAnimEvents();
       state.canvasWidth = canvasWidth;
       state.drawToCanvasArea = getDrawToCanvasArea(state.canvasWidth, state.canvasWidth);
-      state.numTiles = defaultMosaic.numTiles;
+      state.numTiles = numTilesDefault;
       state.mosaicPhase = MosaicPhaseEnum.ANIMATION_STOPPED;
     },
     setNumTiles (state, action: PayloadAction<NumTiles>) {

@@ -8,9 +8,8 @@ import type { RootState } from '@store/rootReducer';
 import { setAppPhase, AppPhaseEnum } from '@/components/App/appSlice';
 import type { AppState } from '@/components/App/appSlice';
 // <UploadVideo>
-import { 
-  UploadPhaseEnum,
-  setUploadPhase } from '@components/UploadVideo/uploadSlice';
+import { setUploadPhase } from '@components/UploadVideo/uploadSlice';
+import { UploadPhaseEnum } from '@components/UploadVideo/uploadSliceInterace';
 // api
 import { 
   preUploadValidation,
@@ -18,30 +17,22 @@ import {
   preloadUserVideo,
   preloadSequentialImages 
 } from '@api/index';
-import type { UploadState } from '@components/UploadVideo/uploadSlice';
-// <MosaicTiles>
-import { setMosaicFormatting, setMosaicPhase, MosaicPhaseEnum } from '@/components/MosaicTiles/mosaicSlice';
-// <Navigation>
-import { setNavPhase, NavPhaseEnum } from '@/components/Navigation/navSlice';
-// Components
+import type { UploadState } from '@components/UploadVideo/uploadSliceInterace';
+import { setMosaicFormatting, setMosaicPhase, MosaicPhaseEnum } from '@components/MosaicTiles/mosaicSlice';
+import { setNavPhase, NavPhaseEnum } from '@components/Navigation/navSlice';
 import PopOver from '@components/PopOver/PopOver';
-import SlideInOut from '@/components/SideInOut/SlideInOut';
-// Material-UI
+import SlideInOut from '@components/SideInOut/SlideInOut';
 import { Button, Paper } from '@material-ui/core';
 import { useStyles } from '@components/UploadVideo/uploadVideo.useStyles';
 import { Warning, LibraryAdd, CloudUpload } from '@material-ui/icons';
 import CircularProgress from '@material-ui/core/CircularProgress';
-// scrubberSlice
 import { setVideoUploadCount } from '@components/Scrubber/scrubberSlice';
 import type { AppDispatch } from '@store/store';
-
 
 export interface UploadVideoProps {
   displaySize: { width: number, height: number }
   isActive: boolean
 }
-
-
 
 const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
   const classes = useStyles();
