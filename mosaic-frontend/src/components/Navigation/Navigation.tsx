@@ -52,9 +52,9 @@ const Navigation: React.FC<NavigationProps> = ({
         value={navPhase}
         onChange={handleChange}
       >
-        <Tab icon={<VideoCall fontSize='large' />} value={NavPhaseEnum.UPLOAD} style={{ minWidth: width / 3 }} label="UPLOAD" />
-        <Tab icon={<MovieCreation fontSize='large' />} value={NavPhaseEnum.EDIT} style={{ minWidth: width / 3 }} label="EDIT" />
-        <Tab icon={<SaveAlt fontSize='large' />} value={NavPhaseEnum.DOWNLOAD} style={{ minWidth: width / 3 }} label="SAVE" />
+        <Tab icon={<VideoCall fontSize='large' />} value={NavPhaseEnum.UPLOAD} style={{ minWidth: width / 3, backgroundColor: 'white' }} label="UPLOAD" />
+        <Tab icon={<MovieCreation fontSize='large' />} value={NavPhaseEnum.EDIT} style={{ minWidth: width / 3, backgroundColor: 'white' }} label="EDIT" />
+        <Tab icon={<SaveAlt fontSize='large' />} value={NavPhaseEnum.DOWNLOAD} style={{ minWidth: width / 3, backgroundColor: 'white' }} label="SAVE" />
       </Tabs>
     </div>
   );

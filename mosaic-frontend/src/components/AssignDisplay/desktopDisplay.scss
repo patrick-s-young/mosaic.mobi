@@ -30,10 +30,20 @@
     }
   }
   &__title {
-    font-size: 64px;
+    font-size: 96px;
     font-weight: 600;
     color:#7b1fa2
   }
+  &__tag {
+    font-size: 32px;
+    font-weight: 100;
+    color: #000000;
+  }
+  &__tag--bold {
+        font-size: 32px;
+    font-weight: 500;
+  }
+
 
   &__leftColumn {
     width: 33vw;

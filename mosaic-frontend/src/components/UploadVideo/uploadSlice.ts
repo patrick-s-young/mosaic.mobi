@@ -8,67 +8,26 @@ import {
   preloadUserVideo,
   preloadSequentialImages 
 } from '@api/index';
-import { defaultMosaic } from '@components/App/app.config';
+import { UploadPhaseEnum } from './uploadSliceInterace';
+import type { 
+  UploadState, 
+  UploadPhase, 
+  UploadDuration, 
+  UploadSelectedFile } from './uploadSliceInterace';
+import { 
+  MAX_VIDEO_UPLOAD_DURATION, 
+  defaultVideoConfig } from '@components/App/app.config';
 
-export enum UploadPhaseEnum {
-  PROMPT,
-  VIDEO_TOO_LONG,
-  VIDEO_UPLOADING,
-  VIDEO_SUBMITED,
-  VIDEO_UPLOADED,
-  VIDEO_PRELOADED,
-  IMAGES_PRELOADED,
-  MOSAIC_INITIALIZED
-}
 
-export interface UploadPhase {
-  uploadPhase: UploadPhaseEnum
-}
-
-export interface UploadAssetID {
-  assetID: string
-}
-
-export interface UploadDuration {
-  uploadDuration: number
-}
-
-export interface UploadVideoURL {
-  videoURL: string
-}
-
-export interface UploadSelectedFile {
-  selectedFile: File | undefined
-}
-
-export interface UploadImageURLs {
-  imageURLs: Array<string>
-}
-
-export interface UploadVideoResized {
-  resizedWidth: number
-}
-
-export type UploadState = 
-    UploadPhase 
-  & UploadAssetID 
-  & UploadDuration 
-  & UploadVideoURL 
-  & UploadSelectedFile
-  & UploadImageURLs
-  & UploadVideoResized
-  & { statusMessage: string }
-
-const RESIZED_VIDEO_WIDTH_HEIGHT = 320;
 
 const initialState: UploadState = {
   uploadPhase: UploadPhaseEnum.VIDEO_UPLOADED,
   selectedFile: undefined,
-  assetID: defaultMosaic.assetID,
-  uploadDuration: defaultMosaic.uploadDuration,
+  assetID: defaultVideoConfig.assetID,
+  uploadDuration: defaultVideoConfig.uploadDuration,
   videoURL: '',
   imageURLs: [],
-  resizedWidth: RESIZED_VIDEO_WIDTH_HEIGHT,
+  resizedWidth: 320,
   statusMessage: ''
 }
 
@@ -97,7 +56,7 @@ const uploadSlice = createSlice ({
       console.log(`preUploadValidation.fulfilled > action.payload.uploadDuration: ${action.payload.uploadDuration}`);
       console.log(`preUploadValidation.fulfilled > action.payload.selectedFile: ${action.payload.selectedFile}`);
       state.uploadDuration = action.payload.uploadDuration;
-      if (state.uploadDuration > 15) {
+      if (state.uploadDuration > MAX_VIDEO_UPLOAD_DURATION) {
         state.uploadPhase = UploadPhaseEnum.VIDEO_TOO_LONG;
       } else {
         state.selectedFile = action.payload.selectedFile;
@@ -143,7 +102,6 @@ const uploadSlice = createSlice ({
     })
   }
 });
-
 
 export const {
   setVideoSubmitted,

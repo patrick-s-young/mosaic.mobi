@@ -33,7 +33,8 @@ export const useStyles = makeStyles((theme: Theme) =>
         padding: theme.spacing(1)
       },
       margin: theme.spacing(4),
-      padding: theme.spacing(1)
+      padding: theme.spacing(1),
+      border: '1px solid #d0d0d0'
     },
     promptButtonsContainer: {
       display: 'flex',

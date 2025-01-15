@@ -2,13 +2,13 @@ import { traceEvent } from '@analytics/traceEvent';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setMosaicPhase, MosaicPhaseEnum } from '@/components/MosaicTiles';
-import type { MosaicState } from '@/components/MosaicTiles';
-import type { UploadState } from '@/components/UploadVideo/uploadSlice';
+import { setMosaicPhase, MosaicPhaseEnum } from '@components/MosaicTiles';
+import type { MosaicState } from '@components/MosaicTiles';
+import type { UploadState } from '@components/UploadVideo/uploadSliceInterace';
 import type { RootState } from '@store/rootReducer';
 import { setLogText } from '@devTools/MobileDisplayLog/mobileDisplayLog.slice';
 import '@components/MosaicTiles/mosaicTiles.css';
-import MosaicTile from '@/components/MosaicTiles/MosaicTile';
+import MosaicTile from '@components/MosaicTiles/MosaicTile';
 
 const ANIMATION_CYCLE_DURATION = 15000;
 
@@ -143,13 +143,13 @@ const MosaicTiles: React.FC= () => {
   }
 
   return(
-		  <div style={{position: 'absolute', top: `0px`}}>
         <canvas
+          className='mosaicTiles-canvas'
           ref={canvasRef}
           width={canvasWidth}
           height={canvasWidth}
         />
-      </div>
+
   );
 }
 

@@ -24,8 +24,6 @@ export const preUploadValidation = createAsyncThunk(
           console.log(`duration: ${target.duration}`);
           urlCreator.revokeObjectURL(videoUrl);
           _resolve(target.duration);
-          //dispatch(setVideoSubmitted({ selectedFile, uploadDuration: target.duration }));
-          //return { selectedFile, uploadDuration: target.duration }
         });
       }
       // read file to determine if duration is not too long (less than fifteen seconds)

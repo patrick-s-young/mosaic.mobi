@@ -1,4 +1,4 @@
-import type { UploadAssetID } from '@/components/UploadVideo/uploadSlice';
+import type { UploadAssetID } from '@components/UploadVideo/uploadSliceInterace';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 export const uploadUserVideo = createAsyncThunk(
