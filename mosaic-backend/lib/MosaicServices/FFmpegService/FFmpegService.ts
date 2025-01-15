@@ -75,7 +75,7 @@ export default class FFmpegService {
     console.log(`\n\nresizeVideo > filter: ${filter}\n\n`);
     console.log(`\n\n\n\n\n`)
   
-    const proc = spawn(ffmpeg.path, ['-i', inputPath, '-filter_complex', filter , '-g', '12', '-map', '[final]', '-an', '-y', outputPath]);
+    const proc = spawn(ffmpeg.path, ['-i', inputPath, '-filter_complex', filter , '-g', '12', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', outputPath]);
       // @ts-ignore: Object is possibly 'null'.
     proc.stdout.on('data', function(data) {
       console.log(`resizeVideo > proc.stdout.on('data'): ${data}`);
@@ -101,7 +101,7 @@ export default class FFmpegService {
     //const proc = spawn(ffmpegPath, ['-ss', 1, '-i', inputPath, '-vframes', 1, `${outputPath}extractframe.jpg`]);
     const duration = res.locals.videoUpload.duration - 1;
     const frameInterval = 18 / duration;
-    const proc = spawn(ffmpeg.path, ['-i', inputPath, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), `${outputPath}img%03d.jpg`]);
+    const proc = spawn(ffmpeg.path, ['-i', inputPath, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-preset', 'ultrafast', '-crf', '28', `${outputPath}img%03d.jpg`]);
     // @ts-ignore: Object is possibly 'null'.
     proc.stdout.on('data', function(data) {
       console.log(`proc.stdout.on('data'): ${data}`);
@@ -145,7 +145,7 @@ export default class FFmpegService {
     const ffmpegFilterComplexStr = createFfmpegFilterComplexStr(filterParams);
     console.log(`\n\nffmpegFilterComplexStr=${ffmpegFilterComplexStr}\n\n`);
 
-    const proc = spawn(ffmpeg.path, ['-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-map', '[final]', '-an', '-y', outputPath]);
+    const proc = spawn(ffmpeg.path, ['-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-preset', 'fast', '-crf', '26', '-map', '[final]', '-an', '-y', outputPath]);
     // @ts-ignore: Object is possibly 'null'.
     proc.stdout.on('data', function(data) {
       console.log(`proc.stdout.on('data'): ${data}`);
