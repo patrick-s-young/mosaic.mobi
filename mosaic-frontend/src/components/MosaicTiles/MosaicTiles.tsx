@@ -25,8 +25,8 @@ const MosaicTiles: React.FC= () => {
     drawToCanvasArea,
     canvasWidth,
     numTiles } = useSelector<RootState, MosaicState>((state) => state.mosaic as MosaicState);
-
   const mosaicTilesRef = useRef<Array<MosaicTile>>([]);
+  const canvasClassName = canvasWidth ? 'mosaicTiles-canvas' : '';
 
 
   const cancelAnimation = () => {
@@ -142,14 +142,15 @@ const MosaicTiles: React.FC= () => {
     animationFrameIdRef.current = requestAnimationFrame(step);
   }
 
-  return(
-        <canvas
-          className='mosaicTiles-canvas'
-          ref={canvasRef}
-          width={canvasWidth}
-          height={canvasWidth}
-        />
 
+
+  return (
+    <canvas
+      className={canvasClassName}
+      ref={canvasRef}
+      width={canvasWidth}
+      height={canvasWidth}
+    />
   );
 }
 

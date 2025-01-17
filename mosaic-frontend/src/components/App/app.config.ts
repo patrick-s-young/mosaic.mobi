@@ -17,6 +17,7 @@ const appDimensions = {
 
 const MAX_VIDEO_UPLOAD_DURATION = 15;
 const SCRUBBER_FRAMES_MAX = 20
+const DEFAULT_VIDEO_NUM_TILES = 4;
 
 const defaultVideoConfig = {
   assetID: '330055' as string,
@@ -28,5 +29,6 @@ export {
   appDimensions, 
   MAX_VIDEO_UPLOAD_DURATION,
   SCRUBBER_FRAMES_MAX,
+  DEFAULT_VIDEO_NUM_TILES,
   defaultVideoConfig
 };

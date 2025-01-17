@@ -23,7 +23,8 @@ const DesktopDisplay: React.FC<DesktopDisplayProps> = ({ children }) => {
       </div>
 
        <div className='desktopDisplay__rightColumn'>
-
+        <div><a href='https://github.com/patrick-s-young/mosaic.mobi' target='_blank'>GitHub</a></div>
+        <div><a href='https://www.linkedin.com/in/patrick-s-young/' target='_blank'>LinkedIn</a></div>
       </div>
     </div>
   );
