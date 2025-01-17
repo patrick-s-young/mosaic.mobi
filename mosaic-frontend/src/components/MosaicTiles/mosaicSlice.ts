@@ -5,7 +5,7 @@ import {
   getDrawToCanvasArea,
   getCopyVideoFromArea
 }  from '@/components/MosaicTiles/helpers';
-import { defaultVideoConfig } from '@components/App/app.config';
+import { defaultVideoConfig, DEFAULT_VIDEO_NUM_TILES } from '@components/App/app.config';
 
 export enum MosaicPhaseEnum {
   WAITING_FOR_VIDEO,
@@ -42,19 +42,22 @@ export interface MosaicFormatting {
   copyVideoFromArea: RectCollection,
   drawToCanvasArea: RectGroupCollection,
   tileAnimEvents: ActionGroupCollection,
+  isDefaultVideo: boolean
 }
 
 export type MosaicState = MosaicFormatting & MosaicPhase;
 
 export const numTilesAllPossibleValues: Array<NumTiles> = [2, 3, 4, 6, 9];
-const numTilesDefault: NumTiles = defaultVideoConfig.numTiles as NumTiles;
+const defaultVideoNumTiles: NumTiles = defaultVideoConfig.numTiles as NumTiles;
+const userVideoNumTiles: NumTiles = DEFAULT_VIDEO_NUM_TILES;
 const initialState: Partial<MosaicState> = {
   mosaicPhase: MosaicPhaseEnum.WAITING_FOR_VIDEO,
   canvasWidth: undefined,
   inPoints: undefined,
   copyVideoFromArea: undefined,
   drawToCanvasArea: undefined,
-  tileAnimEvents: undefined
+  tileAnimEvents: undefined,
+  isDefaultVideo: true
 }
 
 const mosaicSlice = createSlice({
@@ -71,7 +74,8 @@ const mosaicSlice = createSlice({
       state.tileAnimEvents = getTileAnimEvents();
       state.canvasWidth = canvasWidth;
       state.drawToCanvasArea = getDrawToCanvasArea(state.canvasWidth, state.canvasWidth);
-      state.numTiles = numTilesDefault;
+      state.numTiles = state.isDefaultVideo ? defaultVideoNumTiles : userVideoNumTiles;
+      state.isDefaultVideo = false;
       state.mosaicPhase = MosaicPhaseEnum.ANIMATION_STOPPED;
     },
     setNumTiles (state, action: PayloadAction<NumTiles>) {

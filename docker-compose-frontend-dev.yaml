@@ -21,6 +21,7 @@ services:
     volumes:
       - mosaic-volume:/var/lib/video
       - ./assets/330055:/var/lib/video/330055
+      - ./assets/favicon-16x16.png:/var/lib/favicon-16x16.png
     networks:
       - mosaic-network
 
