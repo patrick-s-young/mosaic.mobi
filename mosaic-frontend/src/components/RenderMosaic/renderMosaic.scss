@@ -1,0 +1,16 @@
+
+
+.renderMosaic {
+  position: absolute;
+  background-color: white;
+  margin-top: 0px;
+  opacity: 0.95;
+  z-index: 20;
+  &__centerScreen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+}

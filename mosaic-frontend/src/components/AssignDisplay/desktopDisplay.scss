@@ -1,3 +1,6 @@
+@use '@styles/mosaicVariables.scss' as *;
+@use '@styles/mosaicMixins.scss' as *;
+
 .desktopDisplay {
   box-sizing: border-box;
   display: flex;
@@ -32,7 +35,8 @@
   &__title {
     font-size: 96px;
     font-weight: 600;
-    color:#7b1fa2
+    color:#7b1fa2;
+    text-shadow: 0px 0px 4px #7b1fa2;
   }
   &__tag {
     font-size: 32px;
@@ -40,7 +44,7 @@
     color: #000000;
   }
   &__tag--bold {
-        font-size: 32px;
+    font-size: 32px;
     font-weight: 500;
   }
 

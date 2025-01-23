@@ -1,0 +1,78 @@
+$mosaic-purple-light: #ae52d4;
+$mosaic-purple-dark: #7b1fa2;
+$mosaic-contrast: 'rgba(255, 255, 255, 0.87)';
+
+$mosaic-hover-default: #7b1fa2;
+$mosaic-pressed-default: rgba(30, 30, 30, 0.24);
+
+$surface-default: white;
+
+$mosaic-button-default: #7b1fa2;
+$mosaic-button-hover: #FAF8FF;
+$mosaic-button-pressed: #faf8ffc7;
+
+$mosaic-button-text-default: #FAF8FF;
+$mosaic-button-text-hover: #7b1fa2;
+$mosaic-button-text-pressed: #6a128f;
+
+// State =====
+$state-active: rgba(182, 196, 255, 0.24);
+$state-focus-default: rgba(30, 30, 30, 0.18);
+$state-focus-heavy: rgba(30, 30, 30, 0.26);
+$state-focus-inverse: rgba(249, 249, 249, 0.12);
+$state-focus-light: rgba(30, 30, 30, 0.1);
+$state-focus-primary: rgba(182, 196, 255, 0.32);
+$state-hover-default: rgba(30, 30, 30, 0.16);
+$state-hover-heavy: rgba(30, 30, 30, 0.24);
+$state-hover-inverse: rgba(249, 249, 249, 0.08);
+$state-hover-light: rgba(30, 30, 30, 0.08);
+$state-hover-primary: rgba(182, 196, 255, 0.24);
+$state-loading: rgb(238, 238, 232);
+$state-null: rgba(255, 255, 255, 0);
+$state-pressed-default: rgba(30, 30, 30, 0.24);
+$state-pressed-heavy: rgba(30, 30, 30, 0.32);
+$state-pressed-inverse: rgba(249, 249, 249, 0.24);
+$state-pressed-light: rgba(30, 30, 30, 0.16);
+$state-pressed-primary: rgba(118, 141, 224, 0.32);
+
+// Border =====
+$border-large: 3px;
+$border-medium: 2px;
+$border-small: 1px;
+
+// Radius =====
+$radius-radius-2: 2px;
+$radius-radius-4: 4px;
+$radius-radious-8: 8px;
+$radius-radious-12: 12px;
+$radius-radius-16: 16px;
+$radius-radius-24: 24px;
+$radius-radius-32: 32px;
+$radius-radius-48: 48px;
+$radius-radius-96: 96px;
+$radius-radius-full: 999px;
+
+// Radius Reference --
+$radius-pttn-radius-bttn-sm: $radius-radious-12;
+$radius-pttn-radius-bttn: $radius-radius-16;
+$radius-dialog: $radius-radius-32;
+$radius-modal: $radius-radius-32;
+$radius-pannel: $radius-radius-16;
+
+// Size =====
+$size-bttn-small: 48px;
+$size-bttn-medium: 64px;
+$size-bttn-large: 80px;
+
+// Spacing =====
+$spacing-space-4: 4px;
+$spacing-space-8: 8px;
+$spacing-space-12: 12px;
+$spacing-space-16: 16px;
+$spacing-space-20: 20px;
+$spacing-space-24: 24px;
+$spacing-space-32: 32px;
+$spacing-space-40: 40px;
+$spacing-space-48: 48px;
+$spacing-space-56: 56px;
+$spacing-space-96: 96px;

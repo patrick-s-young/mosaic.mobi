@@ -4,8 +4,8 @@ import type { RootState } from '@store/rootReducer';
 import { setNavPhase, NavPhaseEnum } from '@/components/Navigation/navSlice';
 import type { NavState } from '@/components/Navigation/navSlice';
 import { Tab, Tabs } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { SaveAlt, MovieCreation, VideoCall } from '@material-ui/icons';
+import './navigation.scss';
 
 const navPhaseString = {
   0: 'NAV_PHASE_CHANGED_UPLOAD',
@@ -13,16 +13,6 @@ const navPhaseString = {
   2: 'NAV_PHASE_CHANGED_DOWNLOAD'
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    centerScreen: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }
-  })
-);
 
 export interface NavigationProps {
   width: number
@@ -33,9 +23,13 @@ export interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ 
   width,
   pauseInput }) => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const { navPhase } = useSelector<RootState, NavState>((state) => state.nav);
+  const navigationWidth = width;
+  const tabStyle = {
+    minWidth: navigationWidth / 3,
+    backgroundColor: 'white'
+  }
 
   const handleChange = (_: React.ChangeEvent<{}>, newValue: NavPhaseEnum) => {
     traceEvent({
@@ -47,14 +41,14 @@ const Navigation: React.FC<NavigationProps> = ({
   };
 
   return (
-    <div className={classes.centerScreen}  style={{ width }}>
+    <div className='navigation' style={{ width: navigationWidth }}>
       <Tabs
         value={navPhase}
         onChange={handleChange}
       >
-        <Tab icon={<VideoCall fontSize='large' />} value={NavPhaseEnum.UPLOAD} style={{ minWidth: width / 3, backgroundColor: 'white' }} label="UPLOAD" />
-        <Tab icon={<MovieCreation fontSize='large' />} value={NavPhaseEnum.EDIT} style={{ minWidth: width / 3, backgroundColor: 'white' }} label="EDIT" />
-        <Tab icon={<SaveAlt fontSize='large' />} value={NavPhaseEnum.DOWNLOAD} style={{ minWidth: width / 3, backgroundColor: 'white' }} label="SAVE" />
+        <Tab icon={<VideoCall fontSize='large' />} value={NavPhaseEnum.UPLOAD} style={tabStyle} label="UPLOAD" />
+        <Tab icon={<MovieCreation fontSize='large' />} value={NavPhaseEnum.EDIT} style={tabStyle} label="EDIT" />
+        <Tab icon={<SaveAlt fontSize='large' />} value={NavPhaseEnum.DOWNLOAD} style={tabStyle} label="SAVE" />
       </Tabs>
     </div>
   );

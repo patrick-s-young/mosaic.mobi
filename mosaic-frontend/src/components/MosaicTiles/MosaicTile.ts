@@ -62,24 +62,18 @@ class MosaicTile implements Partial<MosaicTileInterface> {
   }
 
   initAnimation() {
-    console.log('__________initAnimation called');
-    console.log('initAnimation called');
-    console.log('this._tileAnimEvents', this._tileAnimEvents);
     this.currentEventAction = this._wait;
     this._nextEventIndex = 0;
     this.nextEventTime = this._tileAnimEvents?.[this._nextEventIndex ?? 0]?.time;
-    console.log('this._inPoint', this._inPoint);
     this._video.currentTime = this._inPoint ?? 0;
   }
 
   resetAnimation() {
-    console.log('__________resetAnimation called');
     this._nextEventIndex = 0;
     this.nextEventTime = this._tileAnimEvents?.[this._nextEventIndex]?.time;
   }
 
   clearAnimation() {
-    console.log('__________clearAnimation called');
     this.currentEventAction = this._wait;
     this._video.pause();
     this._video.removeAttribute('src');
@@ -106,23 +100,20 @@ class MosaicTile implements Partial<MosaicTileInterface> {
         this._initFadeOut();
         break;
       default:
-        console.log(`ERROR: no case for ${newCurrentEventAction}`); // todo: add error handling
+        console.warn(`ERROR: no case for ${newCurrentEventAction}`); // todo: add error handling
     }
   }
 
   _initFadeIn() {
-    console.log('_______________initFadeIn called');
-
     const playPromise = this._video.play();
     if (playPromise !== undefined) {
       playPromise.then(_ => {
-        //console.log(`Automatic playback started!`);
         this._video.currentTime = this._inPoint ?? 0;
         this._fadeStartTime = Date.now();
         this.currentEventAction = this._fadeIn;
       })
       .catch(error => {
-        console.log(`Auto-play was prevented by error: ${error}`);
+        console.warn(`Auto-play was prevented by error: ${error}`);
       });
     }
     this._video.play();
@@ -131,9 +122,6 @@ class MosaicTile implements Partial<MosaicTileInterface> {
   }
 
   _fadeIn() {
-    // if (this._seeking || !this._fadeStartTime) {
-    //   return;
-    // }
     const timeElapsed = Date.now() - (this._fadeStartTime ?? 0);
     this._fadeOpacity = timeElapsed / FADE_DURATION;
     if (this._fadeOpacity > 1) {
@@ -144,7 +132,6 @@ class MosaicTile implements Partial<MosaicTileInterface> {
     this._drawImage();
   }
   _initFadeOut() {
-    console.log('_______________initFadeOut called');
     this._fadeStartTime = Date.now();
     this.currentEventAction = this._fadeOut;
   }
@@ -166,7 +153,7 @@ class MosaicTile implements Partial<MosaicTileInterface> {
 
   _drawImage() {
     if (!this._drawToCanvasArea || !this._context || !this._copyVideoFromArea) {
-      console.log('_______________return abort drawImage');
+      console.warn('abort _drawImage');
       return;
     }
     
