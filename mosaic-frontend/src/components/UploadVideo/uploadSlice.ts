@@ -8,12 +8,12 @@ import {
   preloadUserVideo,
   preloadSequentialImages 
 } from '@api/index';
-import { UploadPhaseEnum } from './uploadSliceInterace';
+import { UploadPhaseEnum } from './uploadSlice.interface';
 import type { 
   UploadState, 
   UploadPhase, 
   UploadDuration, 
-  UploadSelectedFile } from './uploadSliceInterace';
+  UploadSelectedFile } from './uploadSlice.interface';
 import { 
   MAX_VIDEO_UPLOAD_DURATION, 
   defaultVideoConfig } from '@components/App/app.config';

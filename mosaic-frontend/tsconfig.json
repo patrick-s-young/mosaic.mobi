@@ -12,7 +12,8 @@
       "@theme/*": ["src/theme/*"],
       "@devTools/*": ["src/devTools/*"],
       "@analytics/*": ["src/analytics/*"],
-      "@store/*": ["src/store/*"]
+      "@store/*": ["src/store/*"],
+      "@styles/*": ["src/styles/*"]
 		},
   },
   "files": [],

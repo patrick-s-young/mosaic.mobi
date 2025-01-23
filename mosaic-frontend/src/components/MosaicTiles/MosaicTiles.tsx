@@ -4,10 +4,10 @@ import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setMosaicPhase, MosaicPhaseEnum } from '@components/MosaicTiles';
 import type { MosaicState } from '@components/MosaicTiles';
-import type { UploadState } from '@components/UploadVideo/uploadSliceInterace';
+import type { UploadState } from '@/components/UploadVideo/uploadSlice.interface';
 import type { RootState } from '@store/rootReducer';
 import { setLogText } from '@devTools/MobileDisplayLog/mobileDisplayLog.slice';
-import '@components/MosaicTiles/mosaicTiles.css';
+import '@components/MosaicTiles/mosaicTiles.scss';
 import MosaicTile from '@components/MosaicTiles/MosaicTile';
 
 const ANIMATION_CYCLE_DURATION = 15000;
@@ -76,7 +76,6 @@ const MosaicTiles: React.FC= () => {
           });
           newMosaicTiles.push(newMosaicTile);
         }
-        console.log('newMosaicTiles', newMosaicTiles);
         mosaicTilesRef.current = [...newMosaicTiles];
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.TILES_UPDATED }));
         dispatch(setLogText({ logText: 'ANIMATION_STOPPED called' }));

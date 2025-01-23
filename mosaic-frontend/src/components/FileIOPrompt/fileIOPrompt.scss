@@ -1,0 +1,30 @@
+@use '@styles/mosaicVariables' as *;
+@use '@styles/mosaicMixins' as *;
+
+.fileIOPrompt {
+    @include font-style($size: 20px, $lineHeight: 1.25em);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    margin: 20px;
+    align-items: center;
+    border-radius: $radius-radious-12;
+    @include dropShadow-2();
+  &__headline {
+    display: flex;
+    gap: 6px;
+    color: $mosaic-purple-dark;
+    @include font-style($size: 30px, $weight: 500, $lineHeight: 1em);
+    align-items: center;
+    margin-left: -8%;
+    margin-bottom: -3%;
+  }
+  &__buttonsContainer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+}

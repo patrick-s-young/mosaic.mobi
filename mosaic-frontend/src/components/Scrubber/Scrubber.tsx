@@ -2,7 +2,7 @@ import * as React from 'react';
 // Redux
 import { useSelector } from 'react-redux';
 import type { RootState } from '@store/rootReducer';
-import type { UploadState } from '@components/UploadVideo/uploadSliceInterace';
+import type { UploadState } from '@/components/UploadVideo/uploadSlice.interface';
 import type { AppState } from '@components/App/appSlice';
 import ScrubberFrames from '@components/Scrubber/ScrubberFrames';
 import '@components/Scrubber/scrubber.css';

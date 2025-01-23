@@ -21,7 +21,8 @@ export default defineConfig({
       '@theme': resolve(__dirname, './src/theme'),
       '@devTools': resolve(__dirname, './src/devTools'),
       '@analytics': resolve(__dirname, './src/analytics'),
-      '@store': resolve(__dirname, './src/store')
+      '@store': resolve(__dirname, './src/store'),
+      '@styles': resolve(__dirname, './src/styles')
     }
   }
 })
