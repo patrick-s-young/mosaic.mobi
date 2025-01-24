@@ -22,7 +22,8 @@ export default defineConfig({
       '@devTools': resolve(__dirname, './src/devTools'),
       '@analytics': resolve(__dirname, './src/analytics'),
       '@store': resolve(__dirname, './src/store'),
-      '@styles': resolve(__dirname, './src/styles')
+      '@sass': resolve(__dirname, './src/sass')
     }
   }
 })
+

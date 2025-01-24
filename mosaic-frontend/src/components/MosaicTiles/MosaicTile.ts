@@ -4,7 +4,7 @@ import type {
   CopyVideoFromArea,
   DrawToCanvasArea,
   TileAnimEvents,
-} from './MosaicTileInterface';
+} from './mosaicTile.interface';
 
 const FADE_DURATION = 500;
 

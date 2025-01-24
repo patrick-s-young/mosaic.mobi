@@ -3,39 +3,18 @@ import { traceEvent } from '@analytics/traceEvent';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@store/rootReducer';
-import { setCurrentScrubberFrame } from '@components/Scrubber/scrubberSlice';
-import type { CurrentScrubberFrame, ScrubberState } from '@components/Scrubber/scrubberSlice';
+import { setCurrentScrubberFrame } from '@/components/Scrubber/scrubber.slice';
+import type { CurrentScrubberFrame, ScrubberState } from '@/components/Scrubber/scrubber.slice';
 import { Slider } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import './scrubberSlider.scss';
 
-const useStyles = makeStyles({
-  centerScreen: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  slider: {
-    width: '90%',
-    "& .MuiSlider-thumb": {
-      width:24,
-      height: 24,
-      marginTop: -12,
-      marginLeft: -12
-    },
-    "& .MuiSlider-valueLabel": {
-      left: 'calc(-50% + 8px)',
-      top: -30
-    }
-  }
-});
 
 export interface ScrubberSliderProps {
   width: number
 }
 
 const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width }) => {
-  const classes = useStyles();
+
   const dispatch = useDispatch();
   const { currentScrubberFrame, scrubberFramesMax } = useSelector<RootState, ScrubberState>(
     (state) => state.scrubber
@@ -56,7 +35,7 @@ const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width }) => {
 
   return (
     <div style={{ width }}>
-      <div className={classes.centerScreen}>
+      <div className='scrubberSlider'>
         <Slider
           value={currentScrubberFrame}
           getAriaValueText={valuetext}
@@ -68,7 +47,7 @@ const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width }) => {
           min={0}
           max={scrubberFramesMax - 1}
           valueLabelDisplay="auto"
-          className={classes.slider}
+          className='scrubberSlider__slider'
         />
       </div>
     </div>

@@ -1,19 +1,19 @@
 import { traceEvent } from '@analytics/traceEvent';
-import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAppPhase, AppPhaseEnum } from '@/components/App/appSlice';
-import { setNavPhase, NavPhaseEnum } from '@components/Navigation/navSlice';
-import { RenderPhaseEnum, RenderState, setRenderPhase } from '@/components/RenderMosaic/renderSlice';
-import { renderMosaic } from '@api/index';
-import PopOver from '@components/PopOver/PopOver';
-import SlideInOut from '@/components/SideInOut/SlideInOut';
-import FileDownload from 'js-file-download'
-import FileIOPrompt from '@/components/FileIOPrompt/FileIOPrompt';
-import type { MosaicState } from '@components/MosaicTiles/mosaicSlice';
-import type { ScrubberState } from '@components/Scrubber/scrubberSlice';
+import { setAppPhase, AppPhaseEnum } from '@components/App/app.slice';
+import { setNavPhase, NavPhaseEnum } from '@components/Navigation/nav.slice';
+import { RenderPhaseEnum, RenderState, setRenderPhase } from '@components/RenderMosaic/renderMosaic.slice';
+import type { MosaicState } from '@components/MosaicTiles/mosaicTiles.slice';
+import type { ScrubberState } from '@components/Scrubber/scrubber.slice';
+import type { UploadState } from '@components/UploadVideo/upload.slice.interface';
 import type { RootState } from '@store/rootReducer';
 import type { AppDispatch } from '@store/store';
-import type { UploadState } from '@/components/UploadVideo/uploadSlice.interface';
+import { renderMosaic } from '@api/index';
+import { popOverProps, slideInOutProps } from '@components/App/app.config';
+import FileIOPrompt from '@components/FileIOPrompt/FileIOPrompt';
+import SlideInOut from '@components/SideInOut/SlideInOut';
+import PopOver from '@components/PopOver/PopOver';
+import FileDownload from 'js-file-download'
 import './renderMosaic.scss';
 
 export interface RenderMosaicProps {
@@ -27,17 +27,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
   const { numTiles } = useSelector<RootState, Partial<MosaicState>>((state) => state.mosaic);
   const { currentScrubberFrame } = useSelector<RootState, ScrubberState>((state) => state.scrubber);
   const { renderPhase, renderBlob } = useSelector<RootState, RenderState>((state) => state.render);
-  const slideInOutProps = {
-    enter: `${0.2 * displaySize.height}px`,
-    exit: `${displaySize.height}px`
-  }
-  const popOverProps = {
-    width: `${displaySize.width}px`,
-    height: `${displaySize.height}px`,
-    showTop: `0px`,
-    hideTop: `${displaySize.height}px`,
-    isActive: isActive
-  }
+
   const onRenderVideo = () => {
     traceEvent({
       category: 'RenderMosaic',
@@ -75,7 +65,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
   }
 
   return (
-    <PopOver {...popOverProps}>
+    <PopOver {...popOverProps} isActive={isActive}>
       <div className='renderMosaic' style={{ width: displaySize.width, height: displaySize.height }}>
         <div className='renderMosaic__centerScreen'>
           <SlideInOut 

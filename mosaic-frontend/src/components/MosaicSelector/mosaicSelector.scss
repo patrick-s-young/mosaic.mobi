@@ -1,8 +1,12 @@
+@use '@sass/mosaicVariables' as *;
 .mosaicSelector {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  & .MuiTabs-indicator {
+    background-color: $mosaic-purple-dark;
+  }
   &__tabs {
     z-index: 10;
   }

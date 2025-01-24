@@ -5,7 +5,7 @@ import { RootState } from '@store/rootReducer';
 import { setNumTiles } from '@components/MosaicTiles';
 import type { MosaicState, NumTiles } from '@components/MosaicTiles';
 import { Tab, Tabs } from '@material-ui/core';
-import { TwoTilesIcon, ThreeTilesIcon, FourTilesIcon, SixTilesIcon, NineTilesIcon} from '@components/MosaicSelector/mosaicSelectorIcons';
+import { TwoTilesIcon, ThreeTilesIcon, FourTilesIcon, SixTilesIcon, NineTilesIcon} from '@components/MosaicSelector/mosaicSelector.icons';
 import './mosaicSelector.scss';
 
 

@@ -1,10 +1,10 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import navSlice  from '@/components/Navigation/navSlice';
-import uploadSlice from '@/components/UploadVideo/uploadSlice';
-import scrubberSlice from '@/components/Scrubber/scrubberSlice';
-import mosaicSlice from '@/components/MosaicTiles/mosaicSlice';
-import appSlice from '@/components/App/appSlice';
-import renderSlice from '@/components/RenderMosaic/renderSlice';
+import navSlice  from '@components/Navigation/nav.slice';
+import uploadSlice from '@components/UploadVideo/upload.slice';
+import scrubberSlice from '@components/Scrubber/scrubber.slice';
+import mosaicSlice from '@components/MosaicTiles/mosaicTiles.slice';
+import appSlice from '@components/App/app.slice';
+import renderSlice from '@components/RenderMosaic/renderMosaic.slice';
 import mobileDisplayLogSlice from '@devTools/MobileDisplayLog/mobileDisplayLog.slice';
 
 const rootReducer = combineReducers({

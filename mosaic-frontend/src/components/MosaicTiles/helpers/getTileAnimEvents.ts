@@ -1,4 +1,4 @@
-import type { ActionGroupCollection } from '@/components/MosaicTiles/mosaicSlice';
+import type { ActionGroupCollection } from '@/components/MosaicTiles/mosaicTiles.slice';
 
 interface GetTileAnimEvents {
   (): ActionGroupCollection
