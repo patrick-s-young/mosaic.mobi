@@ -13,7 +13,7 @@
       "@devTools/*": ["src/devTools/*"],
       "@analytics/*": ["src/analytics/*"],
       "@store/*": ["src/store/*"],
-      "@styles/*": ["src/styles/*"]
+      "@sass/*": ["src/sass/*"]
 		},
   },
   "files": [],

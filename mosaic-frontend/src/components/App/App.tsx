@@ -15,13 +15,13 @@ import {
   UploadVideo
 } from '@/components'; 
 import type { RootState } from '@store/rootReducer';
-import type { NavState } from '@/components/Navigation/navSlice';
+import type { NavState } from '@/components/Navigation/nav.slice';
 import type { MosaicState } from '@/components/MosaicTiles';
-import type { AppState } from '@/components/App/appSlice';
-import { setScrubberCanvasWidth } from '@components/Scrubber/scrubberSlice';
-import { NavPhaseEnum } from '@/components/Navigation/navSlice';
+import type { AppState } from '@/components/App/app.slice';
+import { setScrubberCanvasWidth } from '@/components/Scrubber/scrubber.slice';
+import { NavPhaseEnum } from '@/components/Navigation/nav.slice';
 import { MosaicPhaseEnum } from '@/components/MosaicTiles';
-import { AppPhaseEnum, setCanvasWidth } from '@/components/App/appSlice';
+import { AppPhaseEnum, setCanvasWidth } from '@/components/App/app.slice';
 import { appDimensions } from '@/components/App/app.config';
 import '@/components/App/app.css';
 

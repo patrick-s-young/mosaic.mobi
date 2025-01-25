@@ -1,6 +1,17 @@
+@use '@sass/mosaicVariables' as *;
+
 .navigation {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  & .MuiTabs-indicator {
+    background-color: $mosaic-purple-dark;
+  }
+  & .MuiTab-textColorPrimary {
+    color: $mosaic-purple-dark;
+  }
+  & .MuiTab-textColorPrimary.Mui-selected {
+    color: $mosaic-purple-dark;
+  }
 }

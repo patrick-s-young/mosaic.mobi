@@ -1,8 +1,8 @@
 import { traceEvent } from '@analytics/traceEvent';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@store/rootReducer';
-import { setNavPhase, NavPhaseEnum } from '@/components/Navigation/navSlice';
-import type { NavState } from '@/components/Navigation/navSlice';
+import { setNavPhase, NavPhaseEnum } from '@/components/Navigation/nav.slice';
+import type { NavState } from '@/components/Navigation/nav.slice';
 import { Tab, Tabs } from '@material-ui/core';
 import { SaveAlt, MovieCreation, VideoCall } from '@material-ui/icons';
 import './navigation.scss';

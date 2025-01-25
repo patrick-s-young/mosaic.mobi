@@ -6,6 +6,10 @@ const [width, uiContainerHeight] = isMobile({ tablet: true })
 
 const popOverHeight = width + uiContainerHeight;
 
+const MAX_VIDEO_UPLOAD_DURATION = 15;
+const SCRUBBER_FRAMES_MAX = 20
+const DEFAULT_VIDEO_NUM_TILES = 4;
+
 const appDimensions = {
   popOver: { width, height: popOverHeight },
   videoArea: { width, height: width },
@@ -15,9 +19,18 @@ const appDimensions = {
   uiContainerHeight
 }
 
-const MAX_VIDEO_UPLOAD_DURATION = 15;
-const SCRUBBER_FRAMES_MAX = 20
-const DEFAULT_VIDEO_NUM_TILES = 4;
+const popOverProps = {
+  width: `${appDimensions.popOver.width}px`,
+  height: `${appDimensions.popOver.height}px`,
+  showTop: `0px`,
+  hideTop: `${appDimensions.popOver.height}px`
+}
+
+const slideInOutProps = {
+  enter: `${0.2 * appDimensions.popOver.height}px`,
+  exit: `${appDimensions.popOver.height}px`
+}
+
 
 const defaultVideoConfig = {
   assetID: '330055' as string,
@@ -30,5 +43,7 @@ export {
   MAX_VIDEO_UPLOAD_DURATION,
   SCRUBBER_FRAMES_MAX,
   DEFAULT_VIDEO_NUM_TILES,
-  defaultVideoConfig
+  defaultVideoConfig,
+  popOverProps,
+  slideInOutProps
 };

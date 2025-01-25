@@ -1,5 +1,5 @@
-@use '@styles/mosaicVariables' as *;
-@use '@styles/mosaicMixins' as *;
+@use '@sass/mosaicVariables' as *;
+@use '@sass/mosaicMixins' as *;
 
 .fileIOPrompt {
     @include font-style($size: 20px, $lineHeight: 1.25em);

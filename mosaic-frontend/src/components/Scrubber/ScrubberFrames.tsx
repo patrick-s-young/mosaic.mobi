@@ -2,7 +2,7 @@ import { useRef, useEffect } from 'react';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '@store/rootReducer';
-import type { ScrubberState } from '@components/Scrubber/scrubberSlice';
+import type { ScrubberState } from '@/components/Scrubber/scrubber.slice';
 import '@components/Scrubber/scrubberFrames.css';
 
 interface ScrubberFramesProps {

@@ -3,24 +3,25 @@ import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@store/rootReducer';
-import { setAppPhase, AppPhaseEnum } from '@/components/App/appSlice';
-import type { AppState } from '@/components/App/appSlice';
-import { setUploadPhase } from '@components/UploadVideo/uploadSlice';
-import { UploadPhaseEnum } from '@components/UploadVideo/uploadSlice.interface';
+import { setAppPhase, AppPhaseEnum } from '@/components/App/app.slice';
+import type { AppState } from '@/components/App/app.slice';
+import { setUploadPhase } from '@/components/UploadVideo/upload.slice';
+import { UploadPhaseEnum } from '@/components/UploadVideo/upload.slice.interface';
 import { 
   preUploadValidation,
   uploadUserVideo,
   preloadUserVideo,
   preloadSequentialImages 
 } from '@api/index';
-import type { UploadState } from '@/components/UploadVideo/uploadSlice.interface';
-import { setMosaicFormatting, setMosaicPhase, MosaicPhaseEnum } from '@components/MosaicTiles/mosaicSlice';
-import { setNavPhase, NavPhaseEnum } from '@components/Navigation/navSlice';
+import type { UploadState } from '@components/UploadVideo/upload.slice.interface';
+import { setMosaicFormatting, setMosaicPhase, MosaicPhaseEnum } from '@components/MosaicTiles/mosaicTiles.slice';
+import { setNavPhase, NavPhaseEnum } from '@components/Navigation/nav.slice';
 import PopOver from '@components/PopOver/PopOver';
 import SlideInOut from '@components/SideInOut/SlideInOut';
-import { setVideoUploadCount } from '@components/Scrubber/scrubberSlice';
+import { setVideoUploadCount } from '@/components/Scrubber/scrubber.slice';
 import type { AppDispatch } from '@store/store';
-import FileIOPrompt from '@/components/FileIOPrompt/FileIOPrompt';
+import FileIOPrompt from '@components/FileIOPrompt/FileIOPrompt';
+import { popOverProps, slideInOutProps } from '@components/App/app.config';
 import './uploadVideo.scss';
 
 export interface UploadVideoProps {
@@ -36,19 +37,8 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
           selectedFile,
           uploadDuration,
           resizedWidth } = useSelector<RootState, UploadState>((state) => state.upload); 
-
   const inputRef = useRef<HTMLInputElement>(null);   
-  const slideInOutProps = {
-    enter: `${0.2 * displaySize.height}px`,
-    exit: `${displaySize.height}px`
-  }
-  const popOverProps = {
-    width: `${displaySize.width}px`,
-    height: `${displaySize.height}px`,
-    showTop: `0px`,
-    hideTop: `${displaySize.height}px`,
-    isActive: isActive
-  }
+
 
   useEffect(() => {
     switch(uploadPhase) {
@@ -97,9 +87,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
   }
 
   return (
-    <PopOver
-      {...popOverProps}
-    >
+    <PopOver {...popOverProps} isActive={isActive}>
       <input
         ref={inputRef}
         accept="video/*"

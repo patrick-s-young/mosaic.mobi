@@ -1,5 +1,5 @@
-import { numTilesAllPossibleValues } from '@/components/MosaicTiles/mosaicSlice';
-import type { TimeGroup, TimeGroupCollection } from '@/components/MosaicTiles/mosaicSlice';
+import { numTilesAllPossibleValues } from '@components/MosaicTiles/mosaicTiles.slice';
+import type { TimeGroup, TimeGroupCollection } from '@components/MosaicTiles/mosaicTiles.slice';
 
 interface GetInPoints {
   (duration: number): TimeGroupCollection

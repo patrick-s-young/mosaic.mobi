@@ -15,7 +15,7 @@ const PopOver: React.FC<PopOverProps> = ({
   height,
   showTop,
   hideTop,
-  isActive }) => {
+  isActive}) => {
   const slideProps = useSpring({
     from: { 
       top: isActive ? hideTop : showTop

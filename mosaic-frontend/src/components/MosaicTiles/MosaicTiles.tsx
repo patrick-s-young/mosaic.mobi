@@ -1,14 +1,13 @@
 import { traceEvent } from '@analytics/traceEvent';
-import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setMosaicPhase, MosaicPhaseEnum } from '@components/MosaicTiles';
 import type { MosaicState } from '@components/MosaicTiles';
-import type { UploadState } from '@/components/UploadVideo/uploadSlice.interface';
+import type { UploadState } from '@components/UploadVideo/upload.slice.interface';
 import type { RootState } from '@store/rootReducer';
 import { setLogText } from '@devTools/MobileDisplayLog/mobileDisplayLog.slice';
-import '@components/MosaicTiles/mosaicTiles.scss';
 import MosaicTile from '@components/MosaicTiles/MosaicTile';
+import '@components/MosaicTiles/mosaicTiles.scss';
 
 const ANIMATION_CYCLE_DURATION = 15000;
 
