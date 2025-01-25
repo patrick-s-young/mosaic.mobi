@@ -1,0 +1,39 @@
+@use '@sass/mosaicVariables' as *;
+@use '@sass/mosaicMixins' as *;
+
+.mosaicSelectorButton {
+  box-sizing: border-box;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+
+  svg {
+    width: 100%;
+    height: auto;
+    fill: $button-icon-default; 
+    box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 2px 6px 2px rgba(0, 0, 0, 0.25);
+  }
+
+  &:hover {
+    svg {
+      fill: $button-icon-hover;
+      transition: fill 0.3s ease;
+      box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 2px 6px 2px rgba(0, 0, 0, 0.25);
+      transition: box-shadow 0.4s ease;
+    }
+  }
+
+  &:active {
+    svg {
+      fill: $button-icon-pressed;
+      box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.50), 0px 2px 6px 2px rgba(0, 0, 0, 0.45);
+    }
+  }
+  
+  &--selected {
+    svg {
+      fill: $button-icon-pressed;
+      box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.50), 0px 2px 6px 2px rgba(0, 0, 0, 0.45);
+    }
+  }
+}
