@@ -1,17 +1,16 @@
 import { traceEvent } from '@analytics/traceEvent';
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@store/rootReducer';
 import { setNumTiles } from '@components/MosaicTiles';
-import type { MosaicState, NumTiles } from '@components/MosaicTiles';
 import MosaicSelectorButton from '@components/MosaicSelector/MosaicSelectorButton';
+// types
+import type { NumTiles, RootState } from '@typescript/types';
+// interfaces
+import { MosaicSelectorProps } from '@interfaces/MosaicSelectorProps';
+import { MosaicState } from '@interfaces/MosaicState';
 import './mosaicSelector.scss';
 
 const numTileValues: NumTiles[] = [2, 3, 4, 6, 9];
-
-export interface MosaicSelectorProps {
-  width: number
-}
 
 const MosaicSelector: React.FC<MosaicSelectorProps> = ({ width }) => {
   const dispatch = useDispatch();

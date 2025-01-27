@@ -1,0 +1,10 @@
+.popOver {
+  position: absolute;
+  overflow: hidden;
+  margin-top: 0;
+  display: block;
+  &__animatedDiv {
+    position: absolute;
+    display: block;
+  }
+}

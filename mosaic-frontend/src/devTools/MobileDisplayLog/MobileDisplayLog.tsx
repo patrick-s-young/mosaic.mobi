@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@store/rootReducer';
+import type { RootState } from '@typescript/types';
 import type { MobileDisplayLogState } from './mobileDisplayLog.slice';
 import { clearLogText } from './mobileDisplayLog.slice';
 import './mobileDisplayLog.scss';

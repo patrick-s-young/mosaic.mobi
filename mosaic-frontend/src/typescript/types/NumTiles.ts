@@ -1,0 +1,1 @@
+export type NumTiles = 2 | 3 | 4 | 6 | 9;

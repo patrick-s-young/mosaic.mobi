@@ -13,7 +13,11 @@
       "@devTools/*": ["src/devTools/*"],
       "@analytics/*": ["src/analytics/*"],
       "@store/*": ["src/store/*"],
-      "@sass/*": ["src/sass/*"]
+      "@sass/*": ["src/sass/*"],
+      "@enums/*": ["src/typescript/enums/*"],
+      "@types/*": ["src/typescript/types/*"],
+      "@interfaces/*": ["src/typescript/interfaces/*"],
+      "@typescript/*": ["src/typescript/*"]
 		},
   },
   "files": [],

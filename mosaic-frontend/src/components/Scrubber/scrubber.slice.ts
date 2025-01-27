@@ -1,14 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SCRUBBER_FRAMES_MAX } from '@components/App/app.config';
+import { ScrubberState } from '@interfaces/ScrubberState';
+import { CurrentScrubberFrame } from '@typescript/types';
 
-export type CurrentScrubberFrame = number;
-
-export interface ScrubberState {
-  currentScrubberFrame: CurrentScrubberFrame,
-  scrubberFramesMax: number,
-  canvasWidth: number,
-  videoUploadCount: number
-}
 
 export const initialState: ScrubberState = {
   scrubberFramesMax: SCRUBBER_FRAMES_MAX,
@@ -39,9 +33,5 @@ export const {
   setCurrentScrubberFrame,
   setVideoUploadCount
 } = scrubberSlice.actions;
-
-export type SetScrubberCanvasWidth = ReturnType<typeof setScrubberCanvasWidth>;
-export type SetCurrentScrubberFrame = ReturnType<typeof setCurrentScrubberFrame>;
-export type SetVideoUploadCount = ReturnType<typeof setVideoUploadCount>;
 
 export default scrubberSlice.reducer;

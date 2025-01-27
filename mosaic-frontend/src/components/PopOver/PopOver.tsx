@@ -1,13 +1,7 @@
 import {useSpring, animated } from 'react-spring';
+import { PopOverProps } from '@interfaces/PopOverProps';
+import './popOver.scss';
 
-export interface PopOverProps {
-  children: React.ReactNode,
-  width: string,
-  height: string,
-  showTop: string
-  hideTop: string
-  isActive: boolean
-}
 
 const PopOver: React.FC<PopOverProps> = ({
   children,
@@ -26,20 +20,16 @@ const PopOver: React.FC<PopOverProps> = ({
   });
 
   return (
-    <div style={{ 
-      position: 'absolute', 
-      overflow: 'hidden',
-      marginTop: '0',
-      width,  
-      height,
-      display: 'block' }}
+    <div 
+      className='popOver'
+      style={{ 
+        width,  
+        height
+      }}
     >
       <animated.div
-        style={{
-          ...slideProps,
-          position: 'absolute',
-          display: 'block'
-        }}
+        className='popOver__animatedDiv'
+        style={{...slideProps }}
       >
         {children}
       </animated.div>

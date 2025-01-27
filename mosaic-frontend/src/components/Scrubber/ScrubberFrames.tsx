@@ -1,17 +1,11 @@
 import { useRef, useEffect } from 'react';
-import * as React from 'react';
 import { useSelector } from 'react-redux';
-import type { RootState } from '@store/rootReducer';
-import type { ScrubberState } from '@/components/Scrubber/scrubber.slice';
+import type { RootState } from '@typescript/types';
+import { ScrubberState } from '@interfaces/ScrubberState';
+import { ScrubberFramesProps } from '@interfaces/ScrubberFramesProps';
 import '@components/Scrubber/scrubberFrames.css';
 
-interface ScrubberFramesProps {
-  width: number
-	height: number
-	imageArr: Array<string>
-}
 
-// todo: add wait animation while 'videoFramesToCanvasArray' is resolving.
 const ScrubberFrames: React.FC<ScrubberFramesProps> = ({ 
   width,
 	height,
@@ -20,7 +14,6 @@ const ScrubberFrames: React.FC<ScrubberFramesProps> = ({
 	const { currentScrubberFrame, videoUploadCount } = useSelector<RootState, ScrubberState>(
     (state) => state.scrubber
 	);
-
 	const imgRef = useRef<HTMLImageElement | null>(null);
 
 	useEffect(() => {

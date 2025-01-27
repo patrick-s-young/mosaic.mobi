@@ -1,0 +1,1 @@
+export type TileAnimEvents = Array<{ time: number, action: string }>;

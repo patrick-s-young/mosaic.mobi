@@ -1,9 +1,6 @@
 import iPhone_XR from '@assets/device-preview/iPhone_XR_mock_414x712.png';
+import { DesktopDisplayProps } from '@interfaces/DesktopDisplayProps';
 import './desktopDisplay.scss';
-
-export type DesktopDisplayProps = {
-  children: React.ReactNode
-}
 
 const DesktopDisplay: React.FC<DesktopDisplayProps> = ({ children }) => {
 

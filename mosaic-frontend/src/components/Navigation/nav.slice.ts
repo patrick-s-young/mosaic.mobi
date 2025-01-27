@@ -1,16 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export enum NavPhaseEnum {
-  UPLOAD,
-  EDIT,
-  DOWNLOAD
-}
-
-export interface NavPhase {
-  navPhase: NavPhaseEnum
-}
-
-export type NavState = NavPhase;
+import { NavPhaseEnum } from '@enums/NavPhaseEnum';
+import { NavState } from '@interfaces/NavState';  
 
 const initialState: NavState = {
   navPhase: NavPhaseEnum.UPLOAD
@@ -20,7 +10,7 @@ const navSlice = createSlice ({
   name: 'nav',
   initialState,
   reducers: {
-    setNavPhase (state, action: PayloadAction<NavPhase>) {
+    setNavPhase (state, action: PayloadAction<{ navPhase: NavPhaseEnum }>) {
       state.navPhase = action.payload.navPhase;
     }
   }
@@ -29,7 +19,5 @@ const navSlice = createSlice ({
 export const {
   setNavPhase
 } = navSlice.actions;
-
-export type SetNavPhase = ReturnType <typeof setNavPhase>;
 
 export default navSlice.reducer;

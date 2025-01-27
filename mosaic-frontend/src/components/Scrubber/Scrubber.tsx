@@ -1,14 +1,13 @@
 import * as React from 'react';
-// Redux
 import { useSelector } from 'react-redux';
-import type { RootState } from '@store/rootReducer';
-import type { UploadState } from '@/components/UploadVideo/upload.slice.interface';
-import type { AppState } from '@/components/App/app.slice';
+import type { UploadState, RootState } from '@typescript/types';
 import ScrubberFrames from '@components/Scrubber/ScrubberFrames';
+import { ScrubberProps } from '@interfaces/ScrubberProps';
+import { AppState } from '@interfaces/AppState';
 import '@components/Scrubber/scrubber.css';
 
 
-const Scrubber: React.FC = () => {
+const Scrubber: React.FC<ScrubberProps> = () => {
   const { imageURLs } = useSelector<RootState, UploadState>((state) => state.upload);
   const { canvasWidth } = useSelector<RootState, AppState>((state) => state.app);
 

@@ -1,4 +1,7 @@
-const Mosaic2 = () => {
+import type { MosaicIcons } from "@typescript/types";
+import type { MosaicIconProps } from "@interfaces/MosaicIconProps";
+
+const Mosaic2: React.FC<MosaicIconProps> = () => {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
       <rect x="0" y="0" width="24" height="24"></rect>
@@ -7,7 +10,7 @@ const Mosaic2 = () => {
   )
 }
 
-const Mosaic3 = () => {
+const Mosaic3: React.FC<MosaicIconProps> = () => {
   return (  
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
       <rect x="0" y="0" width="24" height="24"></rect>
@@ -16,7 +19,7 @@ const Mosaic3 = () => {
   )
 }
 
-const Mosaic4 = () => {
+const Mosaic4: React.FC<MosaicIconProps> = () => {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
       <rect x="0" y="0" width="24" height="24"></rect>
@@ -25,7 +28,7 @@ const Mosaic4 = () => {
   )
 }
 
-const Mosaic6 = () => {
+const Mosaic6: React.FC<MosaicIconProps> = () => {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
       <rect x="0" y="0" width="24" height="24"></rect>
@@ -34,7 +37,7 @@ const Mosaic6 = () => {
   )
 }
 
-const Mosaic9 = () => {
+const Mosaic9: React.FC<MosaicIconProps> = () => {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
       <rect x="0" y="0" width="24" height="24"></rect>
@@ -43,10 +46,14 @@ const Mosaic9 = () => {
   )
 }
 
-export {
-  Mosaic2,
-  Mosaic3,
-  Mosaic4,
-  Mosaic6,
-  Mosaic9
+
+
+const mosaicIcons: MosaicIcons = {
+  2: Mosaic2,
+  3: Mosaic3,
+  4: Mosaic4,
+  6: Mosaic6,
+  9: Mosaic9
 }
+
+export default mosaicIcons;

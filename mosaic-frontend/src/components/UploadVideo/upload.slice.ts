@@ -1,22 +1,14 @@
-import { 
-  createSlice, 
-  PayloadAction
-} from '@reduxjs/toolkit';
+import { createSlice,  PayloadAction } from '@reduxjs/toolkit';
 import { 
   preUploadValidation,
   uploadUserVideo,
   preloadUserVideo,
   preloadSequentialImages 
 } from '@api/index';
-import { UploadPhaseEnum } from './upload.slice.interface';
-import type { 
-  UploadState, 
-  UploadPhase, 
-  UploadDuration, 
-  UploadSelectedFile } from './upload.slice.interface';
-import { 
-  MAX_VIDEO_UPLOAD_DURATION, 
-  defaultVideoConfig } from '@components/App/app.config';
+import { UploadPhaseEnum } from '@enums/UploadPhaseEnum';
+import type { UploadState, UploadDuration, UploadSelectedFile } from  '@typescript/types'
+import { UploadPhase } from '@interfaces/UploadPhase';
+import { MAX_VIDEO_UPLOAD_DURATION, defaultVideoConfig } from '@components/App/app.config';
 
 
 const initialState: UploadState = {
@@ -101,8 +93,5 @@ export const {
   setVideoSubmitted,
   setUploadPhase
 } = uploadSlice.actions;
-
-export type SetVideoSubmitted = ReturnType <typeof setVideoSubmitted>;
-export type SetUploadPhase = ReturnType <typeof setUploadPhase>;
 
 export default uploadSlice.reducer;

@@ -2,9 +2,10 @@
 import { traceEvent } from '@analytics/traceEvent';
 import instagramPrompt from '@/assets/instagram_prompt.jpg';
 import { appDimensions } from '@/components/App/app.config';
+import { InAppPromptProps } from '@interfaces/InAppPrompt';
 import './inAppPrompt.scss';
 
-const InAppPrompt: React.FC = () => {
+const InAppPrompt: React.FC<InAppPromptProps> = () => {
   traceEvent({
     category: 'InAppPrompt',
     action: 'INSTAGRAM_BIO_CLICK',

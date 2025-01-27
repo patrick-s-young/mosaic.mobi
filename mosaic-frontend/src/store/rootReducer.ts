@@ -17,7 +17,7 @@ const rootReducer = combineReducers({
   upload: uploadSlice
 });
 
-export type RootState = ReturnType<typeof rootReducer>;
+
 
 export default rootReducer;
 

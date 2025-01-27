@@ -1,6 +1,5 @@
 import ReactGA from 'react-ga4';
 ReactGA.initialize('G-J0W4FDF6FY'); 
-import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
@@ -14,15 +13,18 @@ import {
   ScrubberSlider,
   UploadVideo
 } from '@/components'; 
-import type { RootState } from '@store/rootReducer';
-import type { NavState } from '@/components/Navigation/nav.slice';
-import type { MosaicState } from '@/components/MosaicTiles';
-import type { AppState } from '@/components/App/app.slice';
+// slices
 import { setScrubberCanvasWidth } from '@/components/Scrubber/scrubber.slice';
-import { NavPhaseEnum } from '@/components/Navigation/nav.slice';
-import { MosaicPhaseEnum } from '@/components/MosaicTiles';
-import { AppPhaseEnum, setCanvasWidth } from '@/components/App/app.slice';
+import { setCanvasWidth } from '@/components/App/app.slice';
 import { appDimensions } from '@/components/App/app.config';
+// interfaces
+import { AppState } from '@interfaces/AppState';
+import { NavState } from '@interfaces/NavState';
+import { MosaicState } from '@interfaces/MosaicState';
+// types
+import type { RootState } from '@typescript/types';
+// enums
+import { NavPhaseEnum, MosaicPhaseEnum, AppPhaseEnum } from '@typescript/enums';
 import '@/components/App/app.css';
 
 
