@@ -1,5 +1,5 @@
 import { numTilesAllPossibleValues } from '@components/MosaicTiles/mosaicTiles.slice';
-import type { RectGroupCollection } from '@components/MosaicTiles/mosaicTiles.slice';
+import type { RectGroupCollection } from '@typescript/types';
 
 interface GetDrawToCanvasArea {
   (videoWidth: number, videoHeight: number): RectGroupCollection

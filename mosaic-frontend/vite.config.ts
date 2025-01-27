@@ -22,7 +22,11 @@ export default defineConfig({
       '@devTools': resolve(__dirname, './src/devTools'),
       '@analytics': resolve(__dirname, './src/analytics'),
       '@store': resolve(__dirname, './src/store'),
-      '@sass': resolve(__dirname, './src/sass')
+      '@sass': resolve(__dirname, './src/sass'),
+      '@enums': resolve(__dirname, './src/typescript/enums'),
+      '@types': resolve(__dirname, './src/typescript/types'),
+      '@interfaces': resolve(__dirname, './src/typescript/interfaces'),
+      '@typescript': resolve(__dirname, './src/typescript'),
     }
   }
 })

@@ -1,25 +1,25 @@
 import { traceEvent } from '@analytics/traceEvent';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAppPhase, AppPhaseEnum } from '@components/App/app.slice';
-import { setNavPhase, NavPhaseEnum } from '@components/Navigation/nav.slice';
-import { RenderPhaseEnum, RenderState, setRenderPhase } from '@components/RenderMosaic/renderMosaic.slice';
-import type { MosaicState } from '@components/MosaicTiles/mosaicTiles.slice';
-import type { ScrubberState } from '@components/Scrubber/scrubber.slice';
-import type { UploadState } from '@components/UploadVideo/upload.slice.interface';
-import type { RootState } from '@store/rootReducer';
-import type { AppDispatch } from '@store/store';
+import { setAppPhase } from '@components/App/app.slice';
+import { setNavPhase } from '@components/Navigation/nav.slice';
+import { setRenderPhase } from '@components/RenderMosaic/renderMosaic.slice';
 import { renderMosaic } from '@api/index';
 import { popOverProps, slideInOutProps } from '@components/App/app.config';
 import FileIOPrompt from '@components/FileIOPrompt/FileIOPrompt';
 import SlideInOut from '@components/SideInOut/SlideInOut';
 import PopOver from '@components/PopOver/PopOver';
 import FileDownload from 'js-file-download'
+// interfaces
+import { MosaicState } from '@interfaces/MosaicState';
+import { ScrubberState } from '@interfaces/ScrubberState';
+import { RenderMosaicProps } from '@interfaces/RenderMosaicProps';
+import { RenderState } from '@interfaces/RenderState';
+// types
+import type { AppDispatch, RootState, UploadState } from '@typescript/types';
+// enums
+import { AppPhaseEnum, NavPhaseEnum, RenderPhaseEnum } from '@typescript/enums';
 import './renderMosaic.scss';
 
-export interface RenderMosaicProps {
-  displaySize: { width: number, height: number }
-  isActive: boolean
-}
 
 const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) => {
   const dispatch = useDispatch<AppDispatch>();

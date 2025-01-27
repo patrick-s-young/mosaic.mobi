@@ -1,0 +1,1 @@
+export type DrawToCanvasArea = { x: number, y: number, width: number, height: number };

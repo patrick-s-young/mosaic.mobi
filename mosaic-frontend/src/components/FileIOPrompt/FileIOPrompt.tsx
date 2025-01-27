@@ -1,14 +1,8 @@
 import { PROMPT } from './fileIOPrompt.config';
 import PromptButton from '@/components/FileIOPrompt/PromptButton';
+import { FileIOPromptProps } from '@interfaces/FileIOPromptProps';
 import './fileIOPrompt.scss';
 
-
-export interface FileIOPromptProps {
-  action: 'render' | 'save' | 'rendering' | 'upload' | 'uploading' | 'videoTooLong'
-  videoDuration?: number
-  callBack?: () => void
-  onCancel?: () => void
-}
 
 const FileIOPrompt = ({ action, videoDuration = 0, callBack = () => {}, onCancel = () => {} }: FileIOPromptProps) => {
   const { headline, headlineIcon, message, buttonLabel } = PROMPT[action];

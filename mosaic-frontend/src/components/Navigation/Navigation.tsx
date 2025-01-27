@@ -1,24 +1,15 @@
 import { traceEvent } from '@analytics/traceEvent';
 import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '@store/rootReducer';
-import { setNavPhase, NavPhaseEnum } from '@/components/Navigation/nav.slice';
-import type { NavState } from '@/components/Navigation/nav.slice';
+import type { RootState } from '@typescript/types';
+import { setNavPhase } from '@/components/Navigation/nav.slice';
+import { NavState } from '@interfaces/NavState';
 import { Tab, Tabs } from '@material-ui/core';
 import { SaveAlt, MovieCreation, VideoCall } from '@material-ui/icons';
+import { NavPhaseEnum } from '@enums/NavPhaseEnum';
+import { NavigationProps } from '@interfaces/NavigationProps';
+import navPhaseString from '@analytics/traceEvent.config';
 import './navigation.scss';
 
-const navPhaseString = {
-  0: 'NAV_PHASE_CHANGED_UPLOAD',
-  1: 'NAV_PHASE_CHANGED_EDIT',
-  2: 'NAV_PHASE_CHANGED_DOWNLOAD'
-}
-
-
-export interface NavigationProps {
-  width: number
-  height: number
-  pauseInput: boolean
-}
 
 const Navigation: React.FC<NavigationProps> = ({ 
   width,

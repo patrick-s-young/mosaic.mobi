@@ -1,4 +1,4 @@
-import type { RectCollection } from '@/components/MosaicTiles/mosaicTiles.slice';  
+import type { RectCollection } from '@typescript/types';  
 
 export interface GetCopyVideoFromArea {
   (videoWidth: number, videoHeight: number): RectCollection

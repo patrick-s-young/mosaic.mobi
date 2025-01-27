@@ -1,33 +1,34 @@
 import { traceEvent } from '@analytics/traceEvent';
-import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '@store/rootReducer';
-import { setAppPhase, AppPhaseEnum } from '@/components/App/app.slice';
-import type { AppState } from '@/components/App/app.slice';
-import { setUploadPhase } from '@/components/UploadVideo/upload.slice';
-import { UploadPhaseEnum } from '@/components/UploadVideo/upload.slice.interface';
+// api
 import { 
   preUploadValidation,
   uploadUserVideo,
   preloadUserVideo,
   preloadSequentialImages 
 } from '@api/index';
-import type { UploadState } from '@components/UploadVideo/upload.slice.interface';
-import { setMosaicFormatting, setMosaicPhase, MosaicPhaseEnum } from '@components/MosaicTiles/mosaicTiles.slice';
-import { setNavPhase, NavPhaseEnum } from '@components/Navigation/nav.slice';
+// slices
+import { setUploadPhase } from '@/components/UploadVideo/upload.slice';
+import { setAppPhase } from '@components/App/app.slice';
+import { setMosaicFormatting, setMosaicPhase } from '@components/MosaicTiles/mosaicTiles.slice';
+import { setNavPhase } from '@components/Navigation/nav.slice';
+import { setVideoUploadCount } from '@components/Scrubber/scrubber.slice';
+// components
 import PopOver from '@components/PopOver/PopOver';
 import SlideInOut from '@components/SideInOut/SlideInOut';
-import { setVideoUploadCount } from '@/components/Scrubber/scrubber.slice';
-import type { AppDispatch } from '@store/store';
 import FileIOPrompt from '@components/FileIOPrompt/FileIOPrompt';
 import { popOverProps, slideInOutProps } from '@components/App/app.config';
+// interfaces
+import { UploadVideoProps } from '@interfaces/UploadVideoProps';
+import { AppState } from '@interfaces/AppState';
+// types
+import { AppDispatch, RootState, UploadState } from '@typescript/types';
+// enums
+import { AppPhaseEnum, NavPhaseEnum, MosaicPhaseEnum, UploadPhaseEnum } from '@typescript/enums';
 import './uploadVideo.scss';
 
-export interface UploadVideoProps {
-  displaySize: { width: number, height: number }
-  isActive: boolean
-}
+
 
 const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
   const dispatch = useDispatch<AppDispatch>();

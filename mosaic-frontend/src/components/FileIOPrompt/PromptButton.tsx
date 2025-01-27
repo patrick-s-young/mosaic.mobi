@@ -1,9 +1,6 @@
+import { PromptButtonProps } from '@interfaces/PromptButtonProps';
 import './promptButton.scss';
 
-interface PromptButtonProps {
-  prompt: string;
-  onClick?: () => void;
-}
 
 const PromptButton = ({ prompt, onClick }: PromptButtonProps) => {
   return (

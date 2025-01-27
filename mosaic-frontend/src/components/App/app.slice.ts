@@ -1,18 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-
-export enum AppPhaseEnum {
-  INIT_SESSION,
-  LOADING,
-  NOT_LOADING,
-}
-
-export interface AppPhase {
-  appPhase: AppPhaseEnum
-}
-
-export type AppState = AppPhase & { canvasWidth: number }
-
+import { AppPhaseEnum } from '@typescript/enums';
+import { AppState } from '@interfaces/AppState';
 
 const initialState: AppState = {
   appPhase: AppPhaseEnum.LOADING,
@@ -23,7 +11,7 @@ const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
-    setAppPhase (state, action: PayloadAction<AppPhase>) {
+    setAppPhase (state, action: PayloadAction<{ appPhase: AppPhaseEnum }>) {
       state.appPhase = action.payload.appPhase;
     },
     setCanvasWidth (state, action: PayloadAction<{ canvasWidth: number}>) {
@@ -36,8 +24,5 @@ export const {
   setAppPhase,
   setCanvasWidth
 } = appSlice.actions;
-
-export type SetAppPhase = ReturnType<typeof setAppPhase>;
-export type SetCanvasWidth = ReturnType<typeof setCanvasWidth>;
 
 export default appSlice.reducer;

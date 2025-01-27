@@ -1,20 +1,16 @@
-
 import { traceEvent } from '@analytics/traceEvent';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '@store/rootReducer';
+import type { RootState } from '@typescript/types';
 import { setCurrentScrubberFrame } from '@/components/Scrubber/scrubber.slice';
-import type { CurrentScrubberFrame, ScrubberState } from '@/components/Scrubber/scrubber.slice';
+import { CurrentScrubberFrame } from '@typescript/types';
+import { ScrubberState } from '@interfaces/ScrubberState';
+import { ScrubberSliderProps } from '@interfaces/ScrubberSliderProps';
 import { Slider } from '@material-ui/core';
 import './scrubberSlider.scss';
 
 
-export interface ScrubberSliderProps {
-  width: number
-}
-
 const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width }) => {
-
   const dispatch = useDispatch();
   const { currentScrubberFrame, scrubberFramesMax } = useSelector<RootState, ScrubberState>(
     (state) => state.scrubber
@@ -29,7 +25,7 @@ const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width }) => {
     dispatch(setCurrentScrubberFrame(newValue as CurrentScrubberFrame));
   };
 
-  function valuetext(value: number) {
+  const valuetext = (value: number) => {
     return `frame ${value}`;
   }
 

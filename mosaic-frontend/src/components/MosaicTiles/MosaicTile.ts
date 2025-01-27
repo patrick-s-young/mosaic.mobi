@@ -1,14 +1,10 @@
-import type { 
-  MosaicTileInterface, 
-  Attributes,
-  CopyVideoFromArea,
-  DrawToCanvasArea,
-  TileAnimEvents,
-} from './mosaicTile.interface';
+import { MosaicTileProps } from '@/typescript/interfaces/MosaicTileProps';
+import { CopyVideoFromArea, DrawToCanvasArea, TileAnimEvents, MosaicTileAttributes } from '@typescript/types';
 
+// move to config
 const FADE_DURATION = 500;
 
-class MosaicTile implements Partial<MosaicTileInterface> {
+class MosaicTile implements Partial<MosaicTileProps> {
   nextEventTime: number | undefined;
   _canPlayThrough: boolean;
   _context: CanvasRenderingContext2D | undefined;
@@ -44,7 +40,7 @@ class MosaicTile implements Partial<MosaicTileInterface> {
     }
   }
 
-  setAttributes(attributes: Attributes) {
+  setAttributes(attributes: MosaicTileAttributes) {
     const { inPoint, copyVideoFromArea, drawToCanvasArea, tileAnimEvents, videoSrc, context } = attributes;
     this._video.src = videoSrc;
     this._video.pause();

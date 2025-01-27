@@ -1,10 +1,5 @@
-import type { ActionGroupCollection } from '@/components/MosaicTiles/mosaicTiles.slice';
+import { GetTileAnimEvents } from '@interfaces/GetTileAnimEvents';
 
-interface GetTileAnimEvents {
-  (): ActionGroupCollection
-} 
-
-// retrieve values through function to facilitate filtering of data if needed
 export const getTileAnimEvents: GetTileAnimEvents = () => {
   return {
   2:[

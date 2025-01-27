@@ -1,11 +1,6 @@
 import { useSpring, animated } from 'react-spring';
+import { SlideInOutProps } from '@interfaces/SlideInOutProps';
 
-export interface SlideInOutProps {
-  children: React.ReactNode
-  isActive: boolean
-  enter: string
-  exit: string
-}
 
 const SlideInOut: React.FC<SlideInOutProps> = ({
   children,
@@ -24,7 +19,6 @@ const SlideInOut: React.FC<SlideInOutProps> = ({
   });
 
   return (
-
       <animated.div
         style={{
           ...slideProps,
@@ -34,7 +28,6 @@ const SlideInOut: React.FC<SlideInOutProps> = ({
       >
         {children}
       </animated.div>
-
   );
 }
 
