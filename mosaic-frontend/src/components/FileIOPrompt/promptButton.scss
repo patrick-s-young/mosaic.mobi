@@ -5,8 +5,8 @@
 .promptButton {
   width: 140px;
   height: $size-bttn-small;
-  background: $mosaic-button-default;
-  color: $mosaic-button-text-default;
+  background: $button-background-default;
+  color: $button-color-default;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
@@ -14,15 +14,15 @@
   gap: $spacing-space-16;
   text-wrap: nowrap;
   cursor: pointer;
-  border-radius: $radius-radious-12;
-  border: 1px solid $mosaic-purple-light;
+  border-radius: $button-border-radius;
+  border: $button-border-default;
   @include dropShadow-1();
   @include font-style($size: 18px, $weight: 500, $transform: uppercase, $lineHeight: 0.5);
 
   &:hover {
-    @include state-hover-default($surface: $mosaic-button-default, $state: $mosaic-button-hover);
+    @include state-hover-default($surface: $button-background-default, $state: $button-background-hover);
   }
   &:active {
-    @include state-pressed-default($surface: $mosaic-button-default, $state: $mosaic-button-pressed);
+    @include state-pressed-default($surface: $button-background-default, $state: $button-background-pressed);
   }
 }

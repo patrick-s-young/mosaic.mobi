@@ -8,13 +8,31 @@ $mosaic-pressed-default: rgba(30, 30, 30, 0.24);
 
 $surface-default: white;
 
-$mosaic-button-default: #7b1fa2;
-$mosaic-button-hover: #FAF8FF;
-$mosaic-button-pressed: #faf8ffc7;
+// Radius =====
+$radius-radius-2: 2px;
+$radius-radius-4: 4px;
+$radius-radious-8: 8px;
+$radius-radious-12: 12px;
+$radius-radius-16: 16px;
+$radius-radius-24: 24px;
+$radius-radius-32: 32px;
+$radius-radius-48: 48px;
+$radius-radius-96: 96px;
+$radius-radius-full: 999px;
 
-$mosaic-button-text-default: #FAF8FF;
-$mosaic-button-text-hover: #7b1fa2;
-$mosaic-button-text-pressed: #6a128f;
+// Button =====
+$button-background-default: #7b1fa2;
+$button-background-hover: #FAF8FF;
+$button-background-pressed: #faf8ffc7;
+
+$button-border-default: 1px solid $mosaic-purple-light;
+$button-border-light: 1px solid #ad52d44d;
+
+$button-color-default: #FAF8FF;
+$button-color-hover: #7b1fa2;
+$button-color-pressed: #FAF8FF;
+
+$button-border-radius: $radius-radious-12;
 
 $button-icon-default: #777575;
 $button-icon-hover: $mosaic-purple-dark;
@@ -48,17 +66,7 @@ $border-large: 3px;
 $border-medium: 2px;
 $border-small: 1px;
 
-// Radius =====
-$radius-radius-2: 2px;
-$radius-radius-4: 4px;
-$radius-radious-8: 8px;
-$radius-radious-12: 12px;
-$radius-radius-16: 16px;
-$radius-radius-24: 24px;
-$radius-radius-32: 32px;
-$radius-radius-48: 48px;
-$radius-radius-96: 96px;
-$radius-radius-full: 999px;
+
 
 // Radius Reference --
 $radius-pttn-radius-bttn-sm: $radius-radious-12;

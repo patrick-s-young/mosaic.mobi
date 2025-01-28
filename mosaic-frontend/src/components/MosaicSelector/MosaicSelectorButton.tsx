@@ -8,11 +8,12 @@ const MosaicSelectorButton: React.FC<MosaicSelectorButtonProps> = ({ numTiles, w
   const buttonClass = isSelected 
     ? 'mosaicSelectorButton mosaicSelectorButton--selected' 
     : 'mosaicSelectorButton';
+  const buttonHeight = width * .9;
     
   return (
     <button 
       className={buttonClass} 
-      style={{ width, height: width }}
+      style={{ width, height: buttonHeight }}
       onClick={() => onClick(numTiles)}
     >
       {React.createElement(mosaicIcons[numTiles])}
