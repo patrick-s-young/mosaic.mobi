@@ -3,37 +3,47 @@
 
 .mosaicSelectorButton {
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border: none;
   cursor: pointer;
-  background-color: transparent;
+  @include dropShadow-0-5();
+  border-radius: $button-border-radius;
+  border: $button-border-light;
+  background: $button-color-default; 
 
   svg {
-    width: 100%;
-    height: auto;
-    fill: $button-icon-default; 
-    box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 2px 6px 2px rgba(0, 0, 0, 0.25);
+    width: 75%;
+    height: auto; 
+    rect, path {
+      stroke: $button-background-default; 
+    }
   }
 
   &:hover {
     svg {
-      fill: $button-icon-hover;
-      transition: fill 0.3s ease;
-      box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.30), 0px 2px 6px 2px rgba(0, 0, 0, 0.25);
-      transition: box-shadow 0.4s ease;
+      rect, path {
+        stroke: $button-background-hover;
+      }
     }
+    background: $button-background-default;
   }
 
   &:active {
     svg {
       fill: $button-icon-pressed;
-      box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.50), 0px 2px 6px 2px rgba(0, 0, 0, 0.45);
     }
+    @include dropShadow-2();
   }
   
   &--selected {
     svg {
-      fill: $button-icon-pressed;
-      box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.50), 0px 2px 6px 2px rgba(0, 0, 0, 0.45);
+      rect, path {
+        stroke: $button-background-hover;
+      }
     }
+    background: $button-background-default;
+    @include dropShadow-2();
   }
 }
