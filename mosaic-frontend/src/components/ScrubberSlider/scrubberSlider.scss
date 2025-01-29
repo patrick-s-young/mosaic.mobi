@@ -1,4 +1,5 @@
 @use '@sass/mosaicVariables' as *;
+@use '@sass/mosaicMixins' as *;
 
 .scrubberSlider {
   display: flex;
@@ -9,16 +10,25 @@
   &__slider {
     width: 90%;
     & .MuiSlider-thumb {
-      width: 24px;
-      height: 24px;
-      margin-top: -12px;
-      margin-left: -12px;
+      width: 36px;
+      height: 36px;
+      margin-top: -18px;
+      margin-left: -18px;
       background-color: $mosaic-purple-dark;
     }
     & .MuiSlider-valueLabel {
-      left: calc(-50% + 8px);
-      top: -30px;
+      left: calc(-2%);
+      top: -34px;
+      .PrivateValueLabel-circle-4 {
+        background-color: $button-color-default;
+        border: 2px solid $mosaic-purple-dark;
+        .PrivateValueLabel-label-5 {
+          color: $mosaic-purple-dark;
+          @include font-style($size: 18px, $weight: 500, $transform: uppercase, $lineHeight: 0.5);
+        }
+      }
       color: $mosaic-purple-dark;
+      
     }
   }
 }
