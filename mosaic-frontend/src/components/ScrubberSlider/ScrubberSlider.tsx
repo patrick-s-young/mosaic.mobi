@@ -15,6 +15,7 @@ const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width }) => {
   const { currentScrubberFrame, scrubberFramesMax } = useSelector<RootState, ScrubberState>(
     (state) => state.scrubber
   );
+  const trackWidth = width - 60;
 
   const handleChange = (_: any, newValue: number | number[]) => {
   traceEvent({
@@ -30,7 +31,7 @@ const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width }) => {
   }
 
   return (
-    <div style={{ width }}>
+    <div style={{ width: trackWidth }}>
       <div className='scrubberSlider'>
         <Slider
           value={currentScrubberFrame}

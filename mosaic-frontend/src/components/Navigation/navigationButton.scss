@@ -1,30 +1,36 @@
-@use '@sass/mosaicVariables.scss' as *;
-@use '@sass/mosaicMixins.scss' as *;
+@use '@sass/mosaicVariables' as *;
+@use '@sass/mosaicMixins' as *;
 
-
-.promptButton {
-  width: 140px;
-  height: $size-bttn-small;
-  background: $button-color-default;
-  color: $button-background-default; 
+.navigationButton {  
   box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: $spacing-space-16;
-  text-wrap: nowrap;
+  border: none;
   cursor: pointer;
+  color: $button-background-default; 
+  @include dropShadow-0-5();
   border-radius: $button-border-radius;
   border: $button-border-light;
-  @include dropShadow-0-5();
+  background: $button-color-default;
+  width: 100%;
+  min-height: 60px;
   @include font-style($size: 18px, $weight: 500, $transform: uppercase, $lineHeight: 0.5);
+
 
   &:hover {
     color: $button-background-hover;
     background: $button-background-default;
   }
+
   &:active {
     color: $button-background-pressed;
+    @include dropShadow-2();
+  }
+  
+  &--selected {
+    color: $button-background-hover;
+    background: $button-background-default;
     @include dropShadow-2();
   }
 }

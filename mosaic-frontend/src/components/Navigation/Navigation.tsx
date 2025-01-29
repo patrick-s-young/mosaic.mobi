@@ -3,11 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@typescript/types';
 import { setNavPhase } from '@/components/Navigation/nav.slice';
 import { NavState } from '@interfaces/NavState';
-import { Tab, Tabs } from '@material-ui/core';
-import { SaveAlt, MovieCreation, VideoCall } from '@material-ui/icons';
 import { NavPhaseEnum } from '@enums/NavPhaseEnum';
 import { NavigationProps } from '@interfaces/NavigationProps';
 import navPhaseString from '@analytics/traceEvent.config';
+import NavigationButton from './NavigationButton';
 import './navigation.scss';
 
 
@@ -16,13 +15,8 @@ const Navigation: React.FC<NavigationProps> = ({
   pauseInput }) => {
   const dispatch = useDispatch();
   const { navPhase } = useSelector<RootState, NavState>((state) => state.nav);
-  const navigationWidth = width;
-  const tabStyle = {
-    minWidth: navigationWidth / 3,
-    backgroundColor: 'white'
-  }
 
-  const handleChange = (_: React.ChangeEvent<{}>, newValue: NavPhaseEnum) => {
+  const handleChange = (newValue: NavPhaseEnum) => {
     traceEvent({
       category: 'Navigation',
       action: navPhaseString[newValue],
@@ -32,15 +26,10 @@ const Navigation: React.FC<NavigationProps> = ({
   };
 
   return (
-    <div className='navigation' style={{ width: navigationWidth }}>
-      <Tabs
-        value={navPhase}
-        onChange={handleChange}
-      >
-        <Tab icon={<VideoCall fontSize='large' />} value={NavPhaseEnum.UPLOAD} style={tabStyle} label="UPLOAD" />
-        <Tab icon={<MovieCreation fontSize='large' />} value={NavPhaseEnum.EDIT} style={tabStyle} label="EDIT" />
-        <Tab icon={<SaveAlt fontSize='large' />} value={NavPhaseEnum.DOWNLOAD} style={tabStyle} label="SAVE" />
-      </Tabs>
+    <div className='navigation' style={{ width }}>
+      <NavigationButton label='UPLOAD' value={NavPhaseEnum.UPLOAD} activeNavPhase={navPhase} onClick={handleChange} />
+      <NavigationButton label='EDIT' value={NavPhaseEnum.EDIT} activeNavPhase={navPhase} onClick={handleChange} />
+      <NavigationButton label='SAVE' value={NavPhaseEnum.DOWNLOAD} activeNavPhase={navPhase} onClick={handleChange} />
     </div>
   );
 }
