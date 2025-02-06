@@ -3,7 +3,8 @@
 - Mosaic is a web app for creating social media friendly video edits.
 - Mosaic is a port of the popular native app, [Cine-pic](https://apps.apple.com/us/app/cine-pic-photo-video-montage/id923762113).
 
-https://github.com/user-attachments/assets/e5b8cb93-94c7-41e8-8b78-3eb70b540e53
+[https://github.com/user-attachments/assets/e5b8cb93-94c7-41e8-8b78-3eb70b540e53](https://github.com/user-attachments/assets/b4eefe15-9676-4c4f-a6fa-08cd964e05bd
+)
 
 ## Project Organization
 Mosaic is a docker-based and the project is organized by container:
