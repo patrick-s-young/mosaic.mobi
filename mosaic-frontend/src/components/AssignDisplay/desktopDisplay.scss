@@ -12,17 +12,7 @@
     display: flex;
     width: 100%;
     padding: 0px 40px;
-  }
-
-  ul {
-    list-style-type: circle;
-    li {
-      margin-bottom: 30px;
-    }
-   ul li {
-      list-style-type: square;
-      margin-bottom: 10px;
-    }
+    user-select: none;
   }
 
   a {
@@ -32,22 +22,25 @@
       text-decoration: underline;
     }
   }
+
   &__title {
     font-size: 96px;
+    line-height: .9em;
     font-weight: 600;
     color:#7b1fa2;
     text-shadow: 0px 0px 4px #7b1fa2;
   }
+
   &__tag {
     font-size: 32px;
     font-weight: 100;
     color: #000000;
   }
+
   &__tag--bold {
     font-size: 32px;
     font-weight: 500;
   }
-
 
   &__leftColumn {
     width: 33vw;
@@ -68,8 +61,6 @@
       font-weight: 600;
     }
   }
-
-
 
   &__appContainer {
     position: absolute;
