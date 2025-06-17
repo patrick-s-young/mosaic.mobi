@@ -1,7 +1,7 @@
 
 import { traceEvent } from '@analytics/traceEvent';
 import instagramPrompt from '@/assets/instagram_prompt.jpg';
-import { appDimensions } from '@/components/App/app.config';
+import { appDimensions } from '@/app.config';
 import { InAppPromptProps } from '@interfaces/InAppPrompt';
 import './inAppPrompt.scss';
 

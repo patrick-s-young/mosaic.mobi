@@ -1,10 +1,10 @@
 import { traceEvent } from '@analytics/traceEvent';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAppPhase } from '@components/App/app.slice';
+import { setAppPhase } from '@/app.slice';
 import { setNavPhase } from '@components/Navigation/nav.slice';
 import { setRenderPhase } from '@components/RenderMosaic/renderMosaic.slice';
 import { renderMosaic } from '@api/index';
-import { popOverProps, slideInOutProps } from '@components/App/app.config';
+import { popOverProps, slideInOutProps } from '@/app.config';
 import FileIOPrompt from '@components/FileIOPrompt/FileIOPrompt';
 import SlideInOut from '@components/SideInOut/SlideInOut';
 import PopOver from '@components/PopOver/PopOver';

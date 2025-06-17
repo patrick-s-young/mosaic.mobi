@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { SCRUBBER_FRAMES_MAX } from '@components/App/app.config';
+import { SCRUBBER_FRAMES_MAX } from '@/app.config';
 import { ScrubberState } from '@interfaces/ScrubberState';
 import { CurrentScrubberFrame } from '@typescript/types';
 

@@ -10,7 +10,7 @@ import {
 } from '@api/index';
 // slices
 import { setUploadPhase } from '@/components/UploadVideo/upload.slice';
-import { setAppPhase } from '@components/App/app.slice';
+import { setAppPhase } from '@/app.slice';
 import { setMosaicFormatting, setMosaicPhase } from '@components/MosaicTiles/mosaicTiles.slice';
 import { setNavPhase } from '@components/Navigation/nav.slice';
 import { setVideoUploadCount } from '@components/Scrubber/scrubber.slice';
@@ -18,7 +18,7 @@ import { setVideoUploadCount } from '@components/Scrubber/scrubber.slice';
 import PopOver from '@components/PopOver/PopOver';
 import SlideInOut from '@components/SideInOut/SlideInOut';
 import FileIOPrompt from '@components/FileIOPrompt/FileIOPrompt';
-import { popOverProps, slideInOutProps } from '@components/App/app.config';
+import { popOverProps, slideInOutProps } from '@/app.config';
 // interfaces
 import { UploadVideoProps } from '@interfaces/UploadVideoProps';
 import { AppState } from '@interfaces/AppState';

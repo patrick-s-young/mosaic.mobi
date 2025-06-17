@@ -3,7 +3,7 @@ import navSlice  from '@components/Navigation/nav.slice';
 import uploadSlice from '@components/UploadVideo/upload.slice';
 import scrubberSlice from '@components/Scrubber/scrubber.slice';
 import mosaicSlice from '@components/MosaicTiles/mosaicTiles.slice';
-import appSlice from '@components/App/app.slice';
+import appSlice from '@/app.slice';
 import renderSlice from '@components/RenderMosaic/renderMosaic.slice';
 import mobileDisplayLogSlice from '@devTools/MobileDisplayLog/mobileDisplayLog.slice';
 

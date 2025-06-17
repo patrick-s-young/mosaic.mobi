@@ -1,6 +1,6 @@
 import PopOver from '@components/PopOver/PopOver';
 import SlideInOut from '@components/SideInOut/SlideInOut';
-import App from '@components/App/App'; 
+import App from '@/App'; 
 import AssignDisplay from '@components/AssignDisplay/AssignDisplay';
 import Navigation from '@components/Navigation/Navigation';
 import UploadVideo from '@components/UploadVideo/UploadVideo';
