@@ -15,8 +15,8 @@ import {
 } from '@/components'; 
 // slices
 import { setScrubberCanvasWidth } from '@/components/Scrubber/scrubber.slice';
-import { setCanvasWidth } from '@/components/App/app.slice';
-import { appDimensions } from '@/components/App/app.config';
+import { setCanvasWidth } from './app.slice';
+import { appDimensions } from './app.config';
 // interfaces
 import { AppState } from '@interfaces/AppState';
 import { NavState } from '@interfaces/NavState';
@@ -25,7 +25,7 @@ import { MosaicState } from '@interfaces/MosaicState';
 import type { RootState } from '@typescript/types';
 // enums
 import { NavPhaseEnum, MosaicPhaseEnum, AppPhaseEnum } from '@typescript/enums';
-import '@/components/App/app.css';
+import './app.css';
 
 
 const App: React.FC = () => {

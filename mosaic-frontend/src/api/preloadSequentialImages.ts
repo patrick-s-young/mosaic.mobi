@@ -1,7 +1,7 @@
 import { 
   createAsyncThunk
 } from '@reduxjs/toolkit';
-import { SCRUBBER_FRAMES_MAX } from '@components/App/app.config';
+import { SCRUBBER_FRAMES_MAX } from '@/app.config';
 
 export const preloadSequentialImages = createAsyncThunk(
   '@api/preloadSequentialImages',

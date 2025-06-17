@@ -6,7 +6,7 @@ import {
   getDrawToCanvasArea,
   getCopyVideoFromArea
 }  from '@components/MosaicTiles/helpers';
-import { defaultVideoConfig, DEFAULT_VIDEO_NUM_TILES } from '@components/App/app.config';
+import { defaultVideoConfig, DEFAULT_VIDEO_NUM_TILES } from '@/app.config';
 // enums
 import { MosaicPhaseEnum } from '@enums/MosaicPhaseEnum';
 // interfaces

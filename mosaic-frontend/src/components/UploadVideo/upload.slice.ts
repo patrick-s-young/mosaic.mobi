@@ -8,7 +8,7 @@ import {
 import { UploadPhaseEnum } from '@enums/UploadPhaseEnum';
 import type { UploadState, UploadDuration, UploadSelectedFile } from  '@typescript/types'
 import { UploadPhase } from '@interfaces/UploadPhase';
-import { MAX_VIDEO_UPLOAD_DURATION, defaultVideoConfig } from '@components/App/app.config';
+import { MAX_VIDEO_UPLOAD_DURATION, defaultVideoConfig } from '@/app.config';
 
 
 const initialState: UploadState = {
