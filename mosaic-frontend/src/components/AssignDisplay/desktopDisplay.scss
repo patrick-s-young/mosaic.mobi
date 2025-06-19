@@ -5,6 +5,7 @@
   box-sizing: border-box;
   display: flex;
   width: 100%;
+  min-width: 1200px;
   padding: 20px 0px;
 
   > div {
@@ -23,8 +24,15 @@
     }
   }
 
+  &__leftColumn {
+    container-type: inline-size;
+    width: 33%;
+    flex-direction: column;
+  }
+
+
   &__title {
-    font-size: 96px;
+    font-size: 29cqi;
     line-height: .9em;
     font-weight: 600;
     color:#7b1fa2;
@@ -32,21 +40,15 @@
   }
 
   &__tag {
-    font-size: 32px;
+    font-size: 9.5cqi;
     font-weight: 100;
     color: #000000;
   }
 
   &__tag--bold {
-    font-size: 32px;
     font-weight: 500;
   }
 
-  &__leftColumn {
-    width: 33vw;
-    font-size: 2vh;
-    flex-direction: column;
-  }
 
   &__middleColumn {
     justify-content: center;

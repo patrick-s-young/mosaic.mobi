@@ -8,7 +8,7 @@ const DesktopDisplay: React.FC<DesktopDisplayProps> = ({ children }) => {
     <div className='desktopDisplay'>
       <div className='desktopDisplay__leftColumn'>
         <span className='desktopDisplay__title'>Mosaic</span>
-        <span className='desktopDisplay__tag--bold'>Awesome Video Edits</span>
+        <span className='desktopDisplay__tag desktopDisplay__tag--bold'>Awesome Video Edits</span>
         <span className='desktopDisplay__tag'>No Download Required</span>
       </div>
          
