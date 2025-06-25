@@ -80,6 +80,7 @@ class MosaicTile implements Partial<MosaicTileProps> {
   }
 
   // Private methods
+  // @ts-ignore: error TS6133: 'timeStamp' is declared but its value is never read.
   _renderFrame(timeStamp: DOMHighResTimeStamp) {}
 
   _fadeIn(timeStamp: DOMHighResTimeStamp) {
@@ -113,7 +114,7 @@ class MosaicTile implements Partial<MosaicTileProps> {
       this._renderFrame = this._wait;
     }
   }
-  
+  // @ts-ignore: error TS6133: 'timeStamp' is declared but its value is never read.
   _wait(timeStamp: DOMHighResTimeStamp) {}
   
   _drawImage() {

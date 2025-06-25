@@ -1,4 +1,3 @@
-import { MosaicTileAttributes } from "@typescript/types";
 
 export interface MosaicTileProps {
   resetAnimation: () => void;
