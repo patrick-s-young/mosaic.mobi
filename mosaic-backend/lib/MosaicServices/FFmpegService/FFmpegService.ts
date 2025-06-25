@@ -32,15 +32,20 @@ export default class FFmpegService {
   }
 
   public cropVideo (req: Request, res: Response, next: any) {
-    console.log(`\n\n\ncropVideo called with res.locals.videoUpload key values: width: ${res.locals.videoUpload.width}, height: ${res.locals.videoUpload.height}, duration: ${res.locals.videoUpload.duration}\n\n\n`);
     const assetID = res.locals.assetID
     const inputPath  = `${env.getVolumnPath()}/${assetID}/upload.mov`; 
     const outputPath = `${env.getVolumnPath()}/${assetID}/cropped.mov`; 
+
+    const cropSize = res.locals.videoUpload.width > res.locals.videoUpload.height 
+      ? res.locals.videoUpload.height 
+      : res.locals.videoUpload.width;
+    const cropOffset = Math.abs(res.locals.videoUpload.width - res.locals.videoUpload.height) / 2;
+    const [xOffset, yOffset] = res.locals.videoUpload.width > cropSize ? [0, cropOffset] : [cropOffset, 0];
     const crop = {
-      w: res.locals.videoUpload.height,
-      h: res.locals.videoUpload.height,
-      x: 0,
-      y: (res.locals.videoUpload.width - res.locals.videoUpload.height) / 2
+      w: cropSize,
+      h: cropSize,
+      x: xOffset,
+      y: yOffset
     }
     const filter = `[0:v] crop=${crop.w}:${crop.h}:${crop.x}:${crop.y}, scale=${1080}:-1 [final]`;
     const proc = spawn(ffmpeg.path, ['-i', inputPath, '-filter_complex', filter , '-map', '[final]', '-an', '-y', outputPath]);
@@ -62,18 +67,12 @@ export default class FFmpegService {
 
 
   public resizeVideo (req: Request, res: Response, next: any) {
-    console.log(`resizeVideo called`);
     const assetID = res.locals.assetID
     const inputPath  = `${env.getVolumnPath()}/${assetID}/cropped.mov`; 
     const outputPath = `${env.getVolumnPath()}/${assetID}/resized.mov`; 
-    console.log(`resizeVideo inputPath: ${inputPath}`)
-    console.log(`resizeVideo outputPath: ${outputPath}`)
 
     // video will be 320x320 to minimize the cpu load on mobile devices
     const filter = `[0:v] scale=${320}:-1,fps=24 [final]`;
-    console.log(`\n\n\n\n\n`)
-    console.log(`\n\nresizeVideo > filter: ${filter}\n\n`);
-    console.log(`\n\n\n\n\n`)
   
     const proc = spawn(ffmpeg.path, ['-i', inputPath, '-filter_complex', filter , '-g', '12', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', outputPath]);
       // @ts-ignore: Object is possibly 'null'.
@@ -94,11 +93,9 @@ export default class FFmpegService {
   }
 
   public exportFrames (req: Request, res: Response, next: any) {
-    console.log('>>> in exportFrames')
     const assetID = res.locals.assetID
     const inputPath  = `${env.getVolumnPath()}/${assetID}/resized.mov`; 
     const outputPath = `${env.getVolumnPath()}/${assetID}/`; 
-    //const proc = spawn(ffmpegPath, ['-ss', 1, '-i', inputPath, '-vframes', 1, `${outputPath}extractframe.jpg`]);
     const duration = res.locals.videoUpload.duration - 1;
     const frameInterval = 18 / duration;
     const proc = spawn(ffmpeg.path, ['-i', inputPath, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-preset', 'ultrafast', '-crf', '28', `${outputPath}img%03d.jpg`]);
@@ -121,7 +118,6 @@ export default class FFmpegService {
 
 
   public renderMosaic  (req: Request, res: Response, next: any) {
-    console.log('+++++ renderMosaic called with res.locals: ', res.locals)
     const duration = res.locals.videoUpload.duration - 1;
     const frameInterval = duration / 18;
     const bgFrameStart = (res.locals.currentScrubberFrame - 1) * frameInterval;
