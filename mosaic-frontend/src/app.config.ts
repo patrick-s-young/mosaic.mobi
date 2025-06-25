@@ -38,6 +38,12 @@ const defaultVideoConfig = {
   numTiles: 3
 }
 
+const mosaicTileConfig = {
+  ANIMATION_CYCLE_DURATION: 15000,
+  FADE_DURATION: 500,
+  FULL_OPACTIY_DURATION: 1000
+}
+
 export { 
   appDimensions, 
   MAX_VIDEO_UPLOAD_DURATION,
@@ -45,5 +51,6 @@ export {
   DEFAULT_VIDEO_NUM_TILES,
   defaultVideoConfig,
   popOverProps,
-  slideInOutProps
+  slideInOutProps,
+  mosaicTileConfig
 };

@@ -6,5 +6,5 @@ export type MosaicTileAttributes = {
   drawToCanvasArea: DrawToCanvasArea, 
   tileAnimEvents: TileAnimEvents, 
   videoSrc: string, 
-  context: CanvasRenderingContext2D | undefined 
+  context: CanvasRenderingContext2D 
 };

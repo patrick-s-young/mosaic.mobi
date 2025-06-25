@@ -1,5 +1,4 @@
 import type { NumTilesToString } from "./NumTilesToString";
 
-type Action = { time: number, action: string }
-type ActionGroup = Array<Array<Action>>;
+type ActionGroup = Array<Array<number>>;
 export type ActionGroupCollection = { [key in NumTilesToString] : ActionGroup };
