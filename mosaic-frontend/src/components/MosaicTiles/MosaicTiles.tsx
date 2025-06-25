@@ -12,8 +12,6 @@ import { MosaicTilesProps } from '@interfaces/MosaicTilesProps';
 import type { UploadState, RootState } from '@typescript/types';
 import '@components/MosaicTiles/mosaicTiles.scss';
 
-// TODO: move to config
-const ANIMATION_CYCLE_DURATION = 15000;
 
 const MosaicTiles: React.FC<MosaicTilesProps> = () => {
   const dispatch = useDispatch();
@@ -31,11 +29,7 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
   const mosaicTilesRef = useRef<Array<MosaicTile>>([]);
   const canvasClassName = canvasWidth ? 'mosaicTiles-canvas' : '';
 
-  const cancelAnimation = () => {
-    cancelAnimationFrame(animationFrameIdRef.current);
-    mosaicTilesRef.current.forEach(tile => tile.clearAnimation());
-    canvasRef.current.getContext('2d')?.clearRect(0, 0, canvasWidth, canvasWidth);
-  }
+
 
   useEffect(() => {
     switch(mosaicPhase) {
@@ -54,8 +48,7 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
       case MosaicPhaseEnum.ANIMATION_STOPPED:
         const newMosaicTiles: Array<MosaicTile> = [];
         for (let tileIndex = 0; tileIndex < numTiles; tileIndex++) {
-          const newMosaicTile = new MosaicTile();
-          newMosaicTile.setAttributes({
+          const newMosaicTile = new MosaicTile({
             videoSrc: videoURL,
             context: canvasRef.current.getContext('2d') as CanvasRenderingContext2D,
             inPoint: inPoints[numTiles][tileIndex],
@@ -83,8 +76,13 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
     }
   }, [mosaicPhase]);
 
+  const cancelAnimation = () => {
+    cancelAnimationFrame(animationFrameIdRef.current);
+    mosaicTilesRef.current.forEach(tile => tile.clearAnimation());
+  }
+  
   function waitUntilAnimationIsReady() {
-    if (mosaicTilesRef.current.every(tile => tile._canPlayThrough) === false) {
+    if (mosaicTilesRef.current.every(tile => tile.isReady()) !== true) {
       setTimeout(() => {
         waitUntilAnimationIsReady();
       }, 250);
@@ -94,25 +92,20 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
   }
 
   function startAnimation () {
-    mosaicTilesRef.current.forEach(tile => tile.initAnimation());
-    let beginTime = performance.now();
+    const beginTimeStamp = performance.now();
+    mosaicTilesRef.current.forEach(tile => tile.initAnimation(beginTimeStamp));
+    
     function step(timeStamp: DOMHighResTimeStamp) {
-      let elapsedTime = timeStamp - beginTime;
-      if (elapsedTime > ANIMATION_CYCLE_DURATION) {
-        beginTime = performance.now();
-        elapsedTime = 0;
-        mosaicTilesRef.current.forEach((tile) => tile.resetAnimation());
-      }
-      mosaicTilesRef.current.forEach((mosaicTile) => {
-        if (elapsedTime > (mosaicTile.nextEventTime ?? Infinity)) {
-          mosaicTile.updateCurrentEventAction();
-        }
-        mosaicTile.currentEventAction?.();
+      mosaicTilesRef.current.forEach((tile) => {
+        tile.animationFrameUpdate(timeStamp)
       });
       animationFrameIdRef.current = requestAnimationFrame(step);
     }
+
     animationFrameIdRef.current = requestAnimationFrame(step);
   }
+
+
 
   return (
     <canvas
