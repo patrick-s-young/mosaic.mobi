@@ -86,7 +86,6 @@ class MosaicTile implements Partial<MosaicTileProps> {
   _fadeIn(timeStamp: DOMHighResTimeStamp) {
     const timeElapsed = timeStamp - this._fadeInStartTime;
     this._fadeOpacity = Math.round(timeElapsed / FADE_DURATION * 100) / 100;
-    console.log('fadeIn', this._fadeOpacity);
     this._drawImage();
     if (this._fadeOpacity >= 1) {
       this._fadeOpacity = 1;

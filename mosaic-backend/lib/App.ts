@@ -1,25 +1,22 @@
-
-import express from 'express';
+const express = require('express');
 import * as bodyParser from "body-parser";
 import { MosaicRoutes } from "./MosaicRoutes";
 const expressFileUpload = require('express-fileupload');
+import { Server } from 'socket.io';
+import { createServer } from 'http';
 import env from './Environment';
 
-class App {
-   public app: express.Application;
-   private mosaicRoutes: MosaicRoutes = new MosaicRoutes();
+const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(expressFileUpload());
+app.use('/uploads', express.static(`${env.getVolumnPath()}`));
+const mosaicRoutes = new MosaicRoutes();
+mosaicRoutes.route(app);
 
-   constructor() {
-      this.app = express();
-      this.config();
-      this.mosaicRoutes.route(this.app);
-   }
+// Create HTTP server from Express app
+const httpServer = createServer(app);
 
-   private config(): void {
-      this.app.use(bodyParser.json());
-      this.app.use(bodyParser.urlencoded({ extended: false }));
-      this.app.use(expressFileUpload());
-      this.app.use('/uploads', express.static(`${env.getVolumnPath()}`));
-   }
-}
-export default new App().app;
+// Attach Socket.IO to the HTTP server
+const io = new Server(httpServer);
+
+export { app, io, httpServer };

@@ -27,4 +27,8 @@
     display: flex;
     justify-content: space-between;
   }
+  &__progressMessage {
+    font-weight: 600;
+    color: $mosaic-purple-dark;
+  }
 }

@@ -6,6 +6,7 @@ import { createFfmpegFilterComplexStr } from './utils/createFfmpegFilterComplexS
 
 import env from '../../Environment';
 import { Request, Response } from 'express';
+import { io } from '../../App';
 
 export default class FFmpegService {
 
@@ -22,7 +23,8 @@ export default class FFmpegService {
             res.locals.videoUpload = {
               width: info.streams[key].width,
               height: info.streams[key].height,
-              duration: info.streams[key].duration
+              duration: info.streams[key].duration,
+              totalFrames: info.streams[key].nb_frames
             }
           }
         }
@@ -55,9 +57,12 @@ export default class FFmpegService {
     });
       // @ts-ignore: Object is possibly 'null'.
     proc.stderr.setEncoding("utf8")
-      // @ts-ignore: Object is possibly 'null'.
+    // @ts-ignore: Object is possibly 'null'.
     proc.stderr.on('data', function(data) {
-      console.log(`cropVideo > proc.stderr.on('data'): ${data}`);
+      const lines = data.split(/\s+/);
+      if (lines[0] === 'frame=') {
+        io.emit('ffmpegProgress', { currentFrame: lines[1], totalFrames: res.locals.videoUpload.totalFrames });
+      }
     });
     proc.on('close', function() {
       console.log(`cropVideo > proc.on('close')`);
@@ -150,7 +155,10 @@ export default class FFmpegService {
     proc.stderr.setEncoding("utf8")
     // @ts-ignore: Object is possibly 'null'.
     proc.stderr.on('data', function(data) {
-      console.log(`proc.stderr.on('data'): ${data}`);
+      const lines = data.split(/\s+/);
+      if (lines[0] === 'frame=') {
+        io.emit('ffmpegProgress', { currentFrame: lines[1], totalFrames: res.locals.videoUpload.totalFrames });
+      }
     });
     proc.on('close', function() {
       res.locals.status = 'success';
