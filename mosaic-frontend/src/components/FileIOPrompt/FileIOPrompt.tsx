@@ -17,10 +17,9 @@ const FileIOPrompt = ({ action, videoDuration = 0, callBack = () => {}, onCancel
 
   useEffect(() => {
     socket = io();
-    socket.on('ffmpegProgress', 
-      (data: { currentFrame: number, totalFrames: number }) => {
-                  setProgressFrames({currentFrame: data.currentFrame, totalFrames: data.totalFrames});
-                }
+    socket.on('ffmpegProgress', (data: { currentFrame: number, totalFrames: number }) => {
+          setProgressFrames({currentFrame: data.currentFrame, totalFrames: data.totalFrames});
+        }
     );
   }, []);
 
