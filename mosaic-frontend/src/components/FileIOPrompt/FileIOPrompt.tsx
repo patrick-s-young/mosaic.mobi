@@ -8,7 +8,7 @@ import './fileIOPrompt.scss';
 let socket: Socket;
 
 const FileIOPrompt = ({ action, videoDuration = 0, callBack = () => {}, onCancel = () => {} }: FileIOPromptProps) => {
-  const [progressMessage, setProgressMessage] = useState('Processing frame 0 of 0');
+  const [progressFrames, setProgressFrames] = useState({currentFrame: 0, totalFrames: 0});
   const { headline, headlineIcon, message, buttonLabel } = PROMPT[action];
   const formattedMessage = action === 'videoTooLong' 
   ? message.replace('VIDEO_DURATION', Number(videoDuration).toFixed(2)) 
@@ -17,10 +17,9 @@ const FileIOPrompt = ({ action, videoDuration = 0, callBack = () => {}, onCancel
 
   useEffect(() => {
     socket = io();
-    socket.on('ffmpegProgress', 
-      (data: { currentFrame: number, totalFrames: number }) => {
-                  setProgressMessage(`Processing frame ${data.currentFrame} of ${data.totalFrames}`);
-                }
+    socket.on('ffmpegProgress', (data: { currentFrame: number, totalFrames: number }) => {
+          setProgressFrames({currentFrame: data.currentFrame, totalFrames: data.totalFrames});
+        }
     );
   }, []);
 
@@ -30,7 +29,11 @@ const FileIOPrompt = ({ action, videoDuration = 0, callBack = () => {}, onCancel
         {headlineIcon} {headline}
       </div>
       <div>
-        {!showButtons && <p className='fileIOPrompt__progressMessage'>{progressMessage}</p>}
+        {!showButtons && 
+          <p className='fileIOPrompt__progressMessage'>
+            Processing frame <span style={{ display: "inline-block", width: "4ch", textAlign: "right" }}>{progressFrames.currentFrame}</span> of {progressFrames.totalFrames}
+          </p>
+        }
         {formattedMessage}
       </div>
       {showButtons &&
