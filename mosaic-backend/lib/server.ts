@@ -1,8 +1,8 @@
-import app from "./App";
+import { httpServer } from "./App";
 import env from './Environment';
 
-const PORT = env.getPort();
+const PORT = 3001 //env.getPort();
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
    console.log('Express server listening on port ' + PORT);
 });

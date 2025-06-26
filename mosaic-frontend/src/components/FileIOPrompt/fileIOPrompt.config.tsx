@@ -36,7 +36,7 @@ const PROMPT = {
   uploading: {
     headline: 'UPLOADING',
     headlineIcon: <CloudUpload style={{ fontSize: ICON_SIZE }}/>,
-    message: 'Your video is being uploaded and optimized for your mobile device. This process usually takes ten to fifteen seconds.',
+    message: 'Your video is being uploaded and optimized for your mobile device.',
     buttonLabel: '',
   }
 }
