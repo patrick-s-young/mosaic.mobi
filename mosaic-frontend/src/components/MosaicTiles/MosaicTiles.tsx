@@ -1,4 +1,3 @@
-import { traceEvent } from '@analytics/traceEvent';
 import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setMosaicPhase } from '@components/MosaicTiles';
@@ -37,11 +36,6 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
         cancelAnimation();
         break;
       case MosaicPhaseEnum.NUMTILES_UPDATED:
-        traceEvent({ 
-          category: 'MosaicTiles',
-          action: 'NUMTILES_UPDATED',
-          label: 'N/A'
-        });
         cancelAnimation();
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.ANIMATION_STOPPED}));
         break;
@@ -62,11 +56,6 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.TILES_UPDATED }));
         break;
       case MosaicPhaseEnum.TILES_UPDATED:
-        traceEvent({ 
-          category: 'MosaicTiles',
-          action: 'TILES_UPDATED',
-          label: 'N/A'
-        });
         waitUntilAnimationIsReady();
         break;
       case MosaicPhaseEnum.ANIMATION_READY:

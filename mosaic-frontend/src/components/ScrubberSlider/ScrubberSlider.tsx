@@ -1,4 +1,3 @@
-import { traceEvent } from '@analytics/traceEvent';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@typescript/types';
@@ -18,11 +17,6 @@ const ScrubberSlider: React.FC<ScrubberSliderProps> = ({ width }) => {
   const trackWidth = width - 60;
 
   const handleChange = (_: any, newValue: number | number[]) => {
-  traceEvent({
-    category: 'ScrubberSlider',
-    action: 'SCRUBBER_FRAME_UPDATED',
-    label: 'Instagram'
-  });
     dispatch(setCurrentScrubberFrame(newValue as CurrentScrubberFrame));
   };
 

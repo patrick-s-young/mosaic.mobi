@@ -31,7 +31,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
   const onRenderVideo = () => {
     traceEvent({
       category: 'RenderMosaic',
-      action: 'RENDER_VIDEO',
+      action: 'onRenderVideo',
       label: 'N/A'
     });
     const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${currentScrubberFrame}`;
@@ -43,7 +43,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
     if (renderBlob) {
       traceEvent({
         category: 'RenderMosaic',
-        action: 'SAVE_VIDEO',
+        action: 'onSaveVideo',
         label: 'N/A'
       });
       FileDownload(renderBlob, 'mosaic_render.mov');
@@ -54,11 +54,6 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
   }
 
   const onCancel = () => {
-    traceEvent({
-      category: 'RenderMosaic',
-      action: 'CANCEL_RENDER',
-      label: 'N/A'
-    });
     dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
     dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
     dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));
