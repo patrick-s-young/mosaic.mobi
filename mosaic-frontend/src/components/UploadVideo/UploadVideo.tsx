@@ -44,17 +44,17 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
   useEffect(() => {
     switch(uploadPhase) {
       case UploadPhaseEnum.VIDEO_SUBMITED:    
-        if (selectedFile !== undefined) {
+        if (selectedFile !== undefined) {        
+          traceEvent({
+            category: 'UploadVideo',
+            action: 'onVideoSubmited',
+            label: 'N/A'
+          });
           dispatch(uploadUserVideo(selectedFile));
           dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
         }
         break;
       case UploadPhaseEnum.VIDEO_UPLOADED:
-        traceEvent({
-          category: 'Upload',
-          action: 'VIDEO_UPLOADED:',
-          label: 'N/A'
-        });
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.CANCEL_ANIMATION }));
         dispatch(preloadUserVideo(`/uploads/${assetID}/resized.mov`));
         break;

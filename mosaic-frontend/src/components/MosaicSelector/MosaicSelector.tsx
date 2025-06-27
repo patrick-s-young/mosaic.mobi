@@ -1,4 +1,3 @@
-import { traceEvent } from '@analytics/traceEvent';
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setNumTiles } from '@components/MosaicTiles';
@@ -20,11 +19,6 @@ const MosaicSelector: React.FC<MosaicSelectorProps> = ({ width }) => {
   );
 
   const handleOnClick = (newNumTiles: NumTiles) => {
-    traceEvent({
-      category: 'Mosaic Selector',
-      action: 'NUM_TILES CHANGE',
-      label: newNumTiles.toString()
-    });
     dispatch(setNumTiles(newNumTiles));
   };
 

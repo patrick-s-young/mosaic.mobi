@@ -1,8 +1,14 @@
+import { traceEvent } from '@analytics/traceEvent';
 import iPhone_XR from '@assets/device-preview/iPhone_XR_mock_414x712.png';
 import { DesktopDisplayProps } from '@interfaces/DesktopDisplayProps';
 import './desktopDisplay.scss';
 
 const DesktopDisplay: React.FC<DesktopDisplayProps> = ({ children }) => {
+  traceEvent({
+    category: 'DesktopDisplay',
+    action: 'onDesktopDisplay',
+    label: 'N/A'
+  });
 
   return (
     <div className='desktopDisplay'>
