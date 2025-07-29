@@ -5,7 +5,6 @@ const fs = require('fs');
 export default class FileService {
 
     public uploadVideo (req: Request, res: Response, next: any) {
-      console.log(`/n FileService.uploadVideo /n`)
         const assetID = Date.now();
         const myFile = req['files'].myFile;
         res.locals.assetID = assetID;

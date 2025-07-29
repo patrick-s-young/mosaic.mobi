@@ -1,4 +1,5 @@
 import fs from 'fs';
+
 export const getNumberOfFiles = (dirPath: string) => {
   try {
     const files = fs.readdirSync(dirPath);

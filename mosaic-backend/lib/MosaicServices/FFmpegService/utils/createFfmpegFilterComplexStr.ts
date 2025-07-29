@@ -1,7 +1,6 @@
-
-import { createOverlayFilter } from './overlay';
-import { createPtsFilter } from './ptsFilter';
-import { createTrimFilter } from './trim';
+import createOverlayFilter from './createOverlayFilter';
+import createPtsFilter from './createPtsFilter';
+import createTrimFilter from './createTrimFilter';
 
 
 export const createFfmpegFilterComplexStr =  ({
@@ -18,13 +17,9 @@ export const createFfmpegFilterComplexStr =  ({
   let ffmpegFilterComplexStr = '';
 
 
-  //preCropStr = 'crop=1080:1080:0:420, ';
-
   /////////////////////////////
   // CREATE BASE AND BG
-  //  ffmpegFilterComplexStr += `nullsrc=size=${outputSize}:duration=${outputDuration} [base];\n`;
   ffmpegFilterComplexStr += `nullsrc=size=${outputSize}:duration=${outputDuration} [base];\n`;
-  //ffmpegFilterComplexStr += `[0:v] scale=${outputScale}, trim=start=${bgFrameStart}:duration=0.05, setpts=PTS-STARTPTS${bgFrameHue} [bg_frame];\n`;
   ffmpegFilterComplexStr += `[0:v] ${preCropStr}trim=start=${bgFrameStart}:duration=0.05, setpts=PTS-STARTPTS${bgFrameHue} [bg_frame];\n`;
   ffmpegFilterComplexStr += `[base][bg_frame] overlay [bg];\n`;
 
