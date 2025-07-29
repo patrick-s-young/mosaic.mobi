@@ -3,13 +3,11 @@ import ffmpeg from '@ffmpeg-installer/ffmpeg';
 import ffprobe from 'ffprobe';
 import ffprobeStatic from 'ffprobe-static';
 import { createFfmpegFilterComplexStr } from './utils/createFfmpegFilterComplexStr';
-
 import env from '../../Environment';
 import { Request, Response } from 'express';
 import { io } from '../../App';
 
 export default class FFmpegService {
-
   public probeVideo (req: Request, res: Response, next: any) {
     const assetID = res.locals.assetID
     const inputPath  = `${env.getVolumnPath()}/${assetID}/upload.mov`;
@@ -19,7 +17,6 @@ export default class FFmpegService {
         if (err) console.log(`ffprobe err status: ${err}`);
         for (const key in Object.entries(info.streams)) {
           if (info.streams[key].codec_type === 'video') {
-            console.log (`probeVideo results: width: ${info.streams[key].width}, height: ${info.streams[key].height}, duration: ${info.streams[key].duration}`);
             res.locals.videoUpload = {
               width: info.streams[key].width,
               height: info.streams[key].height,
@@ -28,7 +25,6 @@ export default class FFmpegService {
             }
           }
         }
-        console.log('res.locals.videoUpload: ', res.locals.videoUpload)
         next();
       });
   }
@@ -61,7 +57,7 @@ export default class FFmpegService {
     proc.stderr.on('data', function(data) {
       const lines = data.split(/\s+/);
       if (lines[0] === 'frame=') {
-        io.emit('ffmpegProgress', { currentFrame: lines[1], totalFrames: res.locals.videoUpload.totalFrames });
+        io.emit('ffmpegProgress', { actionName: 'Cropping', currentFrame: lines[1], totalFrames: res.locals.videoUpload.totalFrames });
       }
     });
     proc.on('close', function() {
@@ -87,9 +83,12 @@ export default class FFmpegService {
       // @ts-ignore: Object is possibly 'null'.
     proc.stderr.setEncoding("utf8")
       // @ts-ignore: Object is possibly 'null'.
-    proc.stderr.on('data', function(data) {
-      console.log(`resizeVideo > proc.stderr.on('data'): ${data}`);
-    });
+      proc.stderr.on('data', function(data) {
+        const lines = data.split(/\s+/);
+        if (lines[0] === 'frame=') {
+          io.emit('ffmpegProgress', { actionName: 'Resizing', currentFrame: lines[1], totalFrames: res.locals.videoUpload.totalFrames });
+        }
+      });
     proc.on('close', function() {
       //res.locals.status = 'success';
       console.log(`resizeVideo > proc.on('close')`);
@@ -112,7 +111,10 @@ export default class FFmpegService {
     proc.stderr.setEncoding("utf8")
     // @ts-ignore: Object is possibly 'null'.
     proc.stderr.on('data', function(data) {
-      console.log(`proc.stderr.on('data'): ${data}`);
+      const lines = data.split(/\s+/);
+      if (lines[0] === 'frame=') {
+        io.emit('ffmpegProgress', { actionName: 'Export frame', currentFrame: lines[1], totalFrames: res.locals.videoUpload.totalFrames });
+      }
     });
     proc.on('close', function() {
       res.locals.status = 'success';
@@ -138,14 +140,11 @@ export default class FFmpegService {
       preCropStr: '',
       inputDuration
     }
-
     const assetID = res.locals.assetID
     const inputPath  = `${env.getVolumnPath()}/${assetID}/cropped.mov`; 
     const outputDirectory = `${env.getVolumnPath()}/${assetID}`; 
     const outputPath = `${outputDirectory}/mosaic.mov`; 
     const ffmpegFilterComplexStr = createFfmpegFilterComplexStr(filterParams);
-    console.log(`\n\nffmpegFilterComplexStr=${ffmpegFilterComplexStr}\n\n`);
-
     const proc = spawn(ffmpeg.path, ['-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-preset', 'fast', '-crf', '26', '-map', '[final]', '-an', '-y', outputPath]);
     // @ts-ignore: Object is possibly 'null'.
     proc.stdout.on('data', function(data) {
@@ -157,7 +156,7 @@ export default class FFmpegService {
     proc.stderr.on('data', function(data) {
       const lines = data.split(/\s+/);
       if (lines[0] === 'frame=') {
-        io.emit('ffmpegProgress', { currentFrame: lines[1], totalFrames: res.locals.videoUpload.totalFrames });
+        io.emit('ffmpegProgress', { actionName: 'Rendering', currentFrame: lines[1], totalFrames: res.locals.videoUpload.totalFrames });
       }
     });
     proc.on('close', function() {
