@@ -37,6 +37,6 @@ export const preloadSequentialImages = createAsyncThunk(
       });
 
     const sequentialImages = await Promise.all(imageArr);
-    return { imageURLs: sequentialImages };
+    return { imageURLs: sequentialImages, imageFilenames: filenameArr };
   }
 );
