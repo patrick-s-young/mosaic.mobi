@@ -98,7 +98,7 @@ export default class FFmpegService {
 
   public exportFrames (req: Request, res: Response, next: any) {
     const assetID = res.locals.assetID
-    const inputPath  = `${env.getVolumnPath()}/${assetID}/resized.mov`; 
+    const inputPath  = `${env.getVolumnPath()}/${assetID}/cropped.mov`; 
     const outputPath = `${env.getVolumnPath()}/${assetID}/`; 
     const duration = res.locals.videoUpload.duration - 1;
     const frameInterval = 18 / duration;
@@ -135,17 +135,17 @@ export default class FFmpegService {
       fadeInToOutDuration: 2.0,
       outputDuration: 15.0,
       outputSize: '1080x1080',
-      bgFrameStart,
-      bgFrameHue: ', hue=s=0.1',
+      bgFrameHue: 'hue=s=0.1',
       preCropStr: '',
       inputDuration
     }
     const assetID = res.locals.assetID
     const inputPath  = `${env.getVolumnPath()}/${assetID}/cropped.mov`; 
+    const bgImagePath = `${env.getVolumnPath()}/${assetID}/${res.locals.currentScrubberFrame}`;
     const outputDirectory = `${env.getVolumnPath()}/${assetID}`; 
     const outputPath = `${outputDirectory}/mosaic.mov`; 
     const ffmpegFilterComplexStr = createFfmpegFilterComplexStr(filterParams);
-    const proc = spawn(ffmpeg.path, ['-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-preset', 'fast', '-crf', '26', '-map', '[final]', '-an', '-y', outputPath]);
+    const proc = spawn(ffmpeg.path, ['-i', bgImagePath, '-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-preset', 'fast', '-crf', '26', '-map', '[final]', '-an', '-y', outputPath]);
     // @ts-ignore: Object is possibly 'null'.
     proc.stdout.on('data', function(data) {
       console.log(`proc.stdout.on('data'): ${data}`);

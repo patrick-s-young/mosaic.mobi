@@ -23,10 +23,11 @@ import './renderMosaic.scss';
 
 const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { assetID } = useSelector<RootState, UploadState>((state) => state.upload);
+  const { assetID, imageFilenames } = useSelector<RootState, UploadState>((state) => state.upload);
   const { numTiles } = useSelector<RootState, Partial<MosaicState>>((state) => state.mosaic);
   const { currentScrubberFrame } = useSelector<RootState, ScrubberState>((state) => state.scrubber);
   const { renderPhase, renderBlob } = useSelector<RootState, RenderState>((state) => state.render);
+  const imageFilename = imageFilenames[currentScrubberFrame];
 
   const onRenderVideo = () => {
     traceEvent({
@@ -34,7 +35,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
       action: 'onRenderVideo',
       label: 'N/A'
     });
-    const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${currentScrubberFrame}`;
+    const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${imageFilename}`;
     dispatch(renderMosaic(renderUrl));
     dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
   }

@@ -9,5 +9,6 @@ export type UploadState =
   & { statusMessage: string,
       uploadPhase: UploadPhaseEnum,
       resizedWidth: number,
-      imageURLs: Array<string>
+      imageURLs: Array<string>,
+      imageFilenames: Array<string>
     }

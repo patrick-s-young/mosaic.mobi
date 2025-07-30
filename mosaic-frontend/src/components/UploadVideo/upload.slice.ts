@@ -18,6 +18,7 @@ const initialState: UploadState = {
   uploadDuration: defaultVideoConfig.uploadDuration,
   videoURL: '',
   imageURLs: [],
+  imageFilenames: [],
   resizedWidth: 320,
   statusMessage: ''
 }
@@ -84,6 +85,7 @@ const uploadSlice = createSlice ({
     })
     builder.addCase(preloadSequentialImages.fulfilled, (state, action) => {
       state.imageURLs = action.payload.imageURLs;
+      state.imageFilenames = action.payload.imageFilenames;
       state.uploadPhase = UploadPhaseEnum.IMAGES_PRELOADED;
     })
   }
