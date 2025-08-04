@@ -40,11 +40,11 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
           resizedWidth } = useSelector<RootState, UploadState>((state) => state.upload); 
   const inputRef = useRef<HTMLInputElement>(null);   
 
-
   useEffect(() => {
     switch(uploadPhase) {
       case UploadPhaseEnum.VIDEO_SUBMITED:    
-        if (selectedFile !== undefined) {        
+        if (selectedFile !== undefined) {     
+          
           traceEvent({
             category: 'UploadVideo',
             action: 'onVideoSubmited',

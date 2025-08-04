@@ -10,5 +10,6 @@ export type UploadState =
       uploadPhase: UploadPhaseEnum,
       resizedWidth: number,
       imageURLs: Array<string>,
-      imageFilenames: Array<string>
+      imageFilenames: Array<string>,
+      downloadFileName: string
     }

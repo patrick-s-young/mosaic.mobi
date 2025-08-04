@@ -14,6 +14,7 @@ import { MAX_VIDEO_UPLOAD_DURATION, defaultVideoConfig } from '@/app.config';
 const initialState: UploadState = {
   uploadPhase: UploadPhaseEnum.VIDEO_UPLOADED,
   selectedFile: undefined,
+  downloadFileName: '',
   assetID: defaultVideoConfig.assetID,
   uploadDuration: defaultVideoConfig.uploadDuration,
   videoURL: '',
@@ -45,11 +46,13 @@ const uploadSlice = createSlice ({
       console.log(`preUploadValidation.pending > action.payload: ${action.payload}`);
     })
     builder.addCase(preUploadValidation.fulfilled, (state, action) => {
+      const regex = new RegExp(/\.[^/.]+$/); 
       state.uploadDuration = action.payload.uploadDuration;
       if (state.uploadDuration > MAX_VIDEO_UPLOAD_DURATION) {
         state.uploadPhase = UploadPhaseEnum.VIDEO_TOO_LONG;
       } else {
         state.selectedFile = action.payload.selectedFile;
+        state.downloadFileName = action.payload.selectedFile.name.replace(regex, '_mosaic.mov');
         state.uploadPhase = UploadPhaseEnum.VIDEO_SUBMITED;
       }
     }) 

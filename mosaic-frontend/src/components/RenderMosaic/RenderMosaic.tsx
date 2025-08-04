@@ -23,7 +23,7 @@ import './renderMosaic.scss';
 
 const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { assetID, imageFilenames } = useSelector<RootState, UploadState>((state) => state.upload);
+  const { assetID, imageFilenames, downloadFileName } = useSelector<RootState, UploadState>((state) => state.upload);
   const { numTiles } = useSelector<RootState, Partial<MosaicState>>((state) => state.mosaic);
   const { currentScrubberFrame } = useSelector<RootState, ScrubberState>((state) => state.scrubber);
   const { renderPhase, renderBlob } = useSelector<RootState, RenderState>((state) => state.render);
@@ -47,7 +47,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
         action: 'onSaveVideo',
         label: 'N/A'
       });
-      FileDownload(renderBlob, 'mosaic_render.mov');
+      FileDownload(renderBlob, downloadFileName);
       dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
       dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
       dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));
