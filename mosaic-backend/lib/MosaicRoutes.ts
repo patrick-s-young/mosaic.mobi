@@ -19,7 +19,6 @@ export class MosaicRoutes {
     app.get('/render/mosaic',  
       (req, res, next) => {
         res.locals = { ...res.locals, ...req.query }
-        console.log('render/mosaic res.locals: ', res.locals)
         this.mosaicController.probeVideo(req, res, next)
       },
       (req, res, next) => this.mosaicController.renderMosaic(req, res, next), 
