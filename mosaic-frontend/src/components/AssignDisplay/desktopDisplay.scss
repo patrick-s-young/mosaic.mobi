@@ -55,8 +55,11 @@
   }
 
   &__rightColumn {
-    justify-content: flex-end;
-    gap: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 20px;
     > div {
       color:#7b1fa2;
       font-size: 24px;
