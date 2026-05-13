@@ -41,8 +41,8 @@ flowchart TD
     FinalMovie --> DownloadBlob[Return rendered video blob]
     DownloadBlob --> Save[Frontend prompts user to save]
 
-    Backend -. Socket.IO progress .-> Progress[Upload/render progress prompt]
-    RenderFFmpeg -. Socket.IO progress .-> Progress
+    Backend -.->|Socket IO progress| Progress[Upload/render progress prompt]
+    RenderFFmpeg -.->|Socket IO progress| Progress
 ```
 
 ### Frontend Flow
