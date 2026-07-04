@@ -3,7 +3,7 @@ import ffmpeg from '@ffmpeg-installer/ffmpeg';
 import ffprobe from 'ffprobe';
 import ffprobeStatic from 'ffprobe-static';
 import { createFfmpegFilterComplexStr } from './utils/createFfmpegFilterComplexStr';
-import env from '../../Environment';
+import env from '../../environment';
 import { Request, Response } from 'express';
 import { io } from '../../App';
 

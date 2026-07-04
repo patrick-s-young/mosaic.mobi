@@ -1,6 +1,6 @@
 import { Application, Request, Response } from 'express';
 import { MosaicController } from './MosaicController';
-import env from './Environment';
+import env from './environment';
 
 
 export class MosaicRoutes {

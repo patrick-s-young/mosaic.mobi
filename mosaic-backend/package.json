@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Express.js server for the 'mosaic' web app",
   "main": "./dist/server.js",
-  "type": "module",
   "scripts": {
     "start": "npm run build:live",
     "build": "tsc -p .",
