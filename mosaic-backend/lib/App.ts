@@ -4,7 +4,7 @@ import { MosaicRoutes } from "./MosaicRoutes";
 const expressFileUpload = require('express-fileupload');
 import { Server } from 'socket.io';
 import { createServer } from 'http';
-import env from './Environment';
+import env from './environment';
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
