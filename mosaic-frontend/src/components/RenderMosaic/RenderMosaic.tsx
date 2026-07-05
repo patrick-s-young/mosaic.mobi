@@ -47,7 +47,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
         action: 'onSaveVideo',
         label: 'N/A'
       });
-      FileDownload(renderBlob, downloadFileName);
+      FileDownload(renderBlob, downloadFileName, 'video/quicktime');
       dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
       dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
       dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));

@@ -129,34 +129,40 @@ export default class FFmpegService {
     const frameInterval = duration / 18;
     const bgFrameStart = (res.locals.currentScrubberFrame - 1) * frameInterval;
     const inputDuration = res.locals.videoUpload.duration;
+    const outputFps = 25;
     const filterParams = {
       panelCount: res.locals.numTiles,
       sequenceCount: res.locals.numTiles > 4 ? 3 : 4,
       fadeInToOutDuration: 2.0,
       outputDuration: 15.0,
+      outputFps,
       outputSize: '1080x1080',
       bgFrameHue: 'hue=s=0.1',
       preCropStr: '',
       inputDuration
     }
+    // the rendered output always has a fixed duration/frame rate regardless of
+    // the source clip's length, so progress must be tracked against the
+    // output's own frame count rather than the uploaded video's totalFrames
+    const totalOutputFrames = filterParams.outputDuration * filterParams.outputFps;
     const assetID = res.locals.assetID
-    const inputPath  = `${env.getVolumnPath()}/${assetID}/cropped.mov`; 
+    const inputPath  = `${env.getVolumnPath()}/${assetID}/cropped.mov`;
     const bgImagePath = `${env.getVolumnPath()}/${assetID}/${res.locals.currentScrubberFrame}`;
-    const outputDirectory = `${env.getVolumnPath()}/${assetID}`; 
-    const outputPath = `${outputDirectory}/mosaic.mov`; 
+    const outputDirectory = `${env.getVolumnPath()}/${assetID}`;
+    const outputPath = `${outputDirectory}/mosaic.mov`;
     const ffmpegFilterComplexStr = createFfmpegFilterComplexStr(filterParams);
-    const proc = spawn(ffmpeg.path, ['-i', bgImagePath, '-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-preset', 'fast', '-crf', '26', '-map', '[final]', '-an', '-y', outputPath]);
+    const proc = spawn(ffmpeg.path, ['-i', bgImagePath, '-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-preset', 'veryfast', '-crf', '26', '-map', '[final]', '-an', '-y', outputPath]);
     // @ts-ignore: Object is possibly 'null'.
     proc.stdout.on('data', function(data) {
       console.log(`proc.stdout.on('data'): ${data}`);
-    });   
+    });
     // @ts-ignore: Object is possibly 'null'.
     proc.stderr.setEncoding("utf8")
     // @ts-ignore: Object is possibly 'null'.
     proc.stderr.on('data', function(data) {
       const lines = data.split(/\s+/);
       if (lines[0] === 'frame=') {
-        io.emit('ffmpegProgress', { actionName: 'Rendering', currentFrame: lines[1], totalFrames: res.locals.videoUpload.totalFrames });
+        io.emit('ffmpegProgress', { actionName: 'Rendering', currentFrame: lines[1], totalFrames: totalOutputFrames });
       }
     });
     proc.on('close', function() {
