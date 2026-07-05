@@ -23,6 +23,10 @@ services:
     build:
       context: ./mosaic-backend
       dockerfile: Dockerfile
+    environment:
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME:-}
+      - AWS_REGION=${AWS_REGION:-us-west-1}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
     volumes:
       - mosaic-volume:/var/lib/video
       - ./assets/330055:/var/lib/video/330055

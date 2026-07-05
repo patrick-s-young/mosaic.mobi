@@ -34,6 +34,18 @@ class Environment {
     }
 
   }
+
+  getS3BucketName(): string {
+    return process.env.S3_BUCKET_NAME || '';
+  }
+
+  getAwsRegion(): string {
+    return process.env.AWS_REGION || 'us-west-1';
+  }
+
+  getAdminPassword(): string {
+    return process.env.ADMIN_PASSWORD || '';
+  }
 }
 
 export default new Environment(Environments.local_environment);

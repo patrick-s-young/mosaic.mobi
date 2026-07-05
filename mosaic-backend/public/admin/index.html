@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Mosaic - Asset Report</title>
+<style>
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif; margin: 2rem; background: #14151a; color: #e6e6e6; }
+  h1 { font-size: 1.4rem; margin-bottom: 1rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid #2c2d33; vertical-align: top; }
+  th { color: #9aa0a6; font-weight: 600; }
+  tr:hover { background: #1c1d22; }
+  .muted { color: #7a7f87; }
+  button { background: #2c2d33; color: #e6e6e6; border: 1px solid #3a3b42; border-radius: 4px; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.85rem; margin-right: 0.4rem; }
+  button:hover { background: #3a3b42; }
+  video { max-width: 240px; display: block; margin-top: 0.4rem; border-radius: 4px; }
+  #status { color: #7a7f87; margin-bottom: 1rem; }
+</style>
+</head>
+<body>
+  <h1>Mosaic - Asset Report</h1>
+  <div id="status">Loading...</div>
+  <table id="assetTable" style="display:none">
+    <thead>
+      <tr>
+        <th>Uploaded</th>
+        <th>Location</th>
+        <th>Latest Edit</th>
+        <th>Original</th>
+        <th>Rendered</th>
+      </tr>
+    </thead>
+    <tbody id="assetRows"></tbody>
+  </table>
+
+  <script>
+    async function fetchVideoUrl(assetID, filename) {
+      const response = await fetch(`/admin/api/video-url?assetID=${encodeURIComponent(assetID)}&filename=${encodeURIComponent(filename)}`);
+      if (!response.ok) return null;
+      const data = await response.json();
+      return data.url;
+    }
+
+    function formatLocation(location) {
+      if (!location) return '<span class="muted">unknown</span>';
+      const parts = [location.city, location.region, location.country].filter(Boolean);
+      return parts.length ? parts.join(', ') : '<span class="muted">unknown</span>';
+    }
+
+    function formatLatestEdit(renders) {
+      if (!renders || renders.length === 0) return '<span class="muted">not rendered</span>';
+      const latest = renders[renders.length - 1];
+      return `${latest.numTiles} tiles, frame ${latest.scrubberFrame}<br><span class="muted">${new Date(latest.renderedAt).toLocaleString()}</span>`;
+    }
+
+    function makeVideoCell(assetID, filename, label) {
+      const cell = document.createElement('td');
+      const button = document.createElement('button');
+      button.textContent = label;
+      button.onclick = async () => {
+        button.textContent = 'Loading...';
+        const url = await fetchVideoUrl(assetID, filename);
+        if (!url) {
+          button.textContent = 'Not available';
+          return;
+        }
+        button.remove();
+        const video = document.createElement('video');
+        video.src = url;
+        video.controls = true;
+        cell.appendChild(video);
+      };
+      cell.appendChild(button);
+      return cell;
+    }
+
+    async function load() {
+      const statusEl = document.getElementById('status');
+      try {
+        const response = await fetch('/admin/api/assets');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        const rows = document.getElementById('assetRows');
+        rows.innerHTML = '';
+        data.assets.forEach((asset) => {
+          const row = document.createElement('tr');
+
+          const uploadedCell = document.createElement('td');
+          uploadedCell.textContent = new Date(asset.uploadedAt).toLocaleString();
+          row.appendChild(uploadedCell);
+
+          const locationCell = document.createElement('td');
+          locationCell.innerHTML = formatLocation(asset.location);
+          row.appendChild(locationCell);
+
+          const editCell = document.createElement('td');
+          editCell.innerHTML = formatLatestEdit(asset.renders);
+          row.appendChild(editCell);
+
+          row.appendChild(makeVideoCell(asset.assetID, 'upload.mov', 'View original'));
+          row.appendChild(makeVideoCell(asset.assetID, 'mosaic.mov', 'View rendered'));
+
+          rows.appendChild(row);
+        });
+
+        statusEl.style.display = 'none';
+        document.getElementById('assetTable').style.display = data.assets.length ? 'table' : 'none';
+        if (!data.assets.length) {
+          statusEl.style.display = 'block';
+          statusEl.textContent = 'No archived assets yet.';
+        }
+      } catch (err) {
+        statusEl.textContent = `Failed to load assets: ${err.message}`;
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>

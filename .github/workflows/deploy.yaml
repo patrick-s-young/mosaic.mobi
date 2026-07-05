@@ -78,6 +78,9 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
           IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
+          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
         run: |
           set -euo pipefail
 
@@ -95,7 +98,8 @@ jobs:
 
           ssh $SSH_OPTS "$EC2_USER@$EC2_HOST" "
             cd ~/mosaic-app &&
-            echo IMAGE_TAG=$IMAGE_TAG > .env &&
+            printf 'IMAGE_TAG=%s\nS3_BUCKET_NAME=%s\nAWS_REGION=%s\nADMIN_PASSWORD=%s\n' \
+              '$IMAGE_TAG' '$S3_BUCKET_NAME' '$AWS_REGION' '$ADMIN_PASSWORD' > .env &&
             docker-compose pull &&
             docker-compose up -d --remove-orphans &&
             docker image prune -af
