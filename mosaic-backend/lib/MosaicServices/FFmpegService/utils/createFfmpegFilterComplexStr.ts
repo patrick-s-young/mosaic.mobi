@@ -9,6 +9,7 @@ export const createFfmpegFilterComplexStr =  ({
   fadeInToOutDuration,
   inputDuration,
   outputDuration,
+  outputFps,
   outputSize,
   bgFrameHue,
   preCropStr
@@ -18,7 +19,7 @@ export const createFfmpegFilterComplexStr =  ({
 
   /////////////////////////////
   // CREATE BASE AND BG
-  ffmpegFilterComplexStr += `nullsrc=size=${outputSize}:duration=${outputDuration} [base];\n`;
+  ffmpegFilterComplexStr += `nullsrc=size=${outputSize}:duration=${outputDuration}:rate=${outputFps} [base];\n`;
   //ffmpegFilterComplexStr += `[0:v] ${preCropStr}trim=start=${bgFrameStart}:duration=0.05, setpts=PTS-STARTPTS${bgFrameHue} [bg_frame];\n`;
   ffmpegFilterComplexStr += `[0:v]${bgFrameHue}[bg_frame];\n`;
   ffmpegFilterComplexStr += `[base][bg_frame] overlay [bg];\n`;

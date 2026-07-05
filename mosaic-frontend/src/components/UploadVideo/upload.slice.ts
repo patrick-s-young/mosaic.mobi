@@ -52,7 +52,8 @@ const uploadSlice = createSlice ({
         state.uploadPhase = UploadPhaseEnum.VIDEO_TOO_LONG;
       } else {
         state.selectedFile = action.payload.selectedFile;
-        state.downloadFileName = action.payload.selectedFile.name.replace(regex, '_mosaic.mov');
+        const baseFileName = action.payload.selectedFile.name.replace(regex, '') || 'video';
+        state.downloadFileName = `${baseFileName}_mosaic.mov`;
         state.uploadPhase = UploadPhaseEnum.VIDEO_SUBMITED;
       }
     }) 
