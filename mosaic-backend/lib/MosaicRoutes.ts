@@ -7,8 +7,9 @@ export class MosaicRoutes {
   private mosaicController: MosaicController = new MosaicController();
 
   public route(app: Application) {
-    app.post('/uploadvideo',  
-      (req, res, next) => this.mosaicController.uploadVideo(req, res, next), 
+    app.post('/uploadvideo',
+      (req, res, next) => this.mosaicController.uploadVideo(req, res, next),
+      (req, res, next) => this.mosaicController.createManifest(req, res, next),
       (req, res, next) => this.mosaicController.probeVideo(req, res, next),
       (req, res, next) => this.mosaicController.cropVideo(req, res, next),
       (req, res, next) => this.mosaicController.resizeVideo(req, res, next),
@@ -16,12 +17,13 @@ export class MosaicRoutes {
       (req, res, next) => res.status(200).json({assetID: res.locals.assetID})
      );
 
-    app.get('/render/mosaic',  
+    app.get('/render/mosaic',
       (req, res, next) => {
         res.locals = { ...res.locals, ...req.query }
         this.mosaicController.probeVideo(req, res, next)
       },
-      (req, res, next) => this.mosaicController.renderMosaic(req, res, next), 
+      (req, res, next) => this.mosaicController.renderMosaic(req, res, next),
+      (req, res, next) => this.mosaicController.recordRender(req, res, next),
       (req, res, next) => res.download(`${env.getVolumnPath()}/${req.query.assetID}/mosaic.mov`)
     );
      
