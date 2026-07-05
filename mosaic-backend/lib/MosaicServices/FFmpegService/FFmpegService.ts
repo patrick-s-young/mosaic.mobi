@@ -46,7 +46,7 @@ export default class FFmpegService {
       y: yOffset
     }
     const filter = `[0:v] crop=${crop.w}:${crop.h}:${crop.x}:${crop.y}, scale=${1080}:-1 [final]`;
-    const proc = spawn(ffmpeg.path, ['-i', inputPath, '-filter_complex', filter , '-map', '[final]', '-an', '-y', outputPath]);
+    const proc = spawn(ffmpeg.path, ['-i', inputPath, '-filter_complex', filter , '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', outputPath]);
       // @ts-ignore: Object is possibly 'null'.
     proc.stdout.on('data', function(data) {
       console.log(`cropVideo > proc.stdout.on('data'): ${data}`);
