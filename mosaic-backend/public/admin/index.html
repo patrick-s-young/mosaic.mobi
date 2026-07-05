@@ -11,10 +11,31 @@
   th { color: #9aa0a6; font-weight: 600; }
   tr:hover { background: #1c1d22; }
   .muted { color: #7a7f87; }
-  button { background: #2c2d33; color: #e6e6e6; border: 1px solid #3a3b42; border-radius: 4px; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.85rem; margin-right: 0.4rem; }
-  button:hover { background: #3a3b42; }
-  video { max-width: 240px; display: block; margin-top: 0.4rem; border-radius: 4px; }
   #status { color: #7a7f87; margin-bottom: 1rem; }
+
+  .thumb {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #23242b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb .placeholder { color: #7a7f87; font-size: 0.75rem; text-align: center; padding: 0.5rem; }
+  .thumb .play-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.25);
+    color: white; font-size: 1.8rem;
+    pointer-events: none;
+  }
+  .thumb:hover .play-overlay { background: rgba(0,0,0,0.4); }
+  video { width: 120px; height: 120px; object-fit: cover; border-radius: 6px; display: block; }
 </style>
 </head>
 <body>
@@ -34,7 +55,7 @@
   </table>
 
   <script>
-    async function fetchVideoUrl(assetID, filename) {
+    async function fetchSignedUrl(assetID, filename) {
       const response = await fetch(`/admin/api/video-url?assetID=${encodeURIComponent(assetID)}&filename=${encodeURIComponent(filename)}`);
       if (!response.ok) return null;
       const data = await response.json();
@@ -53,24 +74,45 @@
       return `${latest.numTiles} tiles, frame ${latest.scrubberFrame}<br><span class="muted">${new Date(latest.renderedAt).toLocaleString()}</span>`;
     }
 
-    function makeVideoCell(assetID, filename, label) {
+    // renders a thumbnail that swaps itself out for a playing <video> on click.
+    // videoFilename is fetched lazily (only when clicked); thumbnailFilename is
+    // fetched immediately so the grid has something to show right away.
+    function makeThumbnailCell(assetID, videoFilename, thumbnailFilename) {
       const cell = document.createElement('td');
-      const button = document.createElement('button');
-      button.textContent = label;
-      button.onclick = async () => {
-        button.textContent = 'Loading...';
-        const url = await fetchVideoUrl(assetID, filename);
+      const thumb = document.createElement('div');
+      thumb.className = 'thumb';
+      thumb.innerHTML = '<span class="placeholder">Loading...</span>';
+      cell.appendChild(thumb);
+
+      fetchSignedUrl(assetID, thumbnailFilename).then((url) => {
+        thumb.innerHTML = '';
+        if (url) {
+          const img = document.createElement('img');
+          img.src = url;
+          thumb.appendChild(img);
+        } else {
+          thumb.innerHTML = '<span class="placeholder">Click to play</span>';
+        }
+        const overlay = document.createElement('div');
+        overlay.className = 'play-overlay';
+        overlay.textContent = '▶';
+        thumb.appendChild(overlay);
+      });
+
+      thumb.onclick = async () => {
+        thumb.innerHTML = '<span class="placeholder">Loading...</span>';
+        const url = await fetchSignedUrl(assetID, videoFilename);
         if (!url) {
-          button.textContent = 'Not available';
+          thumb.innerHTML = '<span class="placeholder">Not available</span>';
           return;
         }
-        button.remove();
         const video = document.createElement('video');
         video.src = url;
         video.controls = true;
-        cell.appendChild(video);
+        video.autoplay = true;
+        thumb.replaceWith(video);
       };
-      cell.appendChild(button);
+
       return cell;
     }
 
@@ -97,8 +139,12 @@
           editCell.innerHTML = formatLatestEdit(asset.renders);
           row.appendChild(editCell);
 
-          row.appendChild(makeVideoCell(asset.assetID, 'upload.mov', 'View original'));
-          row.appendChild(makeVideoCell(asset.assetID, 'mosaic.mov', 'View rendered'));
+          const latestRender = asset.renders && asset.renders.length ? asset.renders[asset.renders.length - 1] : null;
+          const renderedFilename = (latestRender && latestRender.outputFilename) || 'mosaic.mov';
+          const renderedThumbnailFilename = renderedFilename.replace(/\.mov$/, '.jpg');
+
+          row.appendChild(makeThumbnailCell(asset.assetID, 'upload.mov', 'img001.jpg'));
+          row.appendChild(makeThumbnailCell(asset.assetID, renderedFilename, renderedThumbnailFilename));
 
           rows.appendChild(row);
         });

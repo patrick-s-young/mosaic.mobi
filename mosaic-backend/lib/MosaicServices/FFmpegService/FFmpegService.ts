@@ -6,6 +6,7 @@ import { createFfmpegFilterComplexStr } from './utils/createFfmpegFilterComplexS
 import env from '../../environment';
 import { Request, Response } from 'express';
 import { io } from '../../App';
+const fs = require('fs');
 
 export default class FFmpegService {
   public probeVideo (req: Request, res: Response, next: any) {
@@ -149,7 +150,24 @@ export default class FFmpegService {
     const inputPath  = `${env.getVolumnPath()}/${assetID}/cropped.mov`;
     const bgImagePath = `${env.getVolumnPath()}/${assetID}/${res.locals.currentScrubberFrame}`;
     const outputDirectory = `${env.getVolumnPath()}/${assetID}`;
-    const outputPath = `${outputDirectory}/mosaic.mov`;
+    // cache key is the source video (assetID) + background frame + tile
+    // pattern; an identical combination has already produced this exact
+    // output, so it's safe to reuse it instead of re-encoding
+    const scrubberFrameBase = String(res.locals.currentScrubberFrame).replace(/\.[^/.]+$/, '');
+    const outputFilename = `mosaic_${res.locals.numTiles}_${scrubberFrameBase}.mov`;
+    const outputPath = `${outputDirectory}/${outputFilename}`;
+    const thumbnailFilename = outputFilename.replace(/\.mov$/, '.jpg');
+    const thumbnailPath = `${outputDirectory}/${thumbnailFilename}`;
+    res.locals.outputFilename = outputFilename;
+    res.locals.thumbnailFilename = thumbnailFilename;
+
+    if (fs.existsSync(outputPath)) {
+      console.log(`renderMosaic: reusing cached render at ${outputPath}`);
+      res.locals.status = 'success';
+      this.generateThumbnail(outputPath, thumbnailPath).then(() => next());
+      return;
+    }
+
     const ffmpegFilterComplexStr = createFfmpegFilterComplexStr(filterParams);
     const proc = spawn(ffmpeg.path, ['-i', bgImagePath, '-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-preset', 'veryfast', '-crf', '26', '-map', '[final]', '-an', '-y', outputPath]);
     // @ts-ignore: Object is possibly 'null'.
@@ -165,10 +183,27 @@ export default class FFmpegService {
         io.emit('ffmpegProgress', { actionName: 'Rendering', currentFrame: lines[1], totalFrames: totalOutputFrames });
       }
     });
-    proc.on('close', function() {
+    proc.on('close', () => {
       res.locals.status = 'success';
       console.log(`renderMosaic : proc.on('close')`);
-      next();
+      this.generateThumbnail(outputPath, thumbnailPath).then(() => next());
+    });
+  }
+
+  // grabs a single frame from a rendered video for use as an admin-report thumbnail;
+  // failures are swallowed so a broken thumbnail never blocks the render response
+  private generateThumbnail (videoPath: string, thumbnailPath: string): Promise<void> {
+    return new Promise((resolve) => {
+      if (fs.existsSync(thumbnailPath)) {
+        resolve();
+        return;
+      }
+      const proc = spawn(ffmpeg.path, ['-i', videoPath, '-ss', '1', '-frames:v', '1', '-y', thumbnailPath]);
+      proc.on('close', () => resolve());
+      proc.on('error', (err) => {
+        console.log(`generateThumbnail err: ${err}`);
+        resolve();
+      });
     });
   }
 
