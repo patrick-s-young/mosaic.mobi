@@ -46,17 +46,18 @@ const uploadSlice = createSlice ({
       console.log(`preUploadValidation.pending > action.payload: ${action.payload}`);
     })
     builder.addCase(preUploadValidation.fulfilled, (state, action) => {
-      const regex = new RegExp(/\.[^/.]+$/); 
       state.uploadDuration = action.payload.uploadDuration;
       if (state.uploadDuration > MAX_VIDEO_UPLOAD_DURATION) {
         state.uploadPhase = UploadPhaseEnum.VIDEO_TOO_LONG;
       } else {
         state.selectedFile = action.payload.selectedFile;
-        const baseFileName = action.payload.selectedFile.name.replace(regex, '') || 'video';
-        state.downloadFileName = `${baseFileName}_mosaic.mov`;
+        const now = new Date();
+        const pad = (n: number) => String(n).padStart(2, '0');
+        const timestamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+        state.downloadFileName = `mosaic_${timestamp}.mov`;
         state.uploadPhase = UploadPhaseEnum.VIDEO_SUBMITED;
       }
-    }) 
+    })
     // Step 2: upload user video
     builder.addCase(uploadUserVideo.rejected, (_, action) => {
       console.warn(`uploadUserVideo.rejected > action.payload: ${action.payload}`);
