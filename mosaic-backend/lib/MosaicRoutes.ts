@@ -24,7 +24,7 @@ export class MosaicRoutes {
       },
       (req, res, next) => this.mosaicController.renderMosaic(req, res, next),
       (req, res, next) => this.mosaicController.recordRender(req, res, next),
-      (req, res, next) => res.download(`${env.getVolumnPath()}/${req.query.assetID}/mosaic.mov`)
+      (req, res, next) => res.download(`${env.getVolumnPath()}/${req.query.assetID}/${res.locals.outputFilename}`)
     );
      
     app.all('*', 

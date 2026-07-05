@@ -21,18 +21,22 @@ export class MosaicController {
 
   public recordRender (req: Request, res: Response, next: any) {
     const assetID = String(req.query.assetID);
+    const outputFilename = String(res.locals.outputFilename);
+    const thumbnailFilename = String(res.locals.thumbnailFilename);
     this.manifestService.recordRender(
       assetID,
       Number(req.query.numTiles),
-      String(req.query.currentScrubberFrame)
+      String(req.query.currentScrubberFrame),
+      outputFilename
     );
     next();
 
     // archive right away so the report reflects recent activity without
     // waiting for the periodic sweep; local copy is left in place so the
-    // user can keep re-rendering this asset in the same session
+    // user can keep re-rendering this asset in the same session.
+    // img001.jpg (from exportFrames) doubles as the original-video thumbnail.
     const assetDir = `${env.getVolumnPath()}/${assetID}`;
-    this.s3Service.uploadAsset(assetID, assetDir, ['upload.mov', 'mosaic.mov', 'manifest.json'])
+    this.s3Service.uploadAsset(assetID, assetDir, ['upload.mov', 'img001.jpg', outputFilename, thumbnailFilename, 'manifest.json'])
       .catch((err) => console.log(`recordRender S3 archive err: ${err}`));
   }
 

@@ -7,6 +7,7 @@ interface RenderEntry {
   renderedAt: string;
   numTiles: number;
   scrubberFrame: string;
+  outputFilename: string;
 }
 
 interface Manifest {
@@ -62,8 +63,8 @@ export default class ManifestService {
     });
   }
 
-  // called after a successful render; records the edit choice made
-  public recordRender (assetID: string, numTiles: number, scrubberFrame: string) {
+  // called after a successful render (cache hit or fresh encode); records the edit choice made
+  public recordRender (assetID: string, numTiles: number, scrubberFrame: string, outputFilename: string) {
     let manifest = this.readManifest(assetID);
     if (!manifest) {
       manifest = {
@@ -76,7 +77,8 @@ export default class ManifestService {
     manifest.renders.push({
       renderedAt: new Date().toISOString(),
       numTiles,
-      scrubberFrame
+      scrubberFrame,
+      outputFilename
     });
     try {
       this.writeManifest(assetID, manifest);

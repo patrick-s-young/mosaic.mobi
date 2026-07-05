@@ -35,7 +35,9 @@ export default class ArchiveService {
       if (age < ASSET_MAX_AGE_MS) continue;
 
       try {
-        await this.s3Service.uploadAsset(assetID, assetDir, ['upload.mov', 'mosaic.mov', 'manifest.json']);
+        // covers both mosaic_*.mov render variants and their mosaic_*.jpg thumbnails
+        const renderVariants = fs.readdirSync(assetDir).filter((f: string) => f.startsWith('mosaic_'));
+        await this.s3Service.uploadAsset(assetID, assetDir, ['upload.mov', 'img001.jpg', 'manifest.json', ...renderVariants]);
         fs.rmSync(assetDir, { recursive: true, force: true });
         console.log(`ArchiveService.sweep archived and removed asset ${assetID}`);
       } catch (err) {
