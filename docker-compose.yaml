@@ -1,0 +1,31 @@
+services:
+
+  proxy:
+    depends_on:
+      - frontend
+    image: patricksyoung/mosaic-proxy:${IMAGE_TAG:-latest}
+    ports:
+      - '80:80'
+    networks:
+      - mosaic-network
+
+  frontend:
+    image: patricksyoung/mosaic-frontend:${IMAGE_TAG:-latest}
+    networks:
+      - mosaic-network
+
+  backend:
+    image: patricksyoung/mosaic-backend:${IMAGE_TAG:-latest}
+    volumes:
+      - mosaic-volume:/var/lib/video
+      - ./assets/330055:/var/lib/video/330055
+      - ./assets/favicon-16x16.png:/var/lib/favicon-16x16.png
+    networks:
+      - mosaic-network
+
+volumes:
+  mosaic-volume:
+
+networks:
+  mosaic-network:
+    driver: bridge # a user defined bridge is required; the default bridge network doesn't support name resolution
