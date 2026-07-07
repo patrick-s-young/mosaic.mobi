@@ -32,6 +32,16 @@ html, body, .full_size {
   background: #000;
 }
 
+/* On a device, size the 9:16 stage to the dynamic viewport so the bottom
+   controls are never clipped behind the browser's address/tool bars. dvh
+   tracks the visible area as the browser chrome shows/hides; vh is the
+   fallback for browsers without dvh support. (Desktop keeps fixed mock dims.) */
+.app_stage--9x16-device {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+}
+
 .video_area--9x16 {
   position: absolute;
   inset: 0;

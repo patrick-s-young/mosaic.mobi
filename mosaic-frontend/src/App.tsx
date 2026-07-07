@@ -17,7 +17,7 @@ import {
 // slices
 import { setScrubberCanvasWidth } from '@/components/Scrubber/scrubber.slice';
 import { setCanvasWidth, setUiVisible } from './app.slice';
-import { appDimensions } from './app.config';
+import { appDimensions, isMobileDevice } from './app.config';
 // interfaces
 import { AppState } from '@interfaces/AppState';
 import { NavState } from '@interfaces/NavState';
@@ -50,8 +50,8 @@ const App: React.FC = () => {
           { isInAppBrowser && <InAppPrompt /> }
           { !isInAppBrowser &&
           <div
-            className={`app_stage ${is9x16 ? 'app_stage--9x16' : ''}`}
-            style={is9x16 ? { width: appDimensions.popOver.width, height: appDimensions.popOver.height } : undefined}
+            className={`app_stage ${is9x16 ? 'app_stage--9x16' : ''} ${is9x16 && isMobileDevice ? 'app_stage--9x16-device' : ''}`}
+            style={is9x16 && !isMobileDevice ? { width: appDimensions.popOver.width, height: appDimensions.popOver.height } : undefined}
           >
             <RenderMosaic
                 displaySize={appDimensions.popOver}
