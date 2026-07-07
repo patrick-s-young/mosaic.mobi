@@ -18,7 +18,9 @@ const initialState: UploadState = {
   assetID: defaultVideoConfig.assetID,
   uploadDuration: defaultVideoConfig.uploadDuration,
   videoURL: '',
+  videoURL9x16: '',
   imageURLs: [],
+  imageURLs9x16: [],
   imageFilenames: [],
   resizedWidth: 320,
   statusMessage: ''
@@ -79,6 +81,7 @@ const uploadSlice = createSlice ({
     })
     builder.addCase(preloadUserVideo.fulfilled, (state, action) => {
       state.videoURL = action.payload.videoURL;
+      state.videoURL9x16 = action.payload.videoURL9x16;
       state.uploadPhase = UploadPhaseEnum.VIDEO_PRELOADED;
     })
     // Step 4: preload sequential images exported from user video
@@ -90,6 +93,7 @@ const uploadSlice = createSlice ({
     })
     builder.addCase(preloadSequentialImages.fulfilled, (state, action) => {
       state.imageURLs = action.payload.imageURLs;
+      state.imageURLs9x16 = action.payload.imageURLs9x16;
       state.imageFilenames = action.payload.imageFilenames;
       state.uploadPhase = UploadPhaseEnum.IMAGES_PRELOADED;
     })

@@ -10,9 +10,10 @@ import MosaicSelector from '@components/MosaicSelector/MosaicSelector';
 import Scrubber from '@components/Scrubber/Scrubber';
 import ScrubberSlider from '@components/ScrubberSlider/ScrubberSlider';
 import InAppPrompt from '@components/InAppPrompt/InAppPrompt';
+import AspectRatioToggle from '@components/AspectRatioToggle/AspectRatioToggle';
 
-export { 
-  PopOver, 
+export {
+  PopOver,
   SlideInOut,
   App,
   AssignDisplay,
@@ -23,5 +24,6 @@ export {
   MosaicSelector,
   Scrubber,
   ScrubberSlider,
-  InAppPrompt
+  InAppPrompt,
+  AspectRatioToggle
 };

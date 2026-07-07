@@ -1,8 +1,11 @@
-import { 
+import {
   createAsyncThunk
 } from '@reduxjs/toolkit';
 import { SCRUBBER_FRAMES_MAX } from '@/app.config';
 
+// preloads both aspect-ratio scrubber background frame sets (imgNNN.jpg and
+// imgNNN_9x16.jpg). imageFilenames are returned as the aspect-agnostic base
+// names; the backend applies the _9x16 suffix when rendering 9:16.
 export const preloadSequentialImages = createAsyncThunk(
   '@api/preloadSequentialImages',
   async (assetID: string) => {
@@ -17,16 +20,15 @@ export const preloadSequentialImages = createAsyncThunk(
         return imgName;
       });
 
-      const imageArr: Array<Promise<string>> = filenameArr.map((filename) => {
+      const loadObjectURL = (path: string): Promise<string> => {
         return new Promise<string>((resolve, reject) => {
           const req = new XMLHttpRequest();
-          req.open('GET', `${directoryPath}/${filename}`, true);
+          req.open('GET', path, true);
           req.responseType = 'blob';
           req.onload = function() {
             if (this.status === 200) {
-              const imageBlob: Blob  = this.response;
-              const imageURL: string = URL.createObjectURL(imageBlob); // IE10+
-               resolve(imageURL);
+              const imageBlob: Blob = this.response;
+              resolve(URL.createObjectURL(imageBlob)); // IE10+
             }
           }
           req.onerror = function() {
@@ -34,9 +36,12 @@ export const preloadSequentialImages = createAsyncThunk(
           }
           req.send();
         });
-      });
+      };
 
-    const sequentialImages = await Promise.all(imageArr);
-    return { imageURLs: sequentialImages, imageFilenames: filenameArr };
+    const [imageURLs, imageURLs9x16] = await Promise.all([
+      Promise.all(filenameArr.map((filename) => loadObjectURL(`${directoryPath}/${filename}`))),
+      Promise.all(filenameArr.map((filename) => loadObjectURL(`${directoryPath}/${filename.replace(/\.jpg$/i, '_9x16.jpg')}`)))
+    ]);
+    return { imageURLs, imageURLs9x16, imageFilenames: filenameArr };
   }
 );

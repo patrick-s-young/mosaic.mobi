@@ -71,7 +71,8 @@
     function formatLatestEdit(renders) {
       if (!renders || renders.length === 0) return '<span class="muted">not rendered</span>';
       const latest = renders[renders.length - 1];
-      return `${latest.numTiles} tiles, frame ${latest.scrubberFrame}<br><span class="muted">${new Date(latest.renderedAt).toLocaleString()}</span>`;
+      const aspect = latest.aspectRatio === '9x16' ? '9:16' : '1:1';
+      return `${latest.numTiles} tiles, ${aspect}, frame ${latest.scrubberFrame}<br><span class="muted">${new Date(latest.renderedAt).toLocaleString()}</span>`;
     }
 
     // renders a thumbnail that swaps itself out for a playing <video> on click.
