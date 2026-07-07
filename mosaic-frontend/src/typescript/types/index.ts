@@ -20,3 +20,4 @@ export type { MosaicIcons } from "./MosaicIcons";
 export type { TimeGroup } from "./TimeGroup";
 export type { Rect } from "./Rect";
 export type { RenderBlob } from "./RenderBlob";
+export type { AspectRatio } from "./AspectRatio";

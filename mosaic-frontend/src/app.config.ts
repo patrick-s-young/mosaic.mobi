@@ -10,6 +10,11 @@ const MAX_VIDEO_UPLOAD_DURATION = 15;
 const SCRUBBER_FRAMES_MAX = 20
 const DEFAULT_VIDEO_NUM_TILES = 4;
 
+// height multiplier applied to the (square) canvas width for each aspect ratio
+const ASPECT_HEIGHT_MULTIPLIER: { [key: string]: number } = { '1x1': 1, '9x16': 16 / 9 };
+const getAspectHeight = (width: number, aspectRatio: string): number =>
+  Math.round(width * (ASPECT_HEIGHT_MULTIPLIER[aspectRatio] ?? 1));
+
 const appDimensions = {
   popOver: { width, height: popOverHeight },
   videoArea: { width, height: width },
@@ -44,13 +49,14 @@ const mosaicTileConfig = {
   FULL_OPACTIY_DURATION: 1000
 }
 
-export { 
-  appDimensions, 
+export {
+  appDimensions,
   MAX_VIDEO_UPLOAD_DURATION,
   SCRUBBER_FRAMES_MAX,
   DEFAULT_VIDEO_NUM_TILES,
   defaultVideoConfig,
   popOverProps,
   slideInOutProps,
-  mosaicTileConfig
+  mosaicTileConfig,
+  getAspectHeight
 };

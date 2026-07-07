@@ -23,11 +23,13 @@ export class MosaicController {
     const assetID = String(req.query.assetID);
     const outputFilename = String(res.locals.outputFilename);
     const thumbnailFilename = String(res.locals.thumbnailFilename);
+    const aspectRatio = res.locals.aspectRatio === '9x16' ? '9x16' : '1x1';
     this.manifestService.recordRender(
       assetID,
       Number(req.query.numTiles),
       String(req.query.currentScrubberFrame),
-      outputFilename
+      outputFilename,
+      aspectRatio
     );
     next();
 

@@ -32,7 +32,7 @@ import './uploadVideo.scss';
 
 const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { canvasWidth } = useSelector<RootState, AppState>((state) => state.app);
+  const { canvasWidth, aspectRatio } = useSelector<RootState, AppState>((state) => state.app);
   const { uploadPhase, 
           assetID, 
           selectedFile,
@@ -56,13 +56,13 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
         break;
       case UploadPhaseEnum.VIDEO_UPLOADED:
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.CANCEL_ANIMATION }));
-        dispatch(preloadUserVideo(`/uploads/${assetID}/resized.mov`));
+        dispatch(preloadUserVideo(assetID));
         break;
       case UploadPhaseEnum.VIDEO_PRELOADED:
         dispatch(preloadSequentialImages(assetID));
         break;
       case UploadPhaseEnum.IMAGES_PRELOADED:
-        dispatch(setMosaicFormatting({ duration: uploadDuration, videoWidth: resizedWidth, canvasWidth}));
+        dispatch(setMosaicFormatting({ duration: uploadDuration, videoWidth: resizedWidth, canvasWidth, aspectRatio }));
         dispatch(setVideoUploadCount({increment: 1}));
         dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.MOSAIC_INITIALIZED}));
         break;

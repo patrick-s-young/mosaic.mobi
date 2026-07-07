@@ -1,10 +1,10 @@
-import { OVERLAY_OFFSETS } from '../configs';
+import type { OverlayOffsets } from '../../../types';
 
-export default function createOverlayFilter (panelCount:number, sequenceCount:number):string {
+export default function createOverlayFilter (panelCount:number, sequenceCount:number, overlayOffsets:OverlayOffsets):string {
   let overlayFilterStr = '[bg]';
   let panelCounter: number = 0;
   let sequenceCounter: number = 0;
-  const overlayFilterArr = OVERLAY_OFFSETS[panelCount];
+  const overlayFilterArr = overlayOffsets[panelCount];
   for (panelCounter = 0; panelCounter < panelCount; panelCounter++) {
     for (sequenceCounter = 0; sequenceCounter < sequenceCount; sequenceCounter++) {
       overlayFilterStr += `[input.${panelCounter}.${sequenceCounter}] overlay=${overlayFilterArr[panelCounter]}`;

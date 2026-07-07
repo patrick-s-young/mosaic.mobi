@@ -19,3 +19,62 @@ html, body, .full_size {
   padding: 20px 0 20px 0;
   gap: 20px;
 }
+
+/* positioned wrapper so the aspect-ratio toggle (and 9:16 overlay) can anchor
+   to the app area. Static flow is unchanged in 1:1. */
+.app_stage {
+  position: relative;
+}
+
+/* ---- 9:16 mode ---- video fills the stage; controls overlay the bottom ---- */
+.app_stage--9x16 {
+  overflow: hidden;
+  background: #000;
+}
+
+.video_area--9x16 {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.video_area--9x16 .scrubber-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.video_area--9x16 .scrubber-img--9x16,
+.mosaicTiles-canvas--9x16 {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  box-shadow: none;
+}
+
+.app_ui_container--9x16 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 24px 0 24px 0;
+  color: #ffffff;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0) 100%);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.app_ui_container--hidden {
+  opacity: 0;
+  transform: translateY(24px);
+  pointer-events: none;
+}
+
+/* keep the upload/download popovers above the 9:16 overlay */
+.app_stage--9x16 .popOver {
+  z-index: 10;
+}

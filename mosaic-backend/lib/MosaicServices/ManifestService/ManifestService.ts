@@ -8,6 +8,7 @@ interface RenderEntry {
   numTiles: number;
   scrubberFrame: string;
   outputFilename: string;
+  aspectRatio: string;
 }
 
 interface Manifest {
@@ -64,7 +65,7 @@ export default class ManifestService {
   }
 
   // called after a successful render (cache hit or fresh encode); records the edit choice made
-  public recordRender (assetID: string, numTiles: number, scrubberFrame: string, outputFilename: string) {
+  public recordRender (assetID: string, numTiles: number, scrubberFrame: string, outputFilename: string, aspectRatio: string = '1x1') {
     let manifest = this.readManifest(assetID);
     if (!manifest) {
       manifest = {
@@ -78,7 +79,8 @@ export default class ManifestService {
       renderedAt: new Date().toISOString(),
       numTiles,
       scrubberFrame,
-      outputFilename
+      outputFilename,
+      aspectRatio
     });
     try {
       this.writeManifest(assetID, manifest);

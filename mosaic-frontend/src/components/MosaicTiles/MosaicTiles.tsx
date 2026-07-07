@@ -7,6 +7,7 @@ import { MosaicPhaseEnum } from '@enums/MosaicPhaseEnum';
 // interfaces
 import { MosaicState } from '@interfaces/MosaicState';
 import { MosaicTilesProps } from '@interfaces/MosaicTilesProps';
+import { AppState } from '@interfaces/AppState';
 // types
 import type { UploadState, RootState } from '@typescript/types';
 import '@components/MosaicTiles/mosaicTiles.scss';
@@ -16,17 +17,22 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
   const dispatch = useDispatch();
   const animationFrameIdRef = useRef<number>(0);
   const canvasRef = useRef() as React.MutableRefObject<HTMLCanvasElement>;
-  const { videoURL } = useSelector<RootState, UploadState>((state) => state.upload );
-  const { 
+  const { videoURL, videoURL9x16 } = useSelector<RootState, UploadState>((state) => state.upload );
+  const { aspectRatio } = useSelector<RootState, AppState>((state) => state.app);
+  const {
     mosaicPhase,
     inPoints,
     copyVideoFromArea,
     tileAnimEvents,
     drawToCanvasArea,
     canvasWidth,
+    canvasHeight,
     numTiles } = useSelector<RootState, MosaicState>((state) => state.mosaic as MosaicState);
   const mosaicTilesRef = useRef<Array<MosaicTile>>([]);
-  const canvasClassName = canvasWidth ? 'mosaicTiles-canvas' : '';
+  const activeVideoURL = aspectRatio === '9x16' ? videoURL9x16 : videoURL;
+  const canvasClassName = canvasWidth
+    ? `mosaicTiles-canvas ${aspectRatio === '9x16' ? 'mosaicTiles-canvas--9x16' : ''}`
+    : '';
 
 
 
@@ -43,7 +49,7 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
         const newMosaicTiles: Array<MosaicTile> = [];
         for (let tileIndex = 0; tileIndex < numTiles; tileIndex++) {
           const newMosaicTile = new MosaicTile({
-            videoSrc: videoURL,
+            videoSrc: activeVideoURL,
             context: canvasRef.current.getContext('2d') as CanvasRenderingContext2D,
             inPoint: inPoints[numTiles][tileIndex],
             copyVideoFromArea: copyVideoFromArea[numTiles], 
@@ -101,7 +107,7 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
       className={canvasClassName}
       ref={canvasRef}
       width={canvasWidth}
-      height={canvasWidth}
+      height={canvasHeight}
     />
   );
 }

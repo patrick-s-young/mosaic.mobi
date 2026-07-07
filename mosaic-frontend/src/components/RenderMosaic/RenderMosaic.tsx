@@ -10,6 +10,7 @@ import SlideInOut from '@components/SideInOut/SlideInOut';
 import PopOver from '@components/PopOver/PopOver';
 import FileDownload from 'js-file-download'
 // interfaces
+import { AppState } from '@interfaces/AppState';
 import { MosaicState } from '@interfaces/MosaicState';
 import { ScrubberState } from '@interfaces/ScrubberState';
 import { RenderMosaicProps } from '@interfaces/RenderMosaicProps';
@@ -25,6 +26,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
   const dispatch = useDispatch<AppDispatch>();
   const { assetID, imageFilenames, downloadFileName } = useSelector<RootState, UploadState>((state) => state.upload);
   const { numTiles } = useSelector<RootState, Partial<MosaicState>>((state) => state.mosaic);
+  const { aspectRatio } = useSelector<RootState, AppState>((state) => state.app);
   const { currentScrubberFrame } = useSelector<RootState, ScrubberState>((state) => state.scrubber);
   const { renderPhase, renderBlob } = useSelector<RootState, RenderState>((state) => state.render);
   const imageFilename = imageFilenames[currentScrubberFrame];
@@ -35,7 +37,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
       action: 'onRenderVideo',
       label: 'N/A'
     });
-    const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${imageFilename}`;
+    const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${imageFilename}&aspectRatio=${aspectRatio}`;
     dispatch(renderMosaic(renderUrl));
     dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
   }

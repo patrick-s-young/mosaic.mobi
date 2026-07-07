@@ -5,6 +5,7 @@ export interface MosaicState {
   mosaicPhase: MosaicPhaseEnum,
   numTiles: NumTiles,
   canvasWidth: number,
+  canvasHeight: number,
   inPoints: TimeGroupCollection,
   copyVideoFromArea: RectCollection,
   drawToCanvasArea: RectGroupCollection,
