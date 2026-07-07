@@ -1,7 +1,9 @@
 import isMobile from 'is-mobile';
 
-const [width, uiContainerHeight] = isMobile({ tablet: true }) 
-  ? [window.innerWidth, window.innerHeight - window.innerWidth] 
+const isMobileDevice = isMobile({ tablet: true });
+
+const [width, uiContainerHeight] = isMobileDevice
+  ? [window.innerWidth, window.innerHeight - window.innerWidth]
   : [414, 302];
 
 const popOverHeight = width + uiContainerHeight;
@@ -51,6 +53,7 @@ const mosaicTileConfig = {
 
 export {
   appDimensions,
+  isMobileDevice,
   MAX_VIDEO_UPLOAD_DURATION,
   SCRUBBER_FRAMES_MAX,
   DEFAULT_VIDEO_NUM_TILES,
