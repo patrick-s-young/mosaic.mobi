@@ -1,0 +1,3 @@
+# runtime render cache + per-asset manifest (regenerated on demand)
+mosaic_*
+manifest.json
