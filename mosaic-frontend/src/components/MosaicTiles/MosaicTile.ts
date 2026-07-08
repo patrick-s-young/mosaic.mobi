@@ -118,21 +118,30 @@ class MosaicTile implements Partial<MosaicTileProps> {
   
   _drawImage() {
     this._context.clearRect(
-      this._drawToCanvasArea.x, 
-      this._drawToCanvasArea.y, 
-      this._drawToCanvasArea.width, 
+      this._drawToCanvasArea.x,
+      this._drawToCanvasArea.y,
+      this._drawToCanvasArea.width,
       this._drawToCanvasArea.height
     );
     this._context.globalAlpha = this._fadeOpacity ?? 1;
+    // Clamp the source rectangle to the video's actual dimensions. A source
+    // rect that exceeds the video throws on iOS/WebKit and silently clips
+    // elsewhere; clamping keeps drawImage safe on every engine.
+    const videoWidth = this._video.videoWidth || this._copyVideoFromArea.width;
+    const videoHeight = this._video.videoHeight || this._copyVideoFromArea.height;
+    const sx = Math.min(this._copyVideoFromArea.x, videoWidth);
+    const sy = Math.min(this._copyVideoFromArea.y, videoHeight);
+    const sWidth = Math.min(this._copyVideoFromArea.width, videoWidth - sx);
+    const sHeight = Math.min(this._copyVideoFromArea.height, videoHeight - sy);
     this._context.drawImage(
     this._video,
-      this._copyVideoFromArea.x, 
-      this._copyVideoFromArea.y, 
-      this._copyVideoFromArea.width, 
-      this._copyVideoFromArea.height,
-      this._drawToCanvasArea.x, 
-      this._drawToCanvasArea.y, 
-      this._drawToCanvasArea.width, 
+      sx,
+      sy,
+      sWidth,
+      sHeight,
+      this._drawToCanvasArea.x,
+      this._drawToCanvasArea.y,
+      this._drawToCanvasArea.width,
       this._drawToCanvasArea.height
     );
   }
