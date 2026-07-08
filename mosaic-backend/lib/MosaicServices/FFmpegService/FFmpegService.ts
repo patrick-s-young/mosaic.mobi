@@ -115,8 +115,11 @@ export default class FFmpegService {
         ['-i', `${dir}/cropped.mov`, '-filter_complex', `[0:v] scale=320:-1,fps=24 [final]`, '-g', '12', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/resized.mov`],
         (frame) => io.emit('ffmpegProgress', { actionName: 'Resizing', currentFrame: frame, totalFrames })
       ),
+      // 320x576 (both multiples of 16). The height is macroblock-aligned so
+      // iOS/WebKit can draw this preview video to a <canvas>; a non-aligned
+      // height (e.g. 568) renders blank on iOS. Kept in sync with getAspectHeight.
       this.runFfmpeg(
-        ['-i', `${dir}/cropped_9x16.mov`, '-filter_complex', `[0:v] scale=320:-1,fps=24 [final]`, '-g', '12', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/resized_9x16.mov`]
+        ['-i', `${dir}/cropped_9x16.mov`, '-filter_complex', `[0:v] scale=320:576,fps=24 [final]`, '-g', '12', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/resized_9x16.mov`]
       )
     ]).then(() => {
       console.log(`resizeVideo > done (1x1 + 9x16)`);
