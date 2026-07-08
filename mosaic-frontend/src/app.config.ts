@@ -14,8 +14,15 @@ const DEFAULT_VIDEO_NUM_TILES = 4;
 
 // height multiplier applied to the (square) canvas width for each aspect ratio
 const ASPECT_HEIGHT_MULTIPLIER: { [key: string]: number } = { '1x1': 1, '9x16': 16 / 9 };
-const getAspectHeight = (width: number, aspectRatio: string): number =>
-  Math.round(width * (ASPECT_HEIGHT_MULTIPLIER[aspectRatio] ?? 1));
+const getAspectHeight = (width: number, aspectRatio: string): number => {
+  const raw = Math.round(width * (ASPECT_HEIGHT_MULTIPLIER[aspectRatio] ?? 1));
+  // The 9:16 preview/render sources are H.264 (even dimensions, e.g. 320x568),
+  // so the height must be rounded to an even number. Otherwise the odd value
+  // (e.g. 569) makes each tile's canvas copy region 1px taller than the source
+  // video; iOS/WebKit throws on a drawImage source rect that exceeds the video,
+  // which kills the preview animation. 1:1 is square, so leave it exact.
+  return aspectRatio === '9x16' ? raw - (raw % 2) : raw;
+};
 
 const appDimensions = {
   popOver: { width, height: popOverHeight },
