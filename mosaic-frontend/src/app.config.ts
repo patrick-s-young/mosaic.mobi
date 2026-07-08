@@ -15,13 +15,17 @@ const DEFAULT_VIDEO_NUM_TILES = 4;
 // height multiplier applied to the (square) canvas width for each aspect ratio
 const ASPECT_HEIGHT_MULTIPLIER: { [key: string]: number } = { '1x1': 1, '9x16': 16 / 9 };
 const getAspectHeight = (width: number, aspectRatio: string): number => {
-  const raw = Math.round(width * (ASPECT_HEIGHT_MULTIPLIER[aspectRatio] ?? 1));
-  // The 9:16 preview/render sources are H.264 (even dimensions, e.g. 320x568),
-  // so the height must be rounded to an even number. Otherwise the odd value
-  // (e.g. 569) makes each tile's canvas copy region 1px taller than the source
-  // video; iOS/WebKit throws on a drawImage source rect that exceeds the video,
-  // which kills the preview animation. 1:1 is square, so leave it exact.
-  return aspectRatio === '9x16' ? raw - (raw % 2) : raw;
+  if (aspectRatio !== '9x16') {
+    return Math.round(width * (ASPECT_HEIGHT_MULTIPLIER[aspectRatio] ?? 1));
+  }
+  // The 9:16 preview source is an H.264 video drawn to a <canvas>. iOS/WebKit
+  // only reliably renders drawImage(video) when the video's dimensions are
+  // multiples of 16 (the H.264 macroblock size); a 320x568 preview (568 is not
+  // a multiple of 16) drew blank on iOS while the 320x320 1:1 preview worked.
+  // Round the height to the nearest multiple of 16 so the preview video and the
+  // canvas copy region stay macroblock-aligned (e.g. 320 -> 576).
+  const raw = width * (ASPECT_HEIGHT_MULTIPLIER['9x16']);
+  return 16 * Math.round(raw / 16);
 };
 
 const appDimensions = {
