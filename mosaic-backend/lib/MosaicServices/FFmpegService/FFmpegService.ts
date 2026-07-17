@@ -186,7 +186,10 @@ export default class FFmpegService {
     // tile pattern; an identical combination has already produced this exact
     // output, so it's safe to reuse instead of re-encoding
     const scrubberFrameBase = baseFrame.replace(/\.[^/.]+$/, '').replace(/_9x16$/, '');
-    const outputFilename = `mosaic_${aspectRatio}_${res.locals.numTiles}_${scrubberFrameBase}.mov`;
+    // version segment in the cache key: bump it whenever the render output
+    // changes visually (e.g. the white grid) so pre-change cached renders are
+    // never reused for identical source/frame/tile params. 'g' = grid lines.
+    const outputFilename = `mosaic_g_${aspectRatio}_${res.locals.numTiles}_${scrubberFrameBase}.mov`;
     const outputPath = `${outputDirectory}/${outputFilename}`;
     const thumbnailFilename = outputFilename.replace(/\.mov$/, '.jpg');
     const thumbnailPath = `${outputDirectory}/${thumbnailFilename}`;
@@ -202,7 +205,7 @@ export default class FFmpegService {
     }
 
     const ffmpegFilterComplexStr = createFfmpegFilterComplexStr(filterParams);
-    const proc = spawn(ffmpeg.path, ['-i', bgImagePath, '-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-preset', 'veryfast', '-crf', '26', '-map', '[final]', '-an', '-y', outputPath]);
+    const proc = spawn(ffmpeg.path, ['-i', bgImagePath, '-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-preset', 'veryfast', '-crf', '26', '-map', '[out]', '-an', '-y', outputPath]);
     // @ts-ignore: Object is possibly 'null'.
     proc.stdout.on('data', function(data) {
       console.log(`proc.stdout.on('data'): ${data}`);

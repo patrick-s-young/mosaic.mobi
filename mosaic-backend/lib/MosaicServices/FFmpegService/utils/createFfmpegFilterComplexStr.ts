@@ -1,6 +1,7 @@
 import createOverlayFilter from './createOverlayFilter';
 import createPtsFilter from './createPtsFilter';
 import createTrimFilter from './createTrimFilter';
+import createGridFilter from './createGridFilter';
 import { getGeometry } from '../configs';
 
 
@@ -57,8 +58,15 @@ export const createFfmpegFilterComplexStr =  ({
 
 
   ////////////////////////
-  // OVERLAY
+  // OVERLAY (produces [final])
   ffmpegFilterComplexStr += createOverlayFilter(panelCount, sequenceCount, OVERLAY_OFFSETS);
+
+  ////////////////////////
+  // GRID LINES over the composited mosaic (produces [out])
+  const gridChain = createGridFilter(panelCount, outputWidth, outputHeight);
+  ffmpegFilterComplexStr += gridChain
+    ? `;\n[final] ${gridChain} [out]`
+    : `;\n[final] null [out]`;
 
   return ffmpegFilterComplexStr;
 }
