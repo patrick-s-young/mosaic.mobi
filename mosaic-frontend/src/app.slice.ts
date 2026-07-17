@@ -6,7 +6,7 @@ import type { AspectRatio } from '@typescript/types';
 const initialState: AppState = {
   appPhase: AppPhaseEnum.LOADING,
   canvasWidth: 0,
-  aspectRatio: '1x1',
+  aspectRatio: '9x16',
   uiVisible: true
 }
 

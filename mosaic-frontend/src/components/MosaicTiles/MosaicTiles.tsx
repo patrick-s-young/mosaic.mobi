@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setMosaicPhase } from '@components/MosaicTiles';
 import MosaicTile from '@components/MosaicTiles/MosaicTile';
+import { drawGridLines } from '@components/MosaicTiles/helpers/drawGridLines';
 // enums
 import { MosaicPhaseEnum } from '@enums/MosaicPhaseEnum';
 // interfaces
@@ -59,6 +60,7 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
           newMosaicTiles.push(newMosaicTile);
         }
         mosaicTilesRef.current = [...newMosaicTiles];
+        drawGrid();
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.TILES_UPDATED }));
         break;
       case MosaicPhaseEnum.TILES_UPDATED:
@@ -86,14 +88,24 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
     dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.ANIMATION_READY }));
   }
 
+  // draws the white separator grid on top of the tiles. Redrawn every frame
+  // because each tile clears/redraws its own region (which would otherwise
+  // erase the lines at the shared tile borders).
+  function drawGrid () {
+    const ctx = canvasRef.current?.getContext('2d');
+    if (!ctx) return;
+    drawGridLines(ctx, canvasWidth, canvasHeight, numTiles);
+  }
+
   function startAnimation () {
     const beginTimeStamp = performance.now();
     mosaicTilesRef.current.forEach(tile => tile.initAnimation(beginTimeStamp));
-    
+
     function step(timeStamp: DOMHighResTimeStamp) {
       mosaicTilesRef.current.forEach((tile) => {
         tile.animationFrameUpdate(timeStamp)
       });
+      drawGrid();
       animationFrameIdRef.current = requestAnimationFrame(step);
     }
 
