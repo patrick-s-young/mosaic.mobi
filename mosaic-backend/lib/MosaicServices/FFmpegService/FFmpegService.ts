@@ -18,7 +18,16 @@ const ASPECT_OUTPUT = {
 
 type AspectRatio = keyof typeof ASPECT_OUTPUT;
 
+// fixed duration (seconds) of every rendered mosaic; the carousel background is
+// built to the same length so it covers the whole render.
+const RENDER_OUTPUT_DURATION = 15.0;
+
 export default class FFmpegService {
+  // in-flight carousel background builds, keyed by output path, so a render that
+  // arrives while the upload-time prebuild is still running awaits the same
+  // build instead of starting a duplicate one.
+  private carouselBuilds: { [bgPath: string]: Promise<string> } = {};
+
   public probeVideo (req: Request, res: Response, next: any) {
     const assetID = res.locals.assetID
     const inputPath  = `${env.getVolumnPath()}/${assetID}/upload.mov`;
@@ -151,6 +160,17 @@ export default class FFmpegService {
       res.locals.status = 'success';
       console.log(`exportFrames > done (1x1 + 9x16)`);
       next();
+      // Kick off the crossfading carousel backgrounds in the BACKGROUND (not
+      // awaited) so the upload response isn't held behind the ~30s build. By
+      // the time the user toggles carousel and renders, these are ready, so the
+      // render is instant instead of building inline and tripping the gateway
+      // timeout. A carousel render that somehow arrives mid-build awaits the
+      // same in-flight build (see buildCarouselBackground) rather than starting
+      // a second one.
+      this.buildCarouselBackground(dir, '1x1', RENDER_OUTPUT_DURATION)
+        .catch((err) => console.log(`carousel bg (1x1) prebuild err: ${err}`));
+      this.buildCarouselBackground(dir, '9x16', RENDER_OUTPUT_DURATION)
+        .catch((err) => console.log(`carousel bg (9x16) prebuild err: ${err}`));
     });
   }
 
@@ -168,7 +188,7 @@ export default class FFmpegService {
       panelCount: res.locals.numTiles,
       sequenceCount: res.locals.numTiles > 4 ? 3 : 4,
       fadeInToOutDuration: 2.0,
-      outputDuration: 15.0,
+      outputDuration: RENDER_OUTPUT_DURATION,
       outputFps,
       outputSize,
       bgFrameHue: 'hue=s=0.1',
@@ -219,7 +239,11 @@ export default class FFmpegService {
     // still path uses the single scrubber frame directly.
     if (carousel) {
       this.buildCarouselBackground(outputDirectory, aspectRatio, filterParams.outputDuration)
-        .then((carouselBgPath) => this.runMainRender(carouselBgPath, inputPath, ffmpegFilterComplexStr, outputPath, thumbnailPath, totalOutputFrames, res, next));
+        .then((carouselBgPath) => this.runMainRender(carouselBgPath, inputPath, ffmpegFilterComplexStr, outputPath, thumbnailPath, totalOutputFrames, res, next))
+        .catch((err) => {
+          console.log(`renderMosaic carousel: background unavailable, aborting render: ${err}`);
+          next();
+        });
     } else {
       this.runMainRender(bgImagePath, inputPath, ffmpegFilterComplexStr, outputPath, thumbnailPath, totalOutputFrames, res, next);
     }
@@ -269,9 +293,19 @@ export default class FFmpegService {
   ): Promise<string> {
     const suffix = aspectRatio === '9x16' ? '_9x16' : '';
     const bgPath = `${outputDirectory}/bg_carousel${suffix}.mov`;
+    // already built (only ever appears complete: written to .tmp then renamed)
     if (fs.existsSync(bgPath)) {
       return Promise.resolve(bgPath);
     }
+    // already building (upload-time prebuild in flight): reuse that promise
+    if (this.carouselBuilds[bgPath]) {
+      return this.carouselBuilds[bgPath];
+    }
+
+    // build to a temp file, then rename so the final path only exists once the
+    // encode is complete — a concurrent render checking existsSync can never
+    // pick up a half-written background.
+    const tmpPath = `${bgPath}.tmp.mov`;
     const args: string[] = [];
     const clipLen = outputDuration.toString();
     for (let i = 1; i <= SCRUBBER_FRAME_COUNT; i++) {
@@ -280,16 +314,33 @@ export default class FFmpegService {
       args.push('-loop', '1', '-t', clipLen, '-i', `${outputDirectory}/${frameName}`);
     }
     args.push(
-      '-filter_complex', createCarouselFilter(SCRUBBER_FRAME_COUNT),
+      '-filter_complex', createCarouselFilter(SCRUBBER_FRAME_COUNT, outputDuration),
       '-map', '[out]',
       '-t', outputDuration.toString(),
       '-r', '25',
       '-pix_fmt', 'yuv420p',
-      '-preset', 'veryfast',
-      '-crf', '26',
-      '-an', '-y', bgPath
+      // intermediate background; the main render re-encodes it, so favor build
+      // speed over size/quality here
+      '-preset', 'ultrafast',
+      '-crf', '28',
+      '-an', '-y', tmpPath
     );
-    return this.runFfmpeg(args).then(() => bgPath);
+
+    const build = this.runFfmpeg(args)
+      .then(() => {
+        // runFfmpeg resolves even on ffmpeg failure; guard so we never rename a
+        // missing/partial temp into place
+        if (!fs.existsSync(tmpPath)) {
+          throw new Error(`carousel background build produced no output (${tmpPath})`);
+        }
+        fs.renameSync(tmpPath, bgPath);
+        return bgPath;
+      })
+      .finally(() => {
+        delete this.carouselBuilds[bgPath];
+      });
+    this.carouselBuilds[bgPath] = build;
+    return build;
   }
 
   // grabs a single frame from a rendered video for use as an admin-report thumbnail;
