@@ -26,12 +26,9 @@ export const createFfmpegFilterComplexStr =  ({
 
   /////////////////////////////
   // CREATE BASE AND BG
-  // scale input 0 to the canvas: a no-op for the full-res still background, and
-  // the upscale for the half-res carousel background (built small to stay within
-  // memory — see createCarouselFilter).
   ffmpegFilterComplexStr += `nullsrc=size=${outputSize}:duration=${outputDuration}:rate=${outputFps} [base];\n`;
   //ffmpegFilterComplexStr += `[0:v] ${preCropStr}trim=start=${bgFrameStart}:duration=0.05, setpts=PTS-STARTPTS${bgFrameHue} [bg_frame];\n`;
-  ffmpegFilterComplexStr += `[0:v]${bgFrameHue},scale=${outputWidth}:${outputHeight}[bg_frame];\n`;
+  ffmpegFilterComplexStr += `[0:v]${bgFrameHue}[bg_frame];\n`;
   ffmpegFilterComplexStr += `[base][bg_frame] overlay [bg];\n`;
 
 
