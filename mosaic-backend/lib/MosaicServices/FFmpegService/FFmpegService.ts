@@ -292,7 +292,11 @@ export default class FFmpegService {
     outputDuration: number
   ): Promise<string> {
     const suffix = aspectRatio === '9x16' ? '_9x16' : '';
-    const bgPath = `${outputDirectory}/bg_carousel${suffix}.mov`;
+    const [outWidth, outHeight] = ASPECT_OUTPUT[aspectRatio].size.split('x').map(Number);
+    // 'r2' cache version: the build now composites at half resolution. Bumping
+    // the name also sidesteps any partial/corrupt bg left by an OOM-killed
+    // earlier build so it is never reused via existsSync.
+    const bgPath = `${outputDirectory}/bg_carousel_r2${suffix}.mov`;
     // already built (only ever appears complete: written to .tmp then renamed)
     if (fs.existsSync(bgPath)) {
       return Promise.resolve(bgPath);
@@ -314,7 +318,7 @@ export default class FFmpegService {
       args.push('-loop', '1', '-t', clipLen, '-i', `${outputDirectory}/${frameName}`);
     }
     args.push(
-      '-filter_complex', createCarouselFilter(SCRUBBER_FRAME_COUNT, outputDuration),
+      '-filter_complex', createCarouselFilter(SCRUBBER_FRAME_COUNT, outputDuration, outWidth, outHeight),
       '-map', '[out]',
       '-t', outputDuration.toString(),
       '-r', '25',
