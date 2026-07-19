@@ -27,7 +27,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
   const { assetID, imageFilenames, downloadFileName } = useSelector<RootState, UploadState>((state) => state.upload);
   const { numTiles } = useSelector<RootState, Partial<MosaicState>>((state) => state.mosaic);
   const { aspectRatio } = useSelector<RootState, AppState>((state) => state.app);
-  const { currentScrubberFrame } = useSelector<RootState, ScrubberState>((state) => state.scrubber);
+  const { currentScrubberFrame, carouselMode } = useSelector<RootState, ScrubberState>((state) => state.scrubber);
   const { renderPhase, renderBlob } = useSelector<RootState, RenderState>((state) => state.render);
   const imageFilename = imageFilenames[currentScrubberFrame];
 
@@ -37,7 +37,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
       action: 'onRenderVideo',
       label: 'N/A'
     });
-    const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${imageFilename}&aspectRatio=${aspectRatio}`;
+    const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${imageFilename}&aspectRatio=${aspectRatio}&carousel=${carouselMode}`;
     dispatch(renderMosaic(renderUrl));
     dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
   }

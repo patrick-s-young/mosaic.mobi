@@ -5,6 +5,10 @@ import type {
   ScaleDimensions,
   PanelCount } from '../../types';
 
+// number of desaturated background frames exported per upload and cycled by the
+// carousel. Kept in sync with the frontend SCRUBBER_FRAMES_MAX (app.config.ts).
+export const SCRUBBER_FRAME_COUNT = 15;
+
 // time offset for each panel to fade in (aspect-ratio independent)
 export const FADE_IN_PRESENTATION_TIMESTAMPS: FadeInPresentationTimestamps =
   {
