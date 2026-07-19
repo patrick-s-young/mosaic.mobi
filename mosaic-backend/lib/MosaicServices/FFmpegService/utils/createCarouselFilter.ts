@@ -13,10 +13,11 @@ const CROSSFADE = 0.5;
 const ADVANCE = 1.0;
 
 // filter_complex for a standalone pass that turns `frameCount` looped image
-// inputs ([0:v] .. [frameCount-1:v]) into a single crossfading [out] stream.
-// The inputs must all share the output canvas size (they do: imgNNN.jpg is
-// 1080x1080 and imgNNN_9x16.jpg is 1080x1920). Assumes frameCount >= 2.
-export default function createCarouselFilter (frameCount: number): string {
+// inputs ([0:v] .. [frameCount-1:v]) into a single crossfading [out] stream of
+// `duration` seconds. The inputs must all share the output canvas size (they
+// do: imgNNN.jpg is 1080x1080 and imgNNN_9x16.jpg is 1080x1920). Assumes
+// frameCount >= 2.
+export default function createCarouselFilter (frameCount: number, duration: number): string {
   const d = CROSSFADE.toFixed(2);
   const statements: string[] = [`[0:v] fps=25, format=yuva420p, setsar=1 [base]`];
 
@@ -27,10 +28,17 @@ export default function createCarouselFilter (frameCount: number): string {
     statements.push(`[${i}:v] fps=25, format=yuva420p, setsar=1, fade=t=in:st=${start}:d=${d}:alpha=1 [f${i}]`);
   }
 
+  // Each layer only needs to be composited from when it starts fading in until
+  // the next frame has fully covered it (one ADVANCE later); the last frame
+  // stays to the end. Gating overlay with `enable` skips compositing outside
+  // that ~1.5s window, so the pass stays cheap instead of blending every layer
+  // across the whole clip.
   let prev = '[base]';
   for (let i = 1; i < frameCount; i++) {
+    const winStart = (i * ADVANCE - CROSSFADE).toFixed(2);
+    const winEnd = (i === frameCount - 1 ? duration : (i + 1) * ADVANCE).toFixed(2);
     const outLabel = i === frameCount - 1 ? '[out]' : `[o${i}]`;
-    statements.push(`${prev}[f${i}] overlay ${outLabel}`);
+    statements.push(`${prev}[f${i}] overlay=enable='between(t,${winStart},${winEnd})' ${outLabel}`);
     prev = `[o${i}]`;
   }
 
