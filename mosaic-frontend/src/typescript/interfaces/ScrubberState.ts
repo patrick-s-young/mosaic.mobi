@@ -4,5 +4,6 @@ export interface ScrubberState {
   currentScrubberFrame: CurrentScrubberFrame,
   scrubberFramesMax: number,
   canvasWidth: number,
-  videoUploadCount: number
+  videoUploadCount: number,
+  carouselMode: boolean
 }

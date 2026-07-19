@@ -9,7 +9,7 @@ const [width, uiContainerHeight] = isMobileDevice
 const popOverHeight = width + uiContainerHeight;
 
 const MAX_VIDEO_UPLOAD_DURATION = 15;
-const SCRUBBER_FRAMES_MAX = 20
+const SCRUBBER_FRAMES_MAX = 15
 const DEFAULT_VIDEO_NUM_TILES = 4;
 
 // height multiplier applied to the (square) canvas width for each aspect ratio

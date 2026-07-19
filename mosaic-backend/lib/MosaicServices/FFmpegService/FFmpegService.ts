@@ -3,6 +3,8 @@ import ffmpeg from '@ffmpeg-installer/ffmpeg';
 import ffprobe from 'ffprobe';
 import ffprobeStatic from 'ffprobe-static';
 import { createFfmpegFilterComplexStr } from './utils/createFfmpegFilterComplexStr';
+import createCarouselFilter from './utils/createCarouselFilter';
+import { SCRUBBER_FRAME_COUNT } from './configs';
 import env from '../../environment';
 import { Request, Response } from 'express';
 import { io } from '../../App';
@@ -132,15 +134,18 @@ export default class FFmpegService {
     const assetID = res.locals.assetID
     const dir = `${env.getVolumnPath()}/${assetID}`;
     const { duration, totalFrames } = res.locals.videoUpload;
-    const frameInterval = 18 / (duration - 1);
+    // sample at a rate that yields more than SCRUBBER_FRAME_COUNT frames across
+    // the clip, then cap the output at exactly that many evenly-spaced frames.
+    const frameInterval = SCRUBBER_FRAME_COUNT / (duration - 1);
+    const frameCap = SCRUBBER_FRAME_COUNT.toString();
 
     Promise.all([
       this.runFfmpeg(
-        ['-i', `${dir}/cropped.mov`, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-preset', 'ultrafast', '-crf', '28', `${dir}/img%03d.jpg`],
+        ['-i', `${dir}/cropped.mov`, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-frames:v', frameCap, '-preset', 'ultrafast', '-crf', '28', `${dir}/img%03d.jpg`],
         (frame) => io.emit('ffmpegProgress', { actionName: 'Export frame', currentFrame: frame, totalFrames })
       ),
       this.runFfmpeg(
-        ['-i', `${dir}/cropped_9x16.mov`, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-preset', 'ultrafast', '-crf', '28', `${dir}/img%03d_9x16.jpg`]
+        ['-i', `${dir}/cropped_9x16.mov`, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-frames:v', frameCap, '-preset', 'ultrafast', '-crf', '28', `${dir}/img%03d_9x16.jpg`]
       )
     ]).then(() => {
       res.locals.status = 'success';
@@ -153,10 +158,10 @@ export default class FFmpegService {
   public renderMosaic  (req: Request, res: Response, next: any) {
     const aspectRatio: AspectRatio = res.locals.aspectRatio === '9x16' ? '9x16' : '1x1';
     const { size: outputSize, cropped: croppedName } = ASPECT_OUTPUT[aspectRatio];
+    // carousel mode dissolves through every background frame instead of holding
+    // a single scrubber-selected still (query param sent by the frontend)
+    const carousel = String(res.locals.carousel) === 'true';
 
-    const duration = res.locals.videoUpload.duration - 1;
-    const frameInterval = duration / 18;
-    const bgFrameStart = (res.locals.currentScrubberFrame - 1) * frameInterval;
     const inputDuration = res.locals.videoUpload.duration;
     const outputFps = 25;
     const filterParams = {
@@ -186,10 +191,13 @@ export default class FFmpegService {
     // tile pattern; an identical combination has already produced this exact
     // output, so it's safe to reuse instead of re-encoding
     const scrubberFrameBase = baseFrame.replace(/\.[^/.]+$/, '').replace(/_9x16$/, '');
+    // carousel renders are independent of the selected still, so they key on a
+    // 'carousel' token instead of a frame number.
+    const frameToken = carousel ? 'carousel' : scrubberFrameBase;
     // version segment in the cache key: bump it whenever the render output
     // changes visually (e.g. the white grid) so pre-change cached renders are
     // never reused for identical source/frame/tile params. 'g' = grid lines.
-    const outputFilename = `mosaic_g_${aspectRatio}_${res.locals.numTiles}_${scrubberFrameBase}.mov`;
+    const outputFilename = `mosaic_g_${aspectRatio}_${res.locals.numTiles}_${frameToken}.mov`;
     const outputPath = `${outputDirectory}/${outputFilename}`;
     const thumbnailFilename = outputFilename.replace(/\.mov$/, '.jpg');
     const thumbnailPath = `${outputDirectory}/${thumbnailFilename}`;
@@ -205,7 +213,32 @@ export default class FFmpegService {
     }
 
     const ffmpegFilterComplexStr = createFfmpegFilterComplexStr(filterParams);
-    const proc = spawn(ffmpeg.path, ['-i', bgImagePath, '-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-preset', 'veryfast', '-crf', '26', '-map', '[out]', '-an', '-y', outputPath]);
+
+    // carousel mode needs its animated background built (once per asset+aspect,
+    // then cached) before the main render can composite the tiles over it; the
+    // still path uses the single scrubber frame directly.
+    if (carousel) {
+      this.buildCarouselBackground(outputDirectory, aspectRatio, filterParams.outputDuration)
+        .then((carouselBgPath) => this.runMainRender(carouselBgPath, inputPath, ffmpegFilterComplexStr, outputPath, thumbnailPath, totalOutputFrames, res, next));
+    } else {
+      this.runMainRender(bgImagePath, inputPath, ffmpegFilterComplexStr, outputPath, thumbnailPath, totalOutputFrames, res, next);
+    }
+  }
+
+  // composites the mosaic tiles over a background (a still frame or the carousel
+  // video, both supplied as input 0) and writes the final render, emitting
+  // progress and generating the thumbnail on close.
+  private runMainRender (
+    bgInputPath: string,
+    inputPath: string,
+    filterStr: string,
+    outputPath: string,
+    thumbnailPath: string,
+    totalOutputFrames: number,
+    res: Response,
+    next: any
+  ) {
+    const proc = spawn(ffmpeg.path, ['-i', bgInputPath, '-i', inputPath, '-filter_complex', filterStr, '-preset', 'veryfast', '-crf', '26', '-map', '[out]', '-an', '-y', outputPath]);
     // @ts-ignore: Object is possibly 'null'.
     proc.stdout.on('data', function(data) {
       console.log(`proc.stdout.on('data'): ${data}`);
@@ -224,6 +257,39 @@ export default class FFmpegService {
       console.log(`renderMosaic : proc.on('close')`);
       this.generateThumbnail(outputPath, thumbnailPath).then(() => next());
     });
+  }
+
+  // Builds (and caches) the crossfading carousel background for an asset +
+  // aspect ratio: the SCRUBBER_FRAME_COUNT desaturated frames dissolved one into
+  // the next across the full render duration. Resolves to the background path.
+  private buildCarouselBackground (
+    outputDirectory: string,
+    aspectRatio: AspectRatio,
+    outputDuration: number
+  ): Promise<string> {
+    const suffix = aspectRatio === '9x16' ? '_9x16' : '';
+    const bgPath = `${outputDirectory}/bg_carousel${suffix}.mov`;
+    if (fs.existsSync(bgPath)) {
+      return Promise.resolve(bgPath);
+    }
+    const args: string[] = [];
+    const clipLen = outputDuration.toString();
+    for (let i = 1; i <= SCRUBBER_FRAME_COUNT; i++) {
+      const frameName = `img${String(i).padStart(3, '0')}${suffix}.jpg`;
+      // each frame is a full-duration layer; alpha fades decide when it shows
+      args.push('-loop', '1', '-t', clipLen, '-i', `${outputDirectory}/${frameName}`);
+    }
+    args.push(
+      '-filter_complex', createCarouselFilter(SCRUBBER_FRAME_COUNT),
+      '-map', '[out]',
+      '-t', outputDuration.toString(),
+      '-r', '25',
+      '-pix_fmt', 'yuv420p',
+      '-preset', 'veryfast',
+      '-crf', '26',
+      '-an', '-y', bgPath
+    );
+    return this.runFfmpeg(args).then(() => bgPath);
   }
 
   // grabs a single frame from a rendered video for use as an admin-report thumbnail;
