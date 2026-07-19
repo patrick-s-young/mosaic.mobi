@@ -1,36 +1,7 @@
 @use '@sass/mosaicVariables' as *;
 @use '@sass/mosaicMixins' as *;
 
-.scrubberSlider__row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: $spacing-space-8;
-}
-
-.scrubberSlider__toggle {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border: $button-border-default;
-  border-radius: $radius-radious-12;
-  background: transparent;
-  color: $mosaic-purple-dark;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-
-  &--active {
-    background: $mosaic-purple-dark;
-    color: #ffffff;
-  }
-}
-
 .scrubberSlider {
-  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
