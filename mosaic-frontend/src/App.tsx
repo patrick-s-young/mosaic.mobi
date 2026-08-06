@@ -1,5 +1,4 @@
-import ReactGA from 'react-ga4';
-ReactGA.initialize('G-J0W4FDF6FY'); 
+import { initAnalytics, logEvent, AnalyticsEvent } from '@analytics/analytics';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -42,7 +41,18 @@ const App: React.FC = () => {
     const canvasWidth: number = appDimensions.videoArea.width;
     dispatch(setCanvasWidth({ canvasWidth }));
     dispatch(setScrubberCanvasWidth({ canvasWidth }));
+    initAnalytics();
+    logEvent(AnalyticsEvent.APP_OPEN, {
+      device: isMobileDevice ? 'mobile' : 'desktop',
+      default_aspect_ratio: aspectRatio
+    });
   }, []);
+
+  const onToggleControls = () => {
+    const nextVisible = !uiVisible;
+    dispatch(setUiVisible({ uiVisible: nextVisible }));
+    logEvent(AnalyticsEvent.TOGGLE_CONTROLS, { visible: nextVisible });
+  };
 
   return (
     <div>
@@ -65,7 +75,7 @@ const App: React.FC = () => {
             <div
               className={`video_area ${is9x16 ? 'video_area--9x16' : ''}`}
               style={is9x16 ? undefined : appDimensions.videoArea}
-              onClick={is9x16 ? () => dispatch(setUiVisible({ uiVisible: !uiVisible })) : undefined}
+              onClick={is9x16 ? onToggleControls : undefined}
             >
               { mosaicPhase !== MosaicPhaseEnum.WAITING_FOR_VIDEO &&
                 <>

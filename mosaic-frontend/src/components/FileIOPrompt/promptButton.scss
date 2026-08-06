@@ -6,7 +6,7 @@
   width: 140px;
   height: $size-bttn-small;
   background: $button-color-default;
-  color: $button-background-default; 
+  color: $button-background-default;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
@@ -16,15 +16,24 @@
   cursor: pointer;
   border-radius: $button-border-radius;
   border: $button-border-light;
+  letter-spacing: $button-letter-spacing;
+  transition: $transition-default;
   @include dropShadow-0-5();
   @include font-style($size: 18px, $weight: 500, $transform: uppercase, $lineHeight: 0.5);
 
   &:hover {
     color: $button-background-hover;
     background: $button-background-default;
+    transform: translateY(-1px);
+    box-shadow: $elevation-hover;
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: $focus-ring;
   }
   &:active {
     color: $button-background-pressed;
+    transform: translateY(0);
     @include dropShadow-2();
   }
 }

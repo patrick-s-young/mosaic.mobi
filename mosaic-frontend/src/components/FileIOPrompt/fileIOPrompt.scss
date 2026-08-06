@@ -8,11 +8,14 @@
     flex-direction: column;
     justify-content: center;
     gap: 20px;
-    padding: 20px;
+    padding: 28px 24px;
     margin: 20px;
     align-items: center;
-    border-radius: $radius-radious-12;
-    @include dropShadow-2();
+    color: #1f2430;
+    background: $surface-default;
+    border: 1px solid rgba(123, 31, 162, 0.12);
+    border-radius: $radius-radius-16;
+    @include dropShadow-3();
   &__headline {
     display: flex;
     gap: 6px;

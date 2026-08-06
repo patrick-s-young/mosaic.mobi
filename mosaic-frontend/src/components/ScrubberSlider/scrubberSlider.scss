@@ -9,12 +9,38 @@
 
   &__slider {
     width: 90%;
+    & .MuiSlider-rail {
+      color: rgba(174, 82, 212, 0.5); // reads on both white (1:1) and dark (9:16)
+      opacity: 1;
+      height: 4px;
+      border-radius: 2px;
+    }
+    & .MuiSlider-track {
+      color: $mosaic-purple-dark;
+      height: 4px;
+      border-radius: 2px;
+    }
+    & .MuiSlider-mark {
+      background-color: rgba(255, 255, 255, 0.85);
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+    }
     & .MuiSlider-thumb {
       width: 36px;
       height: 36px;
       margin-top: -18px;
       margin-left: -18px;
-      background-color: $mosaic-purple-dark;
+      background-color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: box-shadow 0.15s ease;
+      &:hover,
+      &.Mui-focusVisible {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 0 0 8px rgba(123, 31, 162, 0.16);
+      }
+      &.MuiSlider-active {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 0 0 12px rgba(123, 31, 162, 0.22);
+      }
     }
     & .MuiSlider-valueLabel {
       left: calc(-2%);

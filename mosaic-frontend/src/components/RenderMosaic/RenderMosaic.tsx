@@ -1,4 +1,4 @@
-import { traceEvent } from '@analytics/traceEvent';
+import { logEvent, AnalyticsEvent } from '@analytics/analytics';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAppPhase } from '@/app.slice';
 import { setNavPhase } from '@components/Navigation/nav.slice';
@@ -32,10 +32,10 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
   const imageFilename = imageFilenames[currentScrubberFrame];
 
   const onRenderVideo = () => {
-    traceEvent({
-      category: 'RenderMosaic',
-      action: 'onRenderVideo',
-      label: 'N/A'
+    logEvent(AnalyticsEvent.RENDER_VIDEO, {
+      num_tiles: numTiles ?? 0,
+      aspect_ratio: aspectRatio,
+      background_frame: currentScrubberFrame
     });
     const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${imageFilename}&aspectRatio=${aspectRatio}`;
     dispatch(renderMosaic(renderUrl));
@@ -44,21 +44,21 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
 
   const onSaveVideo = () => {
     if (renderBlob) {
-      traceEvent({
-        category: 'RenderMosaic',
-        action: 'onSaveVideo',
-        label: 'N/A'
+      logEvent(AnalyticsEvent.SAVE_VIDEO, {
+        num_tiles: numTiles ?? 0,
+        aspect_ratio: aspectRatio
       });
       FileDownload(renderBlob, downloadFileName, 'video/quicktime');
       dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
-      dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
+      dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));
       dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));
     }
   }
 
   const onCancel = () => {
+    logEvent(AnalyticsEvent.CANCEL, { stage: String(renderPhase) });
     dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
-    dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));  
+    dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));
     dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));
   }
 

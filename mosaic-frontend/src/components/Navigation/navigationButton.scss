@@ -1,33 +1,42 @@
 @use '@sass/mosaicVariables' as *;
 @use '@sass/mosaicMixins' as *;
 
-.navigationButton {  
+.navigationButton {
   box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: none;
   cursor: pointer;
-  color: $button-background-default; 
+  color: $button-background-default;
   @include dropShadow-0-5();
   border-radius: $button-border-radius;
   border: $button-border-light;
   background: $button-color-default;
   width: 100%;
   min-height: 60px;
+  letter-spacing: $button-letter-spacing;
+  transition: $transition-default;
   @include font-style($size: 18px, $weight: 500, $transform: uppercase, $lineHeight: 0.5);
 
 
   &:hover {
     color: $button-background-hover;
     background: $button-background-default;
+    transform: translateY(-1px);
+    box-shadow: $elevation-hover;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: $focus-ring;
   }
 
   &:active {
     color: $button-background-pressed;
+    transform: translateY(0);
     @include dropShadow-2();
   }
-  
+
   &--selected {
     color: $button-background-hover;
     background: $button-background-default;

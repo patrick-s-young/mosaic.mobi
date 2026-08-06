@@ -137,7 +137,7 @@ export default class FFmpegService {
     Promise.all([
       this.runFfmpeg(
         ['-i', `${dir}/cropped.mov`, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-preset', 'ultrafast', '-crf', '28', `${dir}/img%03d.jpg`],
-        (frame) => io.emit('ffmpegProgress', { actionName: 'Export frame', currentFrame: frame, totalFrames })
+        (frame) => io.emit('ffmpegProgress', { actionName: 'Exporting', currentFrame: frame, totalFrames })
       ),
       this.runFfmpeg(
         ['-i', `${dir}/cropped_9x16.mov`, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-preset', 'ultrafast', '-crf', '28', `${dir}/img%03d_9x16.jpg`]
