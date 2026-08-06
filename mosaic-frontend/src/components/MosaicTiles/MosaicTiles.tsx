@@ -9,6 +9,7 @@ import { MosaicPhaseEnum } from '@enums/MosaicPhaseEnum';
 import { MosaicState } from '@interfaces/MosaicState';
 import { MosaicTilesProps } from '@interfaces/MosaicTilesProps';
 import { AppState } from '@interfaces/AppState';
+import { ScrubberState } from '@interfaces/ScrubberState';
 // types
 import type { UploadState, RootState } from '@typescript/types';
 import '@components/MosaicTiles/mosaicTiles.scss';
@@ -20,6 +21,7 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
   const canvasRef = useRef() as React.MutableRefObject<HTMLCanvasElement>;
   const { videoURL, videoURL9x16 } = useSelector<RootState, UploadState>((state) => state.upload );
   const { aspectRatio } = useSelector<RootState, AppState>((state) => state.app);
+  const { isScrubbing } = useSelector<RootState, ScrubberState>((state) => state.scrubber);
   const {
     mosaicPhase,
     inPoints,
@@ -101,9 +103,24 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
     const beginTimeStamp = performance.now();
     mosaicTilesRef.current.forEach(tile => tile.initAnimation(beginTimeStamp));
 
+    // requestAnimationFrame is suspended while the tab is hidden or the window
+    // loses focus (and during system sleep). On return the timestamp jumps far
+    // ahead, which would snap every tile across its fade boundaries and look
+    // disjointed. We absorb any gap larger than a real frame interval into an
+    // offset, so the tiles always see a smooth, continuous clock — the same
+    // effect as pausing the sequencing timer while unfocused and resuming it on
+    // return, but with no blur/focus listeners to manage.
+    let lastTimeStamp = beginTimeStamp;
+    let pausedOffset = 0;
+    const SUSPEND_GAP_MS = 250; // longer than any legitimate frame interval
+
     function step(timeStamp: DOMHighResTimeStamp) {
+      const delta = timeStamp - lastTimeStamp;
+      if (delta > SUSPEND_GAP_MS) pausedOffset += delta;
+      lastTimeStamp = timeStamp;
+      const clock = timeStamp - pausedOffset;
       mosaicTilesRef.current.forEach((tile) => {
-        tile.animationFrameUpdate(timeStamp)
+        tile.animationFrameUpdate(clock)
       });
       drawGrid();
       animationFrameIdRef.current = requestAnimationFrame(step);
@@ -120,6 +137,7 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
       ref={canvasRef}
       width={canvasWidth}
       height={canvasHeight}
+      style={{ opacity: isScrubbing ? 0.25 : 1, transition: 'opacity 0.15s ease' }}
     />
   );
 }

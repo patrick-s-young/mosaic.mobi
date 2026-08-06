@@ -1,4 +1,4 @@
-import { traceEvent } from '@analytics/traceEvent';
+import { logEvent, AnalyticsEvent } from '@analytics/analytics';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // api
@@ -42,17 +42,22 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
 
   useEffect(() => {
     switch(uploadPhase) {
-      case UploadPhaseEnum.VIDEO_SUBMITED:    
-        if (selectedFile !== undefined) {     
-          
-          traceEvent({
-            category: 'UploadVideo',
-            action: 'onVideoSubmited',
-            label: 'N/A'
+      case UploadPhaseEnum.VIDEO_SUBMITED:
+        if (selectedFile !== undefined) {
+          logEvent(AnalyticsEvent.UPLOAD_VIDEO, {
+            file_size_mb: Math.round((selectedFile.size / (1024 * 1024)) * 10) / 10,
+            file_type: selectedFile.type || 'unknown',
+            duration_s: Math.round(uploadDuration * 10) / 10
           });
           dispatch(uploadUserVideo(selectedFile));
           dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
         }
+        break;
+      case UploadPhaseEnum.VIDEO_TOO_LONG:
+        logEvent(AnalyticsEvent.UPLOAD_REJECTED, {
+          reason: 'too_long',
+          duration_s: Math.round(uploadDuration * 10) / 10
+        });
         break;
       case UploadPhaseEnum.VIDEO_UPLOADED:
         dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.CANCEL_ANIMATION }));
@@ -67,9 +72,13 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
         dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.MOSAIC_INITIALIZED}));
         break;
       case UploadPhaseEnum.MOSAIC_INITIALIZED:
+        logEvent(AnalyticsEvent.UPLOAD_SUCCESS, {
+          duration_s: Math.round(uploadDuration * 10) / 10,
+          aspect_ratio: aspectRatio
+        });
         dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.PROMPT}));
-        dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));   
-        dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));  
+        dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));
+        dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));
         break;
     }
   }, [uploadPhase]);

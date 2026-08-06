@@ -1,16 +1,12 @@
 import { useEffect } from 'react';
-import { traceEvent } from '@analytics/traceEvent';
+import { logEvent, AnalyticsEvent } from '@analytics/analytics';
 import iPhone_XR from '@assets/device-preview/iPhone_XR_mock_414x712.png';
 import { DesktopDisplayProps } from '@interfaces/DesktopDisplayProps';
 import './desktopDisplay.scss';
 
 const DesktopDisplay: React.FC<DesktopDisplayProps> = ({ children }) => {
   useEffect(() => {
-    traceEvent({
-      category: 'DesktopDisplay',
-      action: 'onDesktopDisplay',
-      label: 'N/A'
-    });
+    logEvent(AnalyticsEvent.VIEW_DESKTOP);
   }, []);
   
   return (

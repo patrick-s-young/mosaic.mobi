@@ -53,7 +53,7 @@ const slideInOutProps = {
 const defaultVideoConfig = {
   assetID: '330055' as string,
   uploadDuration: 4.5 as number,
-  numTiles: 3
+  numTiles: 4
 }
 
 const mosaicTileConfig = {

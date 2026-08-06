@@ -8,7 +8,8 @@ export const initialState: ScrubberState = {
   scrubberFramesMax: SCRUBBER_FRAMES_MAX,
   currentScrubberFrame: Math.floor(SCRUBBER_FRAMES_MAX / 2),
   canvasWidth: 0,
-  videoUploadCount: 0
+  videoUploadCount: 0,
+  isScrubbing: false
 }
 
 const scrubberSlice = createSlice({
@@ -23,6 +24,9 @@ const scrubberSlice = createSlice({
     },
     setVideoUploadCount (state, action: PayloadAction<{increment: number}>) {
       state.videoUploadCount += action.payload.increment;
+    },
+    setIsScrubbing (state, action: PayloadAction<boolean>) {
+      state.isScrubbing = action.payload;
     }
 
   }
@@ -31,7 +35,8 @@ const scrubberSlice = createSlice({
 export const {
   setScrubberCanvasWidth,
   setCurrentScrubberFrame,
-  setVideoUploadCount
+  setVideoUploadCount,
+  setIsScrubbing
 } = scrubberSlice.actions;
 
 export default scrubberSlice.reducer;

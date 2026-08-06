@@ -2,6 +2,13 @@ $mosaic-purple-light: #ae52d4;
 $mosaic-purple-dark: #7b1fa2;
 $mosaic-contrast: 'rgba(255, 255, 255, 0.87)';
 
+// Refined interaction tokens (shared across buttons/slider for a cohesive,
+// polished feel: one transition curve, one focus ring, one hover elevation).
+$transition-default: all 0.18s ease;
+$button-letter-spacing: 0.06em;
+$focus-ring: 0 0 0 3px rgba(123, 31, 162, 0.35);
+$elevation-hover: 0 4px 12px rgba(123, 31, 162, 0.18), 0 1px 3px rgba(0, 0, 0, 0.14);
+
 $mosaic-hover-default: #7b1fa2;
 $mosaic-pressed-default: rgba(30, 30, 30, 0.24);
 

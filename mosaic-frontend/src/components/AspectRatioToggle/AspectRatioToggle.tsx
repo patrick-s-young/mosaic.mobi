@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
+import { logEvent, AnalyticsEvent } from '@analytics/analytics';
 import { setAspectRatio } from '@/app.slice';
 import { setAspectFormatting } from '@components/MosaicTiles';
 import { AppState } from '@interfaces/AppState';
@@ -20,6 +21,7 @@ const AspectRatioToggle: React.FC = () => {
     const nextAspectRatio: AspectRatio = aspectRatio === '1x1' ? '9x16' : '1x1';
     dispatch(setAspectRatio({ aspectRatio: nextAspectRatio }));
     dispatch(setAspectFormatting({ videoWidth: resizedWidth, canvasWidth, aspectRatio: nextAspectRatio }));
+    logEvent(AnalyticsEvent.SELECT_ASPECT_RATIO, { aspect_ratio: nextAspectRatio });
   };
 
   // the icon shows the shape you will switch TO
