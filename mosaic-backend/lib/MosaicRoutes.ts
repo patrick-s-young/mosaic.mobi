@@ -2,6 +2,16 @@ import { Application, Request, Response } from 'express';
 import { MosaicController } from './MosaicController';
 import env from './environment';
 
+// render query params flow into filesystem paths and ffmpeg args, so anything
+// outside the shapes the frontend actually sends is rejected up front.
+// assetIDs are numeric (Date.now() at upload, or the bundled 330055 default).
+const VALID_NUM_TILES = ['2', '3', '4', '6', '9'];
+const VALID_ASPECT_RATIOS = ['1x1', '9x16'];
+const isValidRenderQuery = (query: Request['query']): boolean =>
+  /^\d+$/.test(String(query.assetID)) &&
+  VALID_NUM_TILES.includes(String(query.numTiles)) &&
+  /^img\d{3}\.jpg$/.test(String(query.currentScrubberFrame)) &&
+  (query.aspectRatio === undefined || VALID_ASPECT_RATIOS.includes(String(query.aspectRatio)));
 
 export class MosaicRoutes {
   private mosaicController: MosaicController = new MosaicController();
@@ -19,6 +29,9 @@ export class MosaicRoutes {
 
     app.get('/render/mosaic',
       (req, res, next) => {
+        if (!isValidRenderQuery(req.query)) {
+          return res.status(400).send({ error: true, message: 'Invalid render parameters' });
+        }
         res.locals = { ...res.locals, ...req.query }
         this.mosaicController.probeVideo(req, res, next)
       },

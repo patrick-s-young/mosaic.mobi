@@ -9,6 +9,7 @@ export const preloadUserVideo = createAsyncThunk(
   async (assetID: string) => {
     const loadObjectURL = async (filename: string) => {
       const response = await fetch(`/uploads/${assetID}/${filename}`, { method: 'GET' });
+      if (!response.ok) throw new Error(`preloadUserVideo status ${response.status}: ${filename}`);
       const videoBlob = await response.blob();
       return URL.createObjectURL(videoBlob);
     };

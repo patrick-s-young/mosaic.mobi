@@ -4,6 +4,7 @@ services:
     depends_on:
       - frontend
     image: patricksyoung/mosaic-proxy:${IMAGE_TAG:-latest}
+    restart: unless-stopped
     ports:
       - '80:80'
     networks:
@@ -11,11 +12,13 @@ services:
 
   frontend:
     image: patricksyoung/mosaic-frontend:${IMAGE_TAG:-latest}
+    restart: unless-stopped
     networks:
       - mosaic-network
 
   backend:
     image: patricksyoung/mosaic-backend:${IMAGE_TAG:-latest}
+    restart: unless-stopped
     environment:
       - S3_BUCKET_NAME=${S3_BUCKET_NAME:-}
       - AWS_REGION=${AWS_REGION:-us-west-1}

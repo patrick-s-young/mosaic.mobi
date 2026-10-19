@@ -4,6 +4,12 @@ import ArchiveService from "./MosaicServices/ArchiveService/ArchiveService";
 const PORT = 3001
 const ARCHIVE_SWEEP_INTERVAL_MS = 15 * 60 * 1000;
 
+// safety net: a stray rejected promise in any request handler would otherwise
+// kill the process (node >= 15 default) and take the whole site down
+process.on('unhandledRejection', (reason) => {
+   console.error('unhandledRejection:', reason);
+});
+
 httpServer.listen(PORT, () => {
    console.log('Express server listening on port ' + PORT);
 });

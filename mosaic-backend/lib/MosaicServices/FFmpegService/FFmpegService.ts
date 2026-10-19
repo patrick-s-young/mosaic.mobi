@@ -35,6 +35,12 @@ export default class FFmpegService {
           }
         }
         next();
+      })
+      // a missing/unreadable upload.mov must fail the request, not reject
+      // unhandled — that terminates the whole node process
+      .catch((err) => {
+        console.log(`probeVideo err: ${err}`);
+        if (!res.headersSent) res.status(404).send({ error: true, message: 'Video not found' });
       });
   }
 
