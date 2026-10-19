@@ -29,6 +29,8 @@ export const preloadSequentialImages = createAsyncThunk(
             if (this.status === 200) {
               const imageBlob: Blob = this.response;
               resolve(URL.createObjectURL(imageBlob)); // IE10+
+            } else {
+              reject(`req status ${this.status}: ${path}`);
             }
           }
           req.onerror = function() {
