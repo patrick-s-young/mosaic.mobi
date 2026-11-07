@@ -15,6 +15,7 @@ export const AnalyticsEvent = {
   SELECT_TILE_COUNT: 'select_tile_count',
   SELECT_BACKGROUND_FRAME: 'select_background_frame',
   TOGGLE_CONTROLS: 'toggle_controls',
+  TOGGLE_SOUND: 'toggle_sound',
   UPLOAD_VIDEO: 'upload_video',
   UPLOAD_SUCCESS: 'upload_success',
   UPLOAD_REJECTED: 'upload_rejected',

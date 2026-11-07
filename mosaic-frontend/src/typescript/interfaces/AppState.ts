@@ -7,4 +7,5 @@ export interface AppState {
   aspectRatio: AspectRatio
   uiVisible: boolean
   hint: AppHintKind | undefined
+  keepSound: boolean
 }

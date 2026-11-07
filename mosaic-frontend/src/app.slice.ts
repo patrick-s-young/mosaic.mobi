@@ -8,7 +8,8 @@ const initialState: AppState = {
   canvasWidth: 0,
   aspectRatio: '9x16',
   uiVisible: true,
-  hint: undefined
+  hint: undefined,
+  keepSound: false
 }
 
 const appSlice = createSlice({
@@ -31,6 +32,9 @@ const appSlice = createSlice({
     },
     setHint (state, action: PayloadAction<{ hint: AppHintKind | undefined }>) {
       state.hint = action.payload.hint;
+    },
+    setKeepSound (state, action: PayloadAction<{ keepSound: boolean }>) {
+      state.keepSound = action.payload.keepSound;
     }
   }
 });
@@ -40,7 +44,8 @@ export const {
   setCanvasWidth,
   setAspectRatio,
   setUiVisible,
-  setHint
+  setHint,
+  setKeepSound
 } = appSlice.actions;
 
 export default appSlice.reducer;

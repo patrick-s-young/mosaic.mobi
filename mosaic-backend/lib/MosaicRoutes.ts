@@ -15,7 +15,8 @@ const isValidRenderQuery = (query: Request['query']): boolean =>
   ASSET_ID_PATTERN.test(String(query.assetID)) &&
   VALID_NUM_TILES.includes(String(query.numTiles)) &&
   /^img\d{3}\.jpg$/.test(String(query.currentScrubberFrame)) &&
-  (query.aspectRatio === undefined || VALID_ASPECT_RATIOS.includes(String(query.aspectRatio)));
+  (query.aspectRatio === undefined || VALID_ASPECT_RATIOS.includes(String(query.aspectRatio))) &&
+  (query.sound === undefined || query.sound === '1');
 
 export class MosaicRoutes {
   private mosaicController: MosaicController = new MosaicController();
@@ -28,7 +29,7 @@ export class MosaicRoutes {
       (req, res, next) => this.mosaicController.cropVideo(req, res, next),
       (req, res, next) => this.mosaicController.resizeVideo(req, res, next),
       (req, res, next) => this.mosaicController.exportFrames(req, res, next),
-      (req, res, next) => res.status(200).json({assetID: res.locals.assetID})
+      (req, res, next) => res.status(200).json({assetID: res.locals.assetID, hasAudio: res.locals.hasAudio === true})
      );
 
     app.get('/render/mosaic',

@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressFileUpload());
 // the volume also holds originals, manifests (with location) and the failure
 // log, so only the files the editor loads are public
-const PUBLIC_UPLOAD_FILE = /^\/[^/]+\/(resized(_9x16)?\.mov|img\d{3}(_9x16)?\.jpg)$/;
+const PUBLIC_UPLOAD_FILE = /^\/[^/]+\/(resized(_9x16)?\.mov|img\d{3}(_9x16)?\.jpg|audio\.m4a)$/;
 // an upload's ID is unique and its files never change, so they can be kept. The
 // demo asset keeps the same URLs across deploys, so it has to be able to refresh.
 const setUploadCacheHeaders = (res: Response, filePath: string) => {

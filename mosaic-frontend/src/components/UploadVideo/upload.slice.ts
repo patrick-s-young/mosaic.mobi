@@ -25,7 +25,8 @@ const initialState: UploadState = {
   resizedWidth: 320,
   statusMessage: '',
   failure: undefined,
-  uploadProgress: { stage: 'loading', fraction: 0 }
+  uploadProgress: { stage: 'loading', fraction: 0 },
+  hasAudio: false
 }
 
 // every step of the upload chain ends here when it fails, so the user always
@@ -81,6 +82,7 @@ const uploadSlice = createSlice ({
     })
     builder.addCase(uploadUserVideo.fulfilled, (state, action) => {
       state.assetID = action.payload.assetID;
+      state.hasAudio = action.payload.hasAudio === true;
       state.uploadProgress = { stage: 'loading', fraction: 0 };
       state.uploadPhase = UploadPhaseEnum.VIDEO_UPLOADED;
     })

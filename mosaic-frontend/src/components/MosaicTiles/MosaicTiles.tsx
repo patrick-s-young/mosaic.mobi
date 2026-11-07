@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setMosaicPhase } from '@components/MosaicTiles';
 import MosaicTile from '@components/MosaicTiles/MosaicTile';
 import { drawGridLines } from '@components/MosaicTiles/helpers/drawGridLines';
+import { markCycleStart, pauseSoundPreview } from '@components/SoundToggle/soundPreview';
+import { mosaicTileConfig } from '@/app.config';
 // enums
 import { MosaicPhaseEnum } from '@enums/MosaicPhaseEnum';
 // interfaces
@@ -79,6 +81,7 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
   const cancelAnimation = () => {
     clearTimeout(readyTimerRef.current);
     cancelAnimationFrame(animationFrameIdRef.current);
+    pauseSoundPreview();
     mosaicTilesRef.current.forEach(tile => tile.clearAnimation());
   }
   
@@ -108,6 +111,7 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
     cancelAnimationFrame(animationFrameIdRef.current);
     const beginTimeStamp = performance.now();
     mosaicTilesRef.current.forEach(tile => tile.initAnimation(beginTimeStamp));
+    markCycleStart();
 
     // requestAnimationFrame is suspended while the tab is hidden or the window
     // loses focus (and during system sleep). On return the timestamp jumps far
@@ -116,6 +120,7 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
     // offset, so the tiles always see a smooth, continuous clock — the same
     // effect as pausing the sequencing timer while unfocused and resuming it on
     // return, but with no blur/focus listeners to manage.
+    let cycleBeganAt = beginTimeStamp;
     let lastTimeStamp = beginTimeStamp;
     let pausedOffset = 0;
     const SUSPEND_GAP_MS = 250; // longer than any legitimate frame interval
@@ -125,6 +130,10 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
       if (delta > SUSPEND_GAP_MS) pausedOffset += delta;
       lastTimeStamp = timeStamp;
       const clock = timeStamp - pausedOffset;
+      if (clock - cycleBeganAt > mosaicTileConfig.ANIMATION_CYCLE_DURATION) {
+        cycleBeganAt = clock;
+        markCycleStart();
+      }
       mosaicTilesRef.current.forEach((tile) => {
         tile.animationFrameUpdate(clock)
       });

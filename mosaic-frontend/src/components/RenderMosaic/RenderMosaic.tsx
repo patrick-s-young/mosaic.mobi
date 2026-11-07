@@ -30,7 +30,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
   const dispatch = useDispatch<AppDispatch>();
   const { assetID, imageFilenames } = useSelector<RootState, UploadState>((state) => state.upload);
   const { numTiles } = useSelector<RootState, Partial<MosaicState>>((state) => state.mosaic);
-  const { aspectRatio } = useSelector<RootState, AppState>((state) => state.app);
+  const { aspectRatio, keepSound } = useSelector<RootState, AppState>((state) => state.app);
   const { currentScrubberFrame } = useSelector<RootState, ScrubberState>((state) => state.scrubber);
   const { renderPhase, renderBlob, failure, downloadFraction } = useSelector<RootState, RenderState>((state) => state.render);
   const renderRequestRef = useRef<{ abort: () => void }>();
@@ -51,12 +51,13 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
     logEvent(AnalyticsEvent.RENDER_VIDEO, {
       num_tiles: numTiles ?? 0,
       aspect_ratio: aspectRatio,
-      background_frame: currentScrubberFrame
+      background_frame: currentScrubberFrame,
+      sound: keepSound
     });
     // the preview is hidden behind this screen, so don't spend the phone's
     // decoders on it while the finished video needs one
     dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.CANCEL_ANIMATION }));
-    const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${imageFilename}&aspectRatio=${aspectRatio}`;
+    const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${imageFilename}&aspectRatio=${aspectRatio}${keepSound ? '&sound=1' : ''}`;
     renderRequestRef.current = dispatch(renderMosaic({ url: renderUrl, assetID }));
     dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
   }
@@ -92,7 +93,8 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
     logEvent(AnalyticsEvent.SAVE_VIDEO, {
       num_tiles: numTiles ?? 0,
       aspect_ratio: aspectRatio,
-      method: result
+      method: result,
+      sound: keepSound
     });
   }
 
@@ -144,6 +146,8 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
                   src={resultURL}
                   style={{ maxHeight: displaySize.height - RESULT_CHROME_HEIGHT }}
                   aria-label='Your finished video'
+                  // phones only autoplay muted, so a video with sound needs controls to unmute it
+                  controls={keepSound}
                   autoPlay
                   loop
                   muted
