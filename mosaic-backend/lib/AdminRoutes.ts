@@ -1,6 +1,7 @@
 import { Application, Request, Response } from 'express';
 import basicAuth from 'express-basic-auth';
 import S3Service from './MosaicServices/S3Service/S3Service';
+import failureLog from './MosaicServices/FailureLogService/FailureLogService';
 import env from './environment';
 const path = require('path');
 
@@ -31,6 +32,10 @@ export class AdminRoutes {
       } catch (err) {
         res.status(500).json({ error: true, message: String(err) });
       }
+    });
+
+    app.get('/admin/api/failures', auth, (req: Request, res: Response) => {
+      res.json({ failures: failureLog.recent() });
     });
 
     app.get('/admin/api/video-url', auth, async (req: Request, res: Response) => {

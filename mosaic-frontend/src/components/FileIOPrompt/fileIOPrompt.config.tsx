@@ -1,4 +1,6 @@
 import { AccessTime, Cached, CloudDownload, CloudUpload, Warning } from '@material-ui/icons';
+import { MAX_VIDEO_UPLOAD_MB } from '@/app.config';
+import type { Failure, FailureReason } from '@typescript/types';
 
 const ICON_SIZE = 36;
 
@@ -38,7 +40,40 @@ const PROMPT = {
     headlineIcon: <CloudUpload style={{ fontSize: ICON_SIZE }}/>,
     message: 'Your video is being uploaded and optimized for your mobile device.',
     buttonLabel: '',
+  },
+  uploadFailed: {
+    headline: 'UPLOAD FAILED',
+    headlineIcon: <Warning style={{ fontSize: ICON_SIZE }}/>,
+    message: '',
+    buttonLabel: 'TRY AGAIN',
+  },
+  renderFailed: {
+    headline: 'RENDER FAILED',
+    headlineIcon: <Warning style={{ fontSize: ICON_SIZE }}/>,
+    message: '',
+    buttonLabel: 'TRY AGAIN',
   }
 }
 
-export { PROMPT };
+const COULD_NOT_PROCESS = 'We couldn\'t process this video. Please try a different one.';
+const SERVER_BUSY = 'Our server is busy right now. Please try again in a moment.';
+const CHECK_CONNECTION = 'The connection was interrupted. Please check it and try again.';
+
+const FAILURE_MESSAGES: Partial<Record<FailureReason, string>> = {
+  too_large: `This video is too large. Please choose one under ${MAX_VIDEO_UPLOAD_MB} MB.`,
+  too_short: 'This video is too short. Please choose one that is at least two seconds long.',
+  unreadable_file: 'We couldn\'t read this video. Please try a different one, such as an MP4 or MOV from your phone.',
+  network: CHECK_CONNECTION,
+  download_failed: CHECK_CONNECTION,
+  timeout: SERVER_BUSY,
+  ffmpeg_killed: SERVER_BUSY,
+  unreadable_video: COULD_NOT_PROCESS,
+  missing_frames: COULD_NOT_PROCESS,
+  ffmpeg_failed: COULD_NOT_PROCESS,
+  asset_expired: 'Your upload has expired. Please upload your video again.'
+};
+
+const failureMessage = (failure: Failure | undefined): string =>
+  (failure && FAILURE_MESSAGES[failure.reason]) ?? 'Something went wrong. Please try again.';
+
+export { PROMPT, failureMessage };

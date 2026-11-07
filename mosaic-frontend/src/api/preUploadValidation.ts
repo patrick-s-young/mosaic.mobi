@@ -1,35 +1,44 @@
-import { 
+import {
   createAsyncThunk
 } from '@reduxjs/toolkit';
+import { MAX_VIDEO_UPLOAD_BYTES, MIN_VIDEO_UPLOAD_DURATION } from '@/app.config';
+import type { Failure } from '@typescript/types';
 
-export const preUploadValidation = createAsyncThunk(
+const METADATA_TIMEOUT_MS = 20000;
+
+// resolves with the video's duration, or null if this browser can't read it.
+// Without the error and timeout paths an unsupported file would wait forever.
+const readDuration = (file: File): Promise<number | null> => new Promise((resolve) => {
+  const videoUrl = URL.createObjectURL(new Blob([file], { type: 'video/mp4' }));
+  const video = document.createElement('video');
+  const finish = (duration: number | null) => {
+    clearTimeout(timeout);
+    URL.revokeObjectURL(videoUrl);
+    resolve(duration);
+  };
+  const timeout = setTimeout(() => finish(null), METADATA_TIMEOUT_MS);
+  video.addEventListener('loadedmetadata', () => finish(video.duration));
+  video.addEventListener('error', () => finish(null));
+  video.src = videoUrl;
+});
+
+export const preUploadValidation = createAsyncThunk<
+  { selectedFile: File, uploadDuration: number },
+  File,
+  { rejectValue: Failure }
+>(
   '@api/preUploadValidation',
-  async (event: { target: HTMLInputElement }) => {
-
-    const selectedFile = event.target.files?.[0];
-    if (!selectedFile) {
-      throw new Error('No file selected');
+  async (selectedFile, { rejectWithValue }) => {
+    if (selectedFile.size > MAX_VIDEO_UPLOAD_BYTES) {
+      return rejectWithValue({ stage: 'validation', reason: 'too_large', detail: `${selectedFile.size} bytes` });
     }
-    
-    const uploadDuration = await new Promise<number>((_resolve, _reject) => {
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const blob: Blob = new Blob([evt.target?.result as ArrayBuffer], { type: "video/mp4" });
-        const urlCreator = window.URL || window.webkitURL;
-        var videoUrl = urlCreator.createObjectURL( blob );
-        var video = document.createElement('video');
-        video.src = videoUrl;
-        video.addEventListener('loadedmetadata', (ev: Event) => {
-          const target = ev.currentTarget as HTMLVideoElement;
-          console.log(`duration: ${target.duration}`);
-          urlCreator.revokeObjectURL(videoUrl);
-          _resolve(target.duration);
-        });
-      }
-      // read file to determine if duration is not too long (less than fifteen seconds)
-      reader.readAsArrayBuffer(selectedFile);
-    });
-
+    const uploadDuration = await readDuration(selectedFile);
+    if (uploadDuration === null || !Number.isFinite(uploadDuration)) {
+      return rejectWithValue({ stage: 'validation', reason: 'unreadable_file', detail: selectedFile.type });
+    }
+    if (uploadDuration < MIN_VIDEO_UPLOAD_DURATION) {
+      return rejectWithValue({ stage: 'validation', reason: 'too_short', detail: `${uploadDuration}s` });
+    }
     return { selectedFile, uploadDuration };
   }
 );

@@ -7,7 +7,8 @@ import { RenderBlob } from '@typescript/types';
 
 const initialState: RenderState = {
   renderPhase: RenderPhaseEnum.RENDER_PROMPT,
-  renderBlob: undefined
+  renderBlob: undefined,
+  failure: undefined
 }
 
 const renderSlice = createSlice ({
@@ -16,6 +17,7 @@ const renderSlice = createSlice ({
   reducers: {
     setRenderPhase (state, action: PayloadAction<{ renderPhase: RenderPhaseEnum }>) {
       state.renderPhase = action.payload.renderPhase;
+      state.failure = undefined;
     },
     resetRenderPhase (state, action: PayloadAction<{ renderPhase: RenderPhaseEnum }>) {
       state.renderPhase = action.payload.renderPhase;
@@ -25,12 +27,14 @@ const renderSlice = createSlice ({
     }
   },
   extraReducers: builder => {
-    builder.addCase(renderMosaic.rejected, (_, action) => {
-      console.log(`renderMosaic.rejected > action.payload: ${action.payload}`);
+    builder.addCase(renderMosaic.rejected, (state, action) => {
+      state.failure = action.payload ?? { stage: 'render', reason: 'server_error' };
+      state.renderPhase = RenderPhaseEnum.RENDER_FAILED;
     })
     builder.addCase(renderMosaic.pending, (state, action) => {
       console.log(`renderMosaic.pending > action.payload: ${action.payload}`);
       state.renderPhase = RenderPhaseEnum.RENDERING;
+      state.failure = undefined;
     })
     builder.addCase(renderMosaic.fulfilled, (state, action) => {
       console.log(`renderMosaic.fulfilled > action.payload.renderBlob: ${action.payload.renderBlob}`);

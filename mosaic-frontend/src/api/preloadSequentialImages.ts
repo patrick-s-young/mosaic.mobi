@@ -2,13 +2,18 @@ import {
   createAsyncThunk
 } from '@reduxjs/toolkit';
 import { SCRUBBER_FRAMES_MAX } from '@/app.config';
+import type { Failure } from '@typescript/types';
 
 // preloads both aspect-ratio scrubber background frame sets (imgNNN.jpg and
 // imgNNN_9x16.jpg). imageFilenames are returned as the aspect-agnostic base
 // names; the backend applies the _9x16 suffix when rendering 9:16.
-export const preloadSequentialImages = createAsyncThunk(
+export const preloadSequentialImages = createAsyncThunk<
+  { imageURLs: Array<string>, imageURLs9x16: Array<string>, imageFilenames: Array<string> },
+  string,
+  { rejectValue: Failure }
+>(
   '@api/preloadSequentialImages',
-  async (assetID: string) => {
+  async (assetID, { rejectWithValue }) => {
       const startIdx = 1;
       const endIdx = SCRUBBER_FRAMES_MAX;
       const nameFormat = 'img .jpg';
@@ -40,10 +45,14 @@ export const preloadSequentialImages = createAsyncThunk(
         });
       };
 
-    const [imageURLs, imageURLs9x16] = await Promise.all([
-      Promise.all(filenameArr.map((filename) => loadObjectURL(`${directoryPath}/${filename}`))),
-      Promise.all(filenameArr.map((filename) => loadObjectURL(`${directoryPath}/${filename.replace(/\.jpg$/i, '_9x16.jpg')}`)))
-    ]);
-    return { imageURLs, imageURLs9x16, imageFilenames: filenameArr };
+    try {
+      const [imageURLs, imageURLs9x16] = await Promise.all([
+        Promise.all(filenameArr.map((filename) => loadObjectURL(`${directoryPath}/${filename}`))),
+        Promise.all(filenameArr.map((filename) => loadObjectURL(`${directoryPath}/${filename.replace(/\.jpg$/i, '_9x16.jpg')}`)))
+      ]);
+      return { imageURLs, imageURLs9x16, imageFilenames: filenameArr };
+    } catch (err) {
+      return rejectWithValue({ stage: 'preload', reason: 'download_failed', detail: String(err) });
+    }
   }
 );

@@ -3,3 +3,4 @@ export { preloadUserVideo } from './preloadUserVideo';
 export { preUploadValidation } from './preUploadValidation';
 export { uploadUserVideo } from './uploadUserVideo';
 export { renderMosaic } from './renderMosaic';
+export { getSessionId, reportFailure, failureReasonForStatus } from './reportFailure';

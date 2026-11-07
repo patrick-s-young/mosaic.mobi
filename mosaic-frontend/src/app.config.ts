@@ -9,6 +9,11 @@ const [width, uiContainerHeight] = isMobileDevice
 const popOverHeight = width + uiContainerHeight;
 
 const MAX_VIDEO_UPLOAD_DURATION = 15;
+// each tile plays a two-second clip, so anything shorter can't fill one
+const MIN_VIDEO_UPLOAD_DURATION = 2;
+// matches client_max_body_size in mosaic-proxy, less room for the form encoding
+const MAX_VIDEO_UPLOAD_MB = 30;
+const MAX_VIDEO_UPLOAD_BYTES = MAX_VIDEO_UPLOAD_MB * 1024 * 1024 - 1024;
 const SCRUBBER_FRAMES_MAX = 20
 const DEFAULT_VIDEO_NUM_TILES = 4;
 
@@ -66,6 +71,9 @@ export {
   appDimensions,
   isMobileDevice,
   MAX_VIDEO_UPLOAD_DURATION,
+  MIN_VIDEO_UPLOAD_DURATION,
+  MAX_VIDEO_UPLOAD_MB,
+  MAX_VIDEO_UPLOAD_BYTES,
   SCRUBBER_FRAMES_MAX,
   DEFAULT_VIDEO_NUM_TILES,
   defaultVideoConfig,

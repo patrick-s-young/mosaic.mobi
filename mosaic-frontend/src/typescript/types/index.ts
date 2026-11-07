@@ -21,3 +21,4 @@ export type { TimeGroup } from "./TimeGroup";
 export type { Rect } from "./Rect";
 export type { RenderBlob } from "./RenderBlob";
 export type { AspectRatio } from "./AspectRatio";
+export type { Failure, FailureStage, FailureReason } from "./Failure";
