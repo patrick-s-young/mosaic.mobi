@@ -1,5 +1,7 @@
 import { GetTileAnimEvents } from '@interfaces/GetTileAnimEvents';
 
+// fade-in times (ms) per tile. MUST match the backend
+// FADE_IN_PRESENTATION_TIMESTAMPS (seconds) so the preview matches the render.
 export const getTileAnimEvents: GetTileAnimEvents = () => {
   return {
   2:[
@@ -19,11 +21,11 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
     ],
   6:[ 
       [ 1000, 8500, 12000 ],
-      [ 500, 7500, 11500 ],
+      [ 500, 7500, 12000 ],
       [ 3000, 7000, 12000 ],
       [ 2000, 6000, 12000 ],
-      [ 5000, 9000, 12000 ],
-      [ 4000, 9500, 12000 ]
+      [ 5000, 9500, 12000 ],
+      [ 4000, 8500, 12000 ]
     ],
   9:[
       [ 250, 4250, 10250 ],
@@ -31,7 +33,7 @@ export const getTileAnimEvents: GetTileAnimEvents = () => {
       [ 500, 5000, 10750 ],
       [ 1500, 5500, 11250],
       [ 1250, 7500, 11500 ],
-      [ 2000, 6250, 11750 ],
+      [ 2000, 6250, 11725 ],
       [ 1750, 4750, 12000 ],
       [ 2250, 8250, 12250 ],
       [ 2500, 5000, 12500 ]

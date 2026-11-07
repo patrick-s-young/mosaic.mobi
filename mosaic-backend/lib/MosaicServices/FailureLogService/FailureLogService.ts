@@ -48,7 +48,7 @@ class FailureLogService {
     return this.cleanSessionId(req.headers['x-session-id']);
   }
 
-  private cleanSessionId (value: unknown): string {
+  public cleanSessionId (value: unknown): string {
     return typeof value === 'string' && SESSION_ID_PATTERN.test(value) ? value : 'unknown';
   }
 

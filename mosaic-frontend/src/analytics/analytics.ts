@@ -29,11 +29,16 @@ export const AnalyticsEvent = {
 export type AnalyticsEventName = typeof AnalyticsEvent[keyof typeof AnalyticsEvent];
 export type AnalyticsParams = Record<string, string | number | boolean>;
 
+// An allow-list rather than excluding localhost, so testing from a phone on the
+// local network or through the EC2 hostname stays out of the reports too.
+const ANALYTICS_HOSTS = ['mosaic.mobi', 'www.mosaic.mobi'];
+const analyticsEnabled = ANALYTICS_HOSTS.includes(window.location.hostname);
+
 let initialized = false;
 
 // Initialize GA once (idempotent). Safe to call from app start-up.
 export const initAnalytics = (): void => {
-  if (initialized) return;
+  if (initialized || !analyticsEnabled) return;
   ReactGA.initialize(MEASUREMENT_ID);
   initialized = true;
 };
@@ -43,5 +48,6 @@ export const initAnalytics = (): void => {
 // carries the dimensions we actually care about — tile count, aspect ratio,
 // render duration, file size, etc.
 export const logEvent = (name: AnalyticsEventName, params: AnalyticsParams = {}): void => {
+  if (!analyticsEnabled) return;
   ReactGA.event(name, params);
 };

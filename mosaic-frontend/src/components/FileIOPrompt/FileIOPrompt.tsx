@@ -3,6 +3,7 @@ import { PROMPT } from './fileIOPrompt.config';
 import PromptButton from '@/components/FileIOPrompt/PromptButton';
 import { FileIOPromptProps } from '@interfaces/FileIOPromptProps';
 import { io, Socket } from 'socket.io-client';
+import { getSessionId } from '@api/reportFailure';
 import './fileIOPrompt.scss';
 
 // shared by every prompt, so a visitor holds one connection however many are mounted
@@ -32,7 +33,7 @@ const FileIOPrompt = ({
   }
 
   useEffect(() => {
-    socket = socket ?? io();
+    socket = socket ?? io({ auth: { sessionId: getSessionId() } });
     const onProgress = (data: any) => {
       setProgressFrames({actionName: data.actionName, currentFrame: data.currentFrame, totalFrames: data.totalFrames});
     };

@@ -8,6 +8,7 @@ RUN npm run build
 
 #production stage
 FROM node:20-alpine AS production-stage
+ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=build-stage /app /app
 EXPOSE 3001
