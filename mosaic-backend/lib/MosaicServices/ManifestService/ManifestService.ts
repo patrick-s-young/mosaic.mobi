@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import env from '../../environment';
 import GeoService from '../GeoService/GeoService';
+import failureLog from '../FailureLogService/FailureLogService';
 const fs = require('fs');
 
 interface RenderEntry {
@@ -13,6 +14,7 @@ interface RenderEntry {
 
 interface Manifest {
   assetID: string;
+  sessionId?: string;
   uploadedAt: string;
   location: { country: string | null; region: string | null; city: string | null };
   renders: RenderEntry[];
@@ -44,6 +46,7 @@ export default class ManifestService {
     const assetID = res.locals.assetID;
     const manifest: Manifest = {
       assetID: String(assetID),
+      sessionId: failureLog.sessionIdFrom(req),
       uploadedAt: new Date().toISOString(),
       location: { country: null, region: null, city: null },
       renders: []

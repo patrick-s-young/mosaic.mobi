@@ -5,14 +5,23 @@ import { FileIOPromptProps } from '@interfaces/FileIOPromptProps';
 import { io, Socket } from 'socket.io-client';
 import './fileIOPrompt.scss';
 
-let socket: Socket;
+// shared by every prompt, so a visitor holds one connection however many are mounted
+let socket: Socket | undefined;
 
-const FileIOPrompt = ({ action, videoDuration = 0, callBack = () => {}, onCancel = () => {} }: FileIOPromptProps) => {
+const FileIOPrompt = ({
+  action,
+  videoDuration = 0,
+  callBack = () => {},
+  onCancel = () => {},
+  messageOverride,
+  buttonLabelOverride,
+  showCancel = true
+}: FileIOPromptProps) => {
   const [progressFrames, setProgressFrames] = useState({actionName: null, currentFrame: 0, totalFrames: 0});
   const { headline, headlineIcon, message, buttonLabel } = PROMPT[action];
-  const formattedMessage = action === 'videoTooLong' 
-  ? message.replace('VIDEO_DURATION', Number(videoDuration).toFixed(2)) 
-  : message;
+  const formattedMessage = messageOverride ?? (action === 'videoTooLong'
+  ? message.replace('VIDEO_DURATION', Number(videoDuration).toFixed(2))
+  : message);
   const showButtons = action !== 'rendering' && action !== 'uploading';
 
   // Temp solution. Replace with upload status method
@@ -23,12 +32,14 @@ const FileIOPrompt = ({ action, videoDuration = 0, callBack = () => {}, onCancel
   }
 
   useEffect(() => {
-    socket = io();
-    socket.on('ffmpegProgress', 
-      (data) => {
-        setProgressFrames({actionName: data.actionName, currentFrame: data.currentFrame, totalFrames: data.totalFrames});
-      }
-    );
+    socket = socket ?? io();
+    const onProgress = (data: any) => {
+      setProgressFrames({actionName: data.actionName, currentFrame: data.currentFrame, totalFrames: data.totalFrames});
+    };
+    socket.on('ffmpegProgress', onProgress);
+    return () => {
+      socket?.off('ffmpegProgress', onProgress);
+    };
   }, []);
 
   return (
@@ -46,8 +57,8 @@ const FileIOPrompt = ({ action, videoDuration = 0, callBack = () => {}, onCancel
       </div>
       {showButtons &&
         <div className='fileIOPrompt__buttonsContainer'>
-          <PromptButton prompt={buttonLabel} onClick={callBack} />
-          <PromptButton prompt="CANCEL" onClick={onCancel} />
+          <PromptButton prompt={buttonLabelOverride ?? buttonLabel} onClick={callBack} />
+          {showCancel && <PromptButton prompt="CANCEL" onClick={onCancel} />}
         </div>
       }
     </div>

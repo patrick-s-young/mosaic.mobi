@@ -18,6 +18,7 @@ import '@components/MosaicTiles/mosaicTiles.scss';
 const MosaicTiles: React.FC<MosaicTilesProps> = () => {
   const dispatch = useDispatch();
   const animationFrameIdRef = useRef<number>(0);
+  const readyTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const canvasRef = useRef() as React.MutableRefObject<HTMLCanvasElement>;
   const { videoURL, videoURL9x16 } = useSelector<RootState, UploadState>((state) => state.upload );
   const { aspectRatio } = useSelector<RootState, AppState>((state) => state.app);
@@ -76,13 +77,17 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
   }, [mosaicPhase]);
 
   const cancelAnimation = () => {
+    clearTimeout(readyTimerRef.current);
     cancelAnimationFrame(animationFrameIdRef.current);
     mosaicTilesRef.current.forEach(tile => tile.clearAnimation());
   }
   
+  // only one wait can run at a time: a second one would start a second
+  // animation loop, and animationFrameIdRef only tracks the latest
   function waitUntilAnimationIsReady() {
+    clearTimeout(readyTimerRef.current);
     if (mosaicTilesRef.current.every(tile => tile.isReady()) !== true) {
-      setTimeout(() => {
+      readyTimerRef.current = setTimeout(() => {
         waitUntilAnimationIsReady();
       }, 250);
       return;
@@ -100,6 +105,7 @@ const MosaicTiles: React.FC<MosaicTilesProps> = () => {
   }
 
   function startAnimation () {
+    cancelAnimationFrame(animationFrameIdRef.current);
     const beginTimeStamp = performance.now();
     mosaicTilesRef.current.forEach(tile => tile.initAnimation(beginTimeStamp));
 

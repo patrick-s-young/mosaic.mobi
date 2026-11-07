@@ -5,6 +5,7 @@ import { setNavPhase } from '@components/Navigation/nav.slice';
 import { setRenderPhase } from '@components/RenderMosaic/renderMosaic.slice';
 import { renderMosaic } from '@api/index';
 import { popOverProps, slideInOutProps } from '@/app.config';
+import { failureMessage } from '@components/FileIOPrompt/fileIOPrompt.config';
 import FileIOPrompt from '@components/FileIOPrompt/FileIOPrompt';
 import SlideInOut from '@components/SideInOut/SlideInOut';
 import PopOver from '@components/PopOver/PopOver';
@@ -28,7 +29,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
   const { numTiles } = useSelector<RootState, Partial<MosaicState>>((state) => state.mosaic);
   const { aspectRatio } = useSelector<RootState, AppState>((state) => state.app);
   const { currentScrubberFrame } = useSelector<RootState, ScrubberState>((state) => state.scrubber);
-  const { renderPhase, renderBlob } = useSelector<RootState, RenderState>((state) => state.render);
+  const { renderPhase, renderBlob, failure } = useSelector<RootState, RenderState>((state) => state.render);
   const imageFilename = imageFilenames[currentScrubberFrame];
 
   const onRenderVideo = () => {
@@ -38,8 +39,20 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
       background_frame: currentScrubberFrame
     });
     const renderUrl = `/render/mosaic/?assetID=${assetID}&numTiles=${numTiles}&currentScrubberFrame=${imageFilename}&aspectRatio=${aspectRatio}`;
-    dispatch(renderMosaic(renderUrl));
+    dispatch(renderMosaic({ url: renderUrl, assetID }));
     dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
+  }
+
+  // an expired upload can't be rendered again, so send the user back to upload
+  const isAssetExpired = failure?.reason === 'asset_expired';
+  const onRetryRender = () => {
+    if (isAssetExpired) {
+      dispatch(setRenderPhase({ renderPhase: RenderPhaseEnum.RENDER_PROMPT }));
+      dispatch(setNavPhase({ navPhase: NavPhaseEnum.UPLOAD }));
+      dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING }));
+    } else {
+      onRenderVideo();
+    }
   }
 
   const onSaveVideo = () => {
@@ -85,6 +98,19 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
             {...slideInOutProps}
           >
             <FileIOPrompt action='save' callBack={onSaveVideo} onCancel={onCancel} />
+          </SlideInOut>
+
+          <SlideInOut
+            isActive={renderPhase === RenderPhaseEnum.RENDER_FAILED}
+            {...slideInOutProps}
+          >
+            <FileIOPrompt
+              action='renderFailed'
+              callBack={onRetryRender}
+              onCancel={onCancel}
+              messageOverride={failureMessage(failure)}
+              buttonLabelOverride={isAssetExpired ? 'UPLOAD' : undefined}
+            />
           </SlideInOut>
           </div>
         </div>

@@ -36,7 +36,8 @@
   }
   .thumb:hover .play-overlay { background: rgba(0,0,0,0.4); }
   video { width: 120px; height: 120px; object-fit: cover; border-radius: 6px; display: block; }
-</style>
+  h2 { font-size: 1.1rem; margin: 2.5rem 0 1rem; }
+  </style>
 </head>
 <body>
   <h1>Mosaic - Asset Report</h1>
@@ -52,6 +53,24 @@
       </tr>
     </thead>
     <tbody id="assetRows"></tbody>
+  </table>
+
+  <h2>Failures</h2>
+  <div id="failureStatus" class="muted">Loading...</div>
+  <table id="failureTable" style="display:none">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Stage</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Session</th>
+        <th>Asset</th>
+        <th>Reported by</th>
+        <th>Browser</th>
+      </tr>
+    </thead>
+    <tbody id="failureRows"></tbody>
   </table>
 
   <script>
@@ -117,6 +136,44 @@
       return cell;
     }
 
+    // failures can include text sent by the client, so nothing here goes through innerHTML
+    function appendTextCell(row, text, title) {
+      const cell = document.createElement('td');
+      cell.textContent = text ?? '';
+      if (title) cell.title = title;
+      row.appendChild(cell);
+    }
+
+    async function loadFailures() {
+      const statusEl = document.getElementById('failureStatus');
+      try {
+        const response = await fetch('/admin/api/failures');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const { failures } = await response.json();
+        if (!failures.length) {
+          statusEl.textContent = 'No failures recorded.';
+          return;
+        }
+        const rows = document.getElementById('failureRows');
+        failures.forEach((failure) => {
+          const row = document.createElement('tr');
+          appendTextCell(row, new Date(failure.at).toLocaleString());
+          appendTextCell(row, failure.stage);
+          appendTextCell(row, failure.reason, failure.detail);
+          appendTextCell(row, failure.status);
+          appendTextCell(row, failure.sessionId.slice(0, 8), failure.sessionId);
+          appendTextCell(row, failure.assetID ? failure.assetID.slice(0, 8) : '', failure.assetID);
+          appendTextCell(row, failure.source);
+          appendTextCell(row, failure.userAgent.slice(0, 60), failure.userAgent);
+          rows.appendChild(row);
+        });
+        statusEl.style.display = 'none';
+        document.getElementById('failureTable').style.display = 'table';
+      } catch (err) {
+        statusEl.textContent = `Failed to load failures: ${err.message}`;
+      }
+    }
+
     async function load() {
       const statusEl = document.getElementById('status');
       try {
@@ -162,6 +219,7 @@
     }
 
     load();
+    loadFailures();
   </script>
 </body>
 </html>
