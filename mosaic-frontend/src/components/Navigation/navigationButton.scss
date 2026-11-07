@@ -42,4 +42,20 @@
     background: $button-background-default;
     @include dropShadow-2();
   }
+
+  &--nudge {
+    animation: navigationButton-nudge 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes navigationButton-nudge {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(174, 82, 212, 0.75); }
+  50% { box-shadow: 0 0 0 8px rgba(174, 82, 212, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navigationButton--nudge {
+    animation: none;
+    box-shadow: 0 0 0 3px rgba(174, 82, 212, 0.75);
+  }
 }

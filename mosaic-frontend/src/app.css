@@ -78,6 +78,41 @@ html, body, .full_size {
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
+/* the controls can't act on anything until the first video has loaded */
+.app_ui_container--waiting {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* the first load shows the demo's opening frame straight away */
+.video_area {
+  background-position: center;
+  background-size: cover;
+}
+
+.video_area__spinner {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  margin-left: -22px;
+  border: 4px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: video_area__spin 0.9s linear infinite;
+}
+
+@keyframes video_area__spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video_area__spinner {
+    animation: none;
+  }
+}
+
 .app_ui_container--hidden {
   opacity: 0;
   transform: translateY(24px);

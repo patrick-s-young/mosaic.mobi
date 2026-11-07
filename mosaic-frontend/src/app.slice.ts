@@ -1,13 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppPhaseEnum } from '@typescript/enums';
 import { AppState } from '@interfaces/AppState';
-import type { AspectRatio } from '@typescript/types';
+import type { AppHintKind, AspectRatio } from '@typescript/types';
 
 const initialState: AppState = {
   appPhase: AppPhaseEnum.LOADING,
   canvasWidth: 0,
   aspectRatio: '9x16',
-  uiVisible: true
+  uiVisible: true,
+  hint: undefined
 }
 
 const appSlice = createSlice({
@@ -27,6 +28,9 @@ const appSlice = createSlice({
     },
     setUiVisible (state, action: PayloadAction<{ uiVisible: boolean }>) {
       state.uiVisible = action.payload.uiVisible;
+    },
+    setHint (state, action: PayloadAction<{ hint: AppHintKind | undefined }>) {
+      state.hint = action.payload.hint;
     }
   }
 });
@@ -35,7 +39,8 @@ export const {
   setAppPhase,
   setCanvasWidth,
   setAspectRatio,
-  setUiVisible
+  setUiVisible,
+  setHint
 } = appSlice.actions;
 
 export default appSlice.reducer;

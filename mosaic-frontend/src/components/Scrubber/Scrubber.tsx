@@ -16,11 +16,14 @@ const Scrubber: React.FC<ScrubberProps> = (): React.JSX.Element => {
   const activeImageURLs = aspectRatio === '9x16' ? imageURLs9x16 : imageURLs;
   const canvasHeight = getAspectHeight(canvasWidth, aspectRatio);
 
+  // a frame still loading keeps the previous one on screen, and this runs again
+  // when it arrives
+  const activeImageURL = activeImageURLs[currentScrubberFrame];
   useEffect(() => {
-		if (imgRef.current !== null) {
-			imgRef.current.src = activeImageURLs[currentScrubberFrame];
+		if (imgRef.current !== null && activeImageURL) {
+			imgRef.current.src = activeImageURL;
 		}
-	}, [currentScrubberFrame, videoUploadCount, aspectRatio]);
+	}, [activeImageURL, videoUploadCount, aspectRatio]);
 
   return (
     <div className='scrubber-container'>

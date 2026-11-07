@@ -7,11 +7,12 @@ import {
   uploadUserVideo,
   preloadUserVideo,
   preloadSequentialImages,
+  loadRemainingFrames,
   reportFailure
 } from '@api/index';
 // slices
 import { setUploadPhase } from '@/components/UploadVideo/upload.slice';
-import { setAppPhase } from '@/app.slice';
+import { setAppPhase, setHint } from '@/app.slice';
 import { setMosaicFormatting, setMosaicPhase } from '@components/MosaicTiles/mosaicTiles.slice';
 import { setNavPhase } from '@components/Navigation/nav.slice';
 import { setVideoUploadCount } from '@components/Scrubber/scrubber.slice';
@@ -40,8 +41,10 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
           selectedFile,
           uploadDuration,
           resizedWidth,
-          failure } = useSelector<RootState, UploadState>((state) => state.upload); 
-  const inputRef = useRef<HTMLInputElement>(null);   
+          failure,
+          uploadProgress } = useSelector<RootState, UploadState>((state) => state.upload); 
+  const inputRef = useRef<HTMLInputElement>(null);
+  const uploadRequestRef = useRef<{ abort: () => void }>();
 
   useEffect(() => {
     switch(uploadPhase) {
@@ -52,7 +55,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
             file_type: selectedFile.type || 'unknown',
             duration_s: Math.round(uploadDuration * 10) / 10
           });
-          dispatch(uploadUserVideo(selectedFile));
+          uploadRequestRef.current = dispatch(uploadUserVideo(selectedFile));
           dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
         }
         break;
@@ -73,13 +76,19 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
           reportFailure(failure, failure.stage === 'preload' ? assetID : undefined);
         }
         dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING }));
+        // the first load happens behind the editor, so bring the message forward
+        dispatch(setNavPhase({ navPhase: NavPhaseEnum.UPLOAD }));
         break;
       case UploadPhaseEnum.VIDEO_UPLOADED:
-        dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.CANCEL_ANIMATION }));
-        dispatch(preloadUserVideo(assetID));
+        // the demo's first load has no preview to stop, and has to stay in the
+        // waiting state so the controls can't act on a video that isn't there yet
+        if (selectedFile !== undefined) {
+          dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.CANCEL_ANIMATION }));
+        }
+        dispatch(preloadUserVideo({ assetID, aspectRatio }));
         break;
       case UploadPhaseEnum.VIDEO_PRELOADED:
-        dispatch(preloadSequentialImages(assetID));
+        dispatch(preloadSequentialImages({ assetID, aspectRatio }));
         break;
       case UploadPhaseEnum.IMAGES_PRELOADED:
         dispatch(setMosaicFormatting({ duration: uploadDuration, videoWidth: resizedWidth, canvasWidth, aspectRatio }));
@@ -93,7 +102,9 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
             duration_s: Math.round(uploadDuration * 10) / 10,
             aspect_ratio: aspectRatio
           });
+          dispatch(setHint({ hint: 'nextStep' }));
         }
+        dispatch(loadRemainingFrames({ assetID, aspectRatio }));
         dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.PROMPT}));
         dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));
         dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));
@@ -113,6 +124,15 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
     dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));   
   }
 
+  // only offered while the file is still sending; after that the server is
+  // already working on it
+  const onCancelUpload = () => {
+    uploadRequestRef.current?.abort();
+    logEvent(AnalyticsEvent.CANCEL, { stage: 'uploading' });
+    reportFailure({ stage: 'upload', reason: 'cancelled', detail: `${Math.round(uploadProgress.fraction * 100)}% sent` });
+    dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING }));
+  }
+
   const handleUploadButtonClick = () => {
     inputRef.current?.click();
   }
@@ -128,6 +148,8 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
       handleUploadButtonClick();
     }
   }
+
+  const isUploading = uploadPhase === UploadPhaseEnum.VIDEO_SUBMITED || uploadPhase === UploadPhaseEnum.VIDEO_UPLOADING || uploadPhase === UploadPhaseEnum.VIDEO_UPLOADED ||  uploadPhase === UploadPhaseEnum.VIDEO_PRELOADED || uploadPhase === UploadPhaseEnum.IMAGES_PRELOADED || uploadPhase === UploadPhaseEnum.MOSAIC_INITIALIZED;
 
   return (
     <PopOver {...popOverProps} isActive={isActive}>
@@ -150,10 +172,10 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
           
 
           <SlideInOut 
-            isActive={uploadPhase === UploadPhaseEnum.VIDEO_SUBMITED || uploadPhase === UploadPhaseEnum.VIDEO_UPLOADING || uploadPhase === UploadPhaseEnum.VIDEO_UPLOADED ||  uploadPhase === UploadPhaseEnum.VIDEO_PRELOADED || uploadPhase === UploadPhaseEnum.IMAGES_PRELOADED || uploadPhase === UploadPhaseEnum.MOSAIC_INITIALIZED }
+            isActive={isUploading}
             {...slideInOutProps}
           >
-            <FileIOPrompt action='uploading' />
+            <FileIOPrompt action='uploading' isActive={isUploading} uploadProgress={uploadProgress} onCancel={onCancelUpload} />
           </SlideInOut>
 
 
@@ -171,6 +193,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
             {/* no cancel for a failed preview download: there is no video to go back to */}
             <FileIOPrompt
               action='uploadFailed'
+              headlineOverride={isPreloadFailure ? 'LOADING FAILED' : undefined}
               callBack={onRetry}
               onCancel={onCancel}
               messageOverride={failureMessage(failure)}

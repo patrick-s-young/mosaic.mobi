@@ -3,7 +3,8 @@ import { NavPhaseEnum } from '@enums/NavPhaseEnum';
 import { NavState } from '@interfaces/NavState';  
 
 const initialState: NavState = {
-  navPhase: NavPhaseEnum.UPLOAD
+  // the editor opens straight away, showing a poster until the demo is ready
+  navPhase: NavPhaseEnum.EDIT
 }
 
 const navSlice = createSlice ({

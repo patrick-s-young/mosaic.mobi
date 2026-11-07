@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PROMPT } from './fileIOPrompt.config';
+import { FrameProgress, getRenderProgress, getUploadProgress } from './fileIOPrompt.progress';
 import PromptButton from '@/components/FileIOPrompt/PromptButton';
 import { FileIOPromptProps } from '@interfaces/FileIOPromptProps';
 import { io, Socket } from 'socket.io-client';
@@ -9,33 +10,45 @@ import './fileIOPrompt.scss';
 // shared by every prompt, so a visitor holds one connection however many are mounted
 let socket: Socket | undefined;
 
+const NO_PROGRESS: FrameProgress = { actionName: null, currentFrame: 0, totalFrames: 0 };
+
 const FileIOPrompt = ({
   action,
   videoDuration = 0,
   callBack = () => {},
   onCancel = () => {},
+  headlineOverride,
   messageOverride,
   buttonLabelOverride,
-  showCancel = true
+  showCancel = true,
+  isActive = false,
+  uploadProgress
 }: FileIOPromptProps) => {
-  const [progressFrames, setProgressFrames] = useState({actionName: null, currentFrame: 0, totalFrames: 0});
+  const [progressFrames, setProgressFrames] = useState<FrameProgress>(NO_PROGRESS);
+  const highestPercent = useRef(0);
   const { headline, headlineIcon, message, buttonLabel } = PROMPT[action];
   const formattedMessage = messageOverride ?? (action === 'videoTooLong'
   ? message.replace('VIDEO_DURATION', Number(videoDuration).toFixed(2))
   : message);
   const showButtons = action !== 'rendering' && action !== 'uploading';
 
-  // Temp solution. Replace with upload status method
-  const statusMessage = () => {
-    return progressFrames.actionName
-      ? <>{progressFrames.actionName} frame <span style={{ display: "inline-block", width: "3ch", textAlign: "right" }}>{progressFrames.currentFrame}</span> of {progressFrames.totalFrames}</>
-      : <>Uploading Video...</>
-  }
+  const progress = action === 'uploading' && uploadProgress
+    ? getUploadProgress(uploadProgress, progressFrames)
+    : getRenderProgress(progressFrames);
+  // the bar only moves forward, even if a late event arrives out of order
+  highestPercent.current = Math.max(highestPercent.current, progress.percent);
+  const percent = Math.round(highestPercent.current);
+
+  // each upload or render starts its bar from empty
+  useEffect(() => {
+    highestPercent.current = 0;
+    setProgressFrames(NO_PROGRESS);
+  }, [isActive]);
 
   useEffect(() => {
     socket = socket ?? io({ auth: { sessionId: getSessionId() } });
     const onProgress = (data: any) => {
-      setProgressFrames({actionName: data.actionName, currentFrame: data.currentFrame, totalFrames: data.totalFrames});
+      setProgressFrames({actionName: data.actionName, currentFrame: Number(data.currentFrame), totalFrames: Number(data.totalFrames)});
     };
     socket.on('ffmpegProgress', onProgress);
     return () => {
@@ -46,18 +59,30 @@ const FileIOPrompt = ({
   return (
     <div className='fileIOPrompt'>
       <div className='fileIOPrompt__headline'>
-        {headlineIcon} {headline}
+        {headlineIcon} {headlineOverride ?? headline}
       </div>
       <div>
-        {!showButtons && 
-          <p className='fileIOPrompt__progressMessage'>
-            {statusMessage()}
-          </p>
+        {!showButtons &&
+          <div className='fileIOPrompt__progress'>
+            <p className='fileIOPrompt__progressMessage' aria-live='polite'>{progress.label}</p>
+            <div
+              className='fileIOPrompt__progressTrack'
+              role='progressbar'
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={percent}
+            >
+              <div className='fileIOPrompt__progressFill' style={{ width: `${percent}%` }} />
+            </div>
+          </div>
         }
         {formattedMessage}
       </div>
+      {action === 'uploading' && uploadProgress?.stage === 'sending' &&
+        <PromptButton prompt="CANCEL" onClick={onCancel} />
+      }
       {showButtons &&
-        <div className='fileIOPrompt__buttonsContainer'>
+        <div className={`fileIOPrompt__buttonsContainer ${showCancel ? '' : 'fileIOPrompt__buttonsContainer--single'}`}>
           <PromptButton prompt={buttonLabelOverride ?? buttonLabel} onClick={callBack} />
           {showCancel && <PromptButton prompt="CANCEL" onClick={onCancel} />}
         </div>

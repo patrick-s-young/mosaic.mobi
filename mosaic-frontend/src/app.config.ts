@@ -61,6 +61,10 @@ const defaultVideoConfig = {
   numTiles: 4
 }
 
+// the demo's frame at the slider's starting position, so the poster and the
+// editor line up. Also referenced by index.html.
+const POSTER_URL = `/uploads/${defaultVideoConfig.assetID}/img011_9x16.jpg`;
+
 const mosaicTileConfig = {
   ANIMATION_CYCLE_DURATION: 15000,
   FADE_DURATION: 500,
@@ -77,6 +81,7 @@ export {
   SCRUBBER_FRAMES_MAX,
   DEFAULT_VIDEO_NUM_TILES,
   defaultVideoConfig,
+  POSTER_URL,
   popOverProps,
   slideInOutProps,
   mosaicTileConfig,

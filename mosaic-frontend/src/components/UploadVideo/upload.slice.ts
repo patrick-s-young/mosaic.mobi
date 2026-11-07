@@ -8,7 +8,8 @@ import {
 import { UploadPhaseEnum } from '@enums/UploadPhaseEnum';
 import type { Failure, UploadState, UploadDuration, UploadSelectedFile } from  '@typescript/types'
 import { UploadPhase } from '@interfaces/UploadPhase';
-import { MAX_VIDEO_UPLOAD_DURATION, defaultVideoConfig } from '@/app.config';
+import { MAX_VIDEO_UPLOAD_DURATION, SCRUBBER_FRAMES_MAX, defaultVideoConfig } from '@/app.config';
+import { setFrameURL, setPreviewURL, setUploadProgress } from '@api/assetLoading';
 
 
 const initialState: UploadState = {
@@ -24,7 +25,8 @@ const initialState: UploadState = {
   imageFilenames: [],
   resizedWidth: 320,
   statusMessage: '',
-  failure: undefined
+  failure: undefined,
+  uploadProgress: { stage: 'loading', fraction: 0 }
 }
 
 // every step of the upload chain ends here when it fails, so the user always
@@ -71,14 +73,19 @@ const uploadSlice = createSlice ({
     })
     // Step 2: upload user video
     builder.addCase(uploadUserVideo.rejected, (state, action) => {
+      // cancelled by the user, so back to the upload prompt rather than an error
+      if (action.meta.aborted) {
+        state.uploadPhase = UploadPhaseEnum.PROMPT;
+        return;
+      }
       failUpload(state, action.payload);
     })
-    builder.addCase(uploadUserVideo.pending, (state, action) => {
-      state.statusMessage = 'Uploading and optimizing video. This may take 10-15 seconds (production vers will be faster)';
-      console.log(`uploadUserVideo.pending > action.payload: ${action.payload}`);
+    builder.addCase(uploadUserVideo.pending, (state) => {
+      state.uploadProgress = { stage: 'sending', fraction: 0 };
     })
     builder.addCase(uploadUserVideo.fulfilled, (state, action) => {
       state.assetID = action.payload.assetID;
+      state.uploadProgress = { stage: 'loading', fraction: 0 };
       state.uploadPhase = UploadPhaseEnum.VIDEO_UPLOADED;
     })
     // Step 3: preload user video to allow auto play in mobile browsers
@@ -89,8 +96,12 @@ const uploadSlice = createSlice ({
       console.log(`preloadUserVideo.pending > action.payload: ${action.payload}`);
     })
     builder.addCase(preloadUserVideo.fulfilled, (state, action) => {
-      state.videoURL = action.payload.videoURL;
-      state.videoURL9x16 = action.payload.videoURL9x16;
+      // a new video, so nothing from the previous one carries over
+      const { aspectRatio, url } = action.payload;
+      state.videoURL = aspectRatio === '9x16' ? '' : url;
+      state.videoURL9x16 = aspectRatio === '9x16' ? url : '';
+      state.imageURLs = Array(SCRUBBER_FRAMES_MAX).fill('');
+      state.imageURLs9x16 = Array(SCRUBBER_FRAMES_MAX).fill('');
       state.uploadPhase = UploadPhaseEnum.VIDEO_PRELOADED;
     })
     // Step 4: preload sequential images exported from user video
@@ -101,10 +112,24 @@ const uploadSlice = createSlice ({
       console.log(`preloadSequentialImages.pending > action.payload: ${action.payload}`);
     })
     builder.addCase(preloadSequentialImages.fulfilled, (state, action) => {
-      state.imageURLs = action.payload.imageURLs;
-      state.imageURLs9x16 = action.payload.imageURLs9x16;
+      const { aspectRatio, index, url } = action.payload;
+      (aspectRatio === '9x16' ? state.imageURLs9x16 : state.imageURLs)[index] = url;
       state.imageFilenames = action.payload.imageFilenames;
       state.uploadPhase = UploadPhaseEnum.IMAGES_PRELOADED;
+    })
+    builder.addCase(setUploadProgress, (state, action) => {
+      state.uploadProgress = action.payload;
+    })
+    builder.addCase(setPreviewURL, (state, action) => {
+      const { assetID, aspectRatio, url } = action.payload;
+      if (assetID !== state.assetID) return;
+      if (aspectRatio === '9x16') state.videoURL9x16 = url;
+      else state.videoURL = url;
+    })
+    builder.addCase(setFrameURL, (state, action) => {
+      const { assetID, aspectRatio, index, url } = action.payload;
+      if (assetID !== state.assetID) return;
+      (aspectRatio === '9x16' ? state.imageURLs9x16 : state.imageURLs)[index] = url;
     })
   }
 });
