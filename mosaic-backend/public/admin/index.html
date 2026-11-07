@@ -199,7 +199,7 @@
 
           const latestRender = asset.renders && asset.renders.length ? asset.renders[asset.renders.length - 1] : null;
           const renderedFilename = (latestRender && latestRender.outputFilename) || 'mosaic.mov';
-          const renderedThumbnailFilename = renderedFilename.replace(/\.mov$/, '.jpg');
+          const renderedThumbnailFilename = renderedFilename.replace(/\.(mov|mp4)$/, '.jpg');
 
           row.appendChild(makeThumbnailCell(asset.assetID, 'upload.mov', 'img001.jpg'));
           row.appendChild(makeThumbnailCell(asset.assetID, renderedFilename, renderedThumbnailFilename));

@@ -20,12 +20,16 @@ const FileIOPrompt = ({
   headlineOverride,
   messageOverride,
   buttonLabelOverride,
+  cancelLabelOverride,
   showCancel = true,
   isActive = false,
-  uploadProgress
+  uploadProgress,
+  renderDownloadFraction = 0,
+  children
 }: FileIOPromptProps) => {
   const [progressFrames, setProgressFrames] = useState<FrameProgress>(NO_PROGRESS);
   const highestPercent = useRef(0);
+  const isActiveRef = useRef(false);
   const { headline, headlineIcon, message, buttonLabel } = PROMPT[action];
   const formattedMessage = messageOverride ?? (action === 'videoTooLong'
   ? message.replace('VIDEO_DURATION', Number(videoDuration).toFixed(2))
@@ -34,20 +38,22 @@ const FileIOPrompt = ({
 
   const progress = action === 'uploading' && uploadProgress
     ? getUploadProgress(uploadProgress, progressFrames)
-    : getRenderProgress(progressFrames);
-  // the bar only moves forward, even if a late event arrives out of order
-  highestPercent.current = Math.max(highestPercent.current, progress.percent);
+    : getRenderProgress(progressFrames, renderDownloadFraction);
+  // each run starts from empty, the bar only moves forward even if a late event
+  // arrives out of order, and it holds its value while the card slides away
+  if (isActive && !isActiveRef.current) highestPercent.current = 0;
+  isActiveRef.current = isActive;
+  if (isActive) highestPercent.current = Math.max(highestPercent.current, progress.percent);
   const percent = Math.round(highestPercent.current);
 
-  // each upload or render starts its bar from empty
   useEffect(() => {
-    highestPercent.current = 0;
-    setProgressFrames(NO_PROGRESS);
+    if (!isActive) setProgressFrames(NO_PROGRESS);
   }, [isActive]);
 
   useEffect(() => {
     socket = socket ?? io({ auth: { sessionId: getSessionId() } });
     const onProgress = (data: any) => {
+      if (!isActiveRef.current) return;
       setProgressFrames({actionName: data.actionName, currentFrame: Number(data.currentFrame), totalFrames: Number(data.totalFrames)});
     };
     socket.on('ffmpegProgress', onProgress);
@@ -62,6 +68,7 @@ const FileIOPrompt = ({
         {headlineIcon} {headlineOverride ?? headline}
       </div>
       <div>
+        {children}
         {!showButtons &&
           <div className='fileIOPrompt__progress'>
             <p className='fileIOPrompt__progressMessage' aria-live='polite'>{progress.label}</p>
@@ -78,13 +85,13 @@ const FileIOPrompt = ({
         }
         {formattedMessage}
       </div>
-      {action === 'uploading' && uploadProgress?.stage === 'sending' &&
+      {(action === 'rendering' || (action === 'uploading' && uploadProgress?.stage === 'sending')) &&
         <PromptButton prompt="CANCEL" onClick={onCancel} />
       }
       {showButtons &&
         <div className={`fileIOPrompt__buttonsContainer ${showCancel ? '' : 'fileIOPrompt__buttonsContainer--single'}`}>
-          <PromptButton prompt={buttonLabelOverride ?? buttonLabel} onClick={callBack} />
-          {showCancel && <PromptButton prompt="CANCEL" onClick={onCancel} />}
+          <PromptButton prompt={buttonLabelOverride ?? buttonLabel} onClick={callBack} primary={action === 'exportReady'} />
+          {showCancel && <PromptButton prompt={cancelLabelOverride ?? 'CANCEL'} onClick={onCancel} />}
         </div>
       }
     </div>

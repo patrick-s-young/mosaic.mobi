@@ -27,6 +27,7 @@ interface FfmpegResult {
   code: number | null;
   signal: string | null;
   stderrTail: string;
+  clientGone?: boolean;
 }
 
 export default class FFmpegService {
@@ -69,10 +70,12 @@ export default class FFmpegService {
 
   // spawns ffmpeg and always resolves with how it ended, so every caller can
   // decide what a failure means; optional onProgress receives the current frame
-  // number parsed from stderr
-  private runFfmpeg (args: string[], onProgress?: (frame: string) => void): Promise<FfmpegResult> {
+  // number parsed from stderr. Pass stopWhenClosed to stop ffmpeg if that response
+  // closes early, so a cancelled export gives its memory and CPU straight back.
+  private runFfmpeg (args: string[], onProgress?: (frame: string) => void, stopWhenClosed?: Response): Promise<FfmpegResult> {
     return new Promise((resolve) => {
       let stderrTail = '';
+      let clientGone = false;
       try {
         const proc = spawn(ffmpeg.path, args);
         proc.stderr?.setEncoding('utf8');
@@ -82,7 +85,15 @@ export default class FFmpegService {
           const lines = data.split(/\s+/);
           if (lines[0] === 'frame=') onProgress(lines[1]);
         });
-        proc.on('close', (code, signal) => resolve({ ok: code === 0, code, signal, stderrTail }));
+        const onClientGone = () => {
+          clientGone = true;
+          proc.kill('SIGKILL');
+        };
+        stopWhenClosed?.once('close', onClientGone);
+        proc.on('close', (code, signal) => {
+          stopWhenClosed?.off('close', onClientGone);
+          resolve({ ok: code === 0, code, signal, stderrTail, clientGone });
+        });
         proc.on('error', (err) => resolve({ ok: false, code: null, signal: null, stderrTail: String(err) }));
       } catch (err) {
         // spawn itself throws on some errors, such as ENOMEM
@@ -252,9 +263,9 @@ export default class FFmpegService {
     // never reused for identical source/frame/tile params. 'h' = grid lines, and
     // drops renders cached before ffmpeg's exit status was checked, which may be
     // corrupt.
-    const outputFilename = `mosaic_h_${aspectRatio}_${res.locals.numTiles}_${scrubberFrameBase}.mov`;
+    const outputFilename = `mosaic_h_${aspectRatio}_${res.locals.numTiles}_${scrubberFrameBase}.mp4`;
     const outputPath = `${outputDirectory}/${outputFilename}`;
-    const thumbnailFilename = outputFilename.replace(/\.mov$/, '.jpg');
+    const thumbnailFilename = outputFilename.replace(/\.mp4$/, '.jpg');
     const thumbnailPath = `${outputDirectory}/${thumbnailFilename}`;
     res.locals.outputFilename = outputFilename;
     res.locals.thumbnailFilename = thumbnailFilename;
@@ -275,8 +286,14 @@ export default class FFmpegService {
     const ffmpegFilterComplexStr = createFfmpegFilterComplexStr(filterParams);
     const result = await this.runFfmpeg(
       ['-i', bgImagePath, '-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-preset', 'veryfast', '-crf', '26', '-map', '[out]', '-an', '-y', tempPath],
-      (frame) => this.emitProgress(req, { actionName: 'Rendering', currentFrame: frame, totalFrames: totalOutputFrames })
+      (frame) => this.emitProgress(req, { actionName: 'Rendering', currentFrame: frame, totalFrames: totalOutputFrames }),
+      res
     );
+    if (result.clientGone) {
+      fs.rmSync(tempPath, { force: true });
+      console.log(`renderMosaic : stopped, client disconnected`);
+      return;
+    }
     if (this.failedFfmpeg(req, res, 'render', 'render', [result])) {
       fs.rmSync(tempPath, { force: true });
       return;

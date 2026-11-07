@@ -4,6 +4,7 @@
 .fileIOPrompt {
     @include font-style($size: 20px, $lineHeight: 1.25em);
     box-sizing: border-box;
+    max-width: calc(100vw - 40px);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -29,6 +30,7 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
+    gap: 10px;
     &--single {
       justify-content: center;
     }

@@ -13,7 +13,6 @@ export type UploadState =
       imageURLs: Array<string>,
       imageURLs9x16: Array<string>,
       imageFilenames: Array<string>,
-      downloadFileName: string,
       failure: Failure | undefined,
       uploadProgress: UploadProgress
     }

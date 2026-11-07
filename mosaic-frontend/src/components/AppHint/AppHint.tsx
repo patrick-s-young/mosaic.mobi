@@ -5,7 +5,7 @@ import type { AppHintKind, RootState } from '@typescript/types';
 import './appHint.scss';
 
 const MESSAGES: Record<AppHintKind, string> = {
-  nextStep: 'Your video is ready! Choose a layout and background, then tap SAVE.',
+  nextStep: 'Your video is ready! Choose a layout and background, then tap EXPORT.',
   formatFailed: 'We couldn\'t switch the format. Check your connection and try again.'
 };
 

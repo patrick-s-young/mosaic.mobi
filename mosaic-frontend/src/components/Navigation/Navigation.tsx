@@ -27,7 +27,7 @@ const Navigation: React.FC<NavigationProps> = ({
     <div className='navigation' style={{ width }}>
       <NavigationButton label='UPLOAD' value={NavPhaseEnum.UPLOAD} activeNavPhase={navPhase} onClick={handleChange} />
       <NavigationButton label='EDIT' value={NavPhaseEnum.EDIT} activeNavPhase={navPhase} onClick={handleChange} />
-      <NavigationButton label='SAVE' value={NavPhaseEnum.DOWNLOAD} activeNavPhase={navPhase} onClick={handleChange} nudge={hint === 'nextStep'} />
+      <NavigationButton label='EXPORT' value={NavPhaseEnum.DOWNLOAD} activeNavPhase={navPhase} onClick={handleChange} nudge={hint === 'nextStep'} />
     </div>
   );
 }

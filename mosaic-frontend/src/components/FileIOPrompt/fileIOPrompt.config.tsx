@@ -1,26 +1,20 @@
-import { AccessTime, Cached, CloudDownload, CloudUpload, Warning } from '@material-ui/icons';
+import { Cached, CheckCircle, CloudUpload, Warning } from '@material-ui/icons';
 import { MAX_VIDEO_UPLOAD_MB } from '@/app.config';
 import type { Failure, FailureReason } from '@typescript/types';
 
 const ICON_SIZE = 36;
 
 const PROMPT = {
-  render: {
-    headline: 'RENDER VIDEO',
-    headlineIcon: <AccessTime style={{ fontSize: ICON_SIZE }}/>,
-    message: 'The mosaic video rendering process takes place in the cloud and usually requires ten to fifteen seconds.',
-    buttonLabel: 'RENDER',
-  },
   rendering: {
-    headline: 'RENDERING VIDEO',
+    headline: 'EXPORTING',
     headlineIcon: <Cached style={{ fontSize: ICON_SIZE }}/>,
-    message: 'When rendering is complete, you will be prompted to download your mosaic video to your device.',
+    message: 'This usually takes ten to fifteen seconds. Please keep this page open.',
     buttonLabel: '',
   },
-  save: {
-    headline: 'SAVE VIDEO',
-    headlineIcon: <CloudDownload style={{ fontSize: ICON_SIZE }}/>,
-    message: 'Your mosaic video is ready to save to your device. If you don\'t have the option to save to your photo library, save to files first and then add it to your photos.',
+  exportReady: {
+    headline: 'VIDEO READY',
+    headlineIcon: <CheckCircle style={{ fontSize: ICON_SIZE }}/>,
+    message: '',
     buttonLabel: 'SAVE',
   },
   upload: {
@@ -48,7 +42,7 @@ const PROMPT = {
     buttonLabel: 'TRY AGAIN',
   },
   renderFailed: {
-    headline: 'RENDER FAILED',
+    headline: 'EXPORT FAILED',
     headlineIcon: <Warning style={{ fontSize: ICON_SIZE }}/>,
     message: '',
     buttonLabel: 'TRY AGAIN',
