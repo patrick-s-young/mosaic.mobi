@@ -87,10 +87,13 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
         dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.MOSAIC_INITIALIZED}));
         break;
       case UploadPhaseEnum.MOSAIC_INITIALIZED:
-        logEvent(AnalyticsEvent.UPLOAD_SUCCESS, {
-          duration_s: Math.round(uploadDuration * 10) / 10,
-          aspect_ratio: aspectRatio
-        });
+        // the demo video passes through this phase on every page load
+        if (selectedFile !== undefined) {
+          logEvent(AnalyticsEvent.UPLOAD_SUCCESS, {
+            duration_s: Math.round(uploadDuration * 10) / 10,
+            aspect_ratio: aspectRatio
+          });
+        }
         dispatch(setUploadPhase({uploadPhase: UploadPhaseEnum.PROMPT}));
         dispatch(setNavPhase({navPhase: NavPhaseEnum.EDIT}));
         dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING}));

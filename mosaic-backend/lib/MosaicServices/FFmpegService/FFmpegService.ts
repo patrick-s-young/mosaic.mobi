@@ -91,6 +91,11 @@ export default class FFmpegService {
     });
   }
 
+  private emitProgress (req: Request, progress: { actionName: string, currentFrame: string, totalFrames: number }) {
+    const sessionId = failureLog.sessionIdFrom(req);
+    if (sessionId !== 'unknown') io.to(sessionId).emit('ffmpegProgress', progress);
+  }
+
   // answers the request if any ffmpeg run failed; returns true when it did.
   // A signal means something killed ffmpeg, usually the out-of-memory killer.
   private failedFfmpeg (req: Request, res: Response, stage: string, step: string, results: FfmpegResult[]): boolean {
@@ -130,11 +135,11 @@ export default class FFmpegService {
 
     const results = await Promise.all([
       this.runFfmpeg(
-        ['-i', inputPath, '-filter_complex', `[0:v] crop=${squareCrop}, scale=1080:-1 [final]`, '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/cropped.mov`],
-        (frame) => io.emit('ffmpegProgress', { actionName: 'Cropping', currentFrame: frame, totalFrames })
+        ['-i', inputPath, '-filter_complex', `[0:v] crop=${squareCrop}, scale=1080:-1 [final]`, '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/cropped.mov`],
+        (frame) => this.emitProgress(req, { actionName: 'Cropping', currentFrame: frame, totalFrames })
       ),
       this.runFfmpeg(
-        ['-i', inputPath, '-filter_complex', `[0:v] crop=${wideCrop}, scale=1080:1920 [final]`, '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/cropped_9x16.mov`]
+        ['-i', inputPath, '-filter_complex', `[0:v] crop=${wideCrop}, scale=1080:1920 [final]`, '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/cropped_9x16.mov`]
       )
     ]);
     if (this.failedFfmpeg(req, res, 'processing', 'crop', results)) return;
@@ -150,14 +155,14 @@ export default class FFmpegService {
 
     const results = await Promise.all([
       this.runFfmpeg(
-        ['-i', `${dir}/cropped.mov`, '-filter_complex', `[0:v] scale=320:-1,fps=24 [final]`, '-g', '12', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/resized.mov`],
-        (frame) => io.emit('ffmpegProgress', { actionName: 'Resizing', currentFrame: frame, totalFrames })
+        ['-i', `${dir}/cropped.mov`, '-filter_complex', `[0:v] scale=320:-1,fps=24 [final]`, '-g', '12', '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/resized.mov`],
+        (frame) => this.emitProgress(req, { actionName: 'Resizing', currentFrame: frame, totalFrames })
       ),
       // 320x576 (both multiples of 16). The height is macroblock-aligned so
       // iOS/WebKit can draw this preview video to a <canvas>; a non-aligned
       // height (e.g. 568) renders blank on iOS. Kept in sync with getAspectHeight.
       this.runFfmpeg(
-        ['-i', `${dir}/cropped_9x16.mov`, '-filter_complex', `[0:v] scale=320:576,fps=24 [final]`, '-g', '12', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/resized_9x16.mov`]
+        ['-i', `${dir}/cropped_9x16.mov`, '-filter_complex', `[0:v] scale=320:576,fps=24 [final]`, '-g', '12', '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/resized_9x16.mov`]
       )
     ]);
     if (this.failedFfmpeg(req, res, 'processing', 'resize', results)) return;
@@ -175,7 +180,7 @@ export default class FFmpegService {
     const results = await Promise.all([
       this.runFfmpeg(
         ['-i', `${dir}/cropped.mov`, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-preset', 'ultrafast', '-crf', '28', `${dir}/img%03d.jpg`],
-        (frame) => io.emit('ffmpegProgress', { actionName: 'Exporting', currentFrame: frame, totalFrames })
+        (frame) => this.emitProgress(req, { actionName: 'Exporting', currentFrame: frame, totalFrames })
       ),
       this.runFfmpeg(
         ['-i', `${dir}/cropped_9x16.mov`, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-preset', 'ultrafast', '-crf', '28', `${dir}/img%03d_9x16.jpg`]
@@ -267,8 +272,8 @@ export default class FFmpegService {
     const tempPath = `${outputDirectory}/tmp_${randomUUID()}_${outputFilename}`;
     const ffmpegFilterComplexStr = createFfmpegFilterComplexStr(filterParams);
     const result = await this.runFfmpeg(
-      ['-i', bgImagePath, '-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-preset', 'veryfast', '-crf', '26', '-map', '[out]', '-an', '-y', tempPath],
-      (frame) => io.emit('ffmpegProgress', { actionName: 'Rendering', currentFrame: frame, totalFrames: totalOutputFrames })
+      ['-i', bgImagePath, '-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-preset', 'veryfast', '-crf', '26', '-map', '[out]', '-an', '-y', tempPath],
+      (frame) => this.emitProgress(req, { actionName: 'Rendering', currentFrame: frame, totalFrames: totalOutputFrames })
     );
     if (this.failedFfmpeg(req, res, 'render', 'render', [result])) {
       fs.rmSync(tempPath, { force: true });

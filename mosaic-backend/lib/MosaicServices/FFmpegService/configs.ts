@@ -5,7 +5,8 @@ import type {
   ScaleDimensions,
   PanelCount } from '../../types';
 
-// time offset for each panel to fade in (aspect-ratio independent)
+// time offset for each panel to fade in (aspect-ratio independent). MUST match
+// the frontend getTileAnimEvents (milliseconds) so the preview matches the render.
 export const FADE_IN_PRESENTATION_TIMESTAMPS: FadeInPresentationTimestamps =
   {
     2:

@@ -85,7 +85,9 @@ class MosaicTile implements Partial<MosaicTileProps> {
 
   _fadeIn(timeStamp: DOMHighResTimeStamp) {
     const timeElapsed = timeStamp - this._fadeInStartTime;
-    this._fadeOpacity = Math.round(timeElapsed / FADE_DURATION * 100) / 100;
+    // clamped because a late frame overshoots, and canvas ignores an out-of-range
+    // globalAlpha, drawing with whatever value the last tile left behind
+    this._fadeOpacity = Math.min(1, Math.round(timeElapsed / FADE_DURATION * 100) / 100);
     this._drawImage();
     if (this._fadeOpacity >= 1) {
       this._fadeOpacity = 1;
@@ -105,7 +107,7 @@ class MosaicTile implements Partial<MosaicTileProps> {
   
   _fadeOut(timeStamp: DOMHighResTimeStamp) {
     const timeElapsed = timeStamp - this._fadeOutStartTime;
-    this._fadeOpacity = Math.round((1 - timeElapsed / FADE_DURATION) * 100) / 100;
+    this._fadeOpacity = Math.max(0, Math.round((1 - timeElapsed / FADE_DURATION) * 100) / 100);
     this._drawImage();
     if (this._fadeOpacity <= 0) {
       this._fadeOpacity = 0;
