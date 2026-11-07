@@ -5,6 +5,7 @@ import type { AspectRatio, Failure, RootState, UploadProgress, UploadState } fro
 const BACKGROUND_FRAME_WORKERS = 3;
 
 export const setUploadProgress = createAction<UploadProgress>('upload/setUploadProgress');
+export const setRenderDownloadProgress = createAction<number>('render/setRenderDownloadProgress');
 export const setPreviewURL = createAction<{ assetID: string, aspectRatio: AspectRatio, url: string }>('upload/setPreviewURL');
 export const setFrameURL = createAction<{ assetID: string, aspectRatio: AspectRatio, index: number, url: string }>('upload/setFrameURL');
 

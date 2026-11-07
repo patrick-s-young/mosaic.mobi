@@ -5,4 +5,5 @@ export interface RenderState {
   renderPhase: RenderPhaseEnum
   renderBlob: RenderBlob
   failure: Failure | undefined
+  downloadFraction: number
 }

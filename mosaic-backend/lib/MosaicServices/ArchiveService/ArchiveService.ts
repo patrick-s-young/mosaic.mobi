@@ -35,7 +35,7 @@ export default class ArchiveService {
       if (age < ASSET_MAX_AGE_MS) continue;
 
       try {
-        // covers both mosaic_*.mov render variants and their mosaic_*.jpg thumbnails
+        // covers both mosaic_*.mp4 render variants and their mosaic_*.jpg thumbnails
         const renderVariants = fs.readdirSync(assetDir).filter((f: string) => f.startsWith('mosaic_'));
         await this.s3Service.uploadAsset(assetID, assetDir, ['upload.mov', 'img001.jpg', 'manifest.json', ...renderVariants]);
         fs.rmSync(assetDir, { recursive: true, force: true });

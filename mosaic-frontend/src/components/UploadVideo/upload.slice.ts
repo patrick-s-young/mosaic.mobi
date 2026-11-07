@@ -15,7 +15,6 @@ import { setFrameURL, setPreviewURL, setUploadProgress } from '@api/assetLoading
 const initialState: UploadState = {
   uploadPhase: UploadPhaseEnum.VIDEO_UPLOADED,
   selectedFile: undefined,
-  downloadFileName: '',
   assetID: defaultVideoConfig.assetID,
   uploadDuration: defaultVideoConfig.uploadDuration,
   videoURL: '',
@@ -64,10 +63,7 @@ const uploadSlice = createSlice ({
         state.uploadPhase = UploadPhaseEnum.VIDEO_TOO_LONG;
       } else {
         state.selectedFile = action.payload.selectedFile;
-        const now = new Date();
-        const pad = (n: number) => String(n).padStart(2, '0');
-        const timestamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-        state.downloadFileName = `mosaic_${timestamp}.mov`;
+        state.uploadProgress = { stage: 'sending', fraction: 0 };
         state.uploadPhase = UploadPhaseEnum.VIDEO_SUBMITED;
       }
     })

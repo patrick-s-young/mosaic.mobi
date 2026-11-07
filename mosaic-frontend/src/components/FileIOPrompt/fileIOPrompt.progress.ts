@@ -32,7 +32,16 @@ export const getUploadProgress = (upload: UploadProgress, frames: FrameProgress)
   return { label: 'Preparing your video', percent: lerp(SENDING_END, PROCESSING_END, fraction) };
 };
 
-export const getRenderProgress = (frames: FrameProgress) => ({
-  label: 'Rendering your video',
-  percent: frames.actionName === 'Rendering' ? frameFraction(frames) * 100 : 0
-});
+// the finished video still has to reach the phone, which is a real wait on a slow
+// connection, so it keeps the last part of the bar
+const RENDER_END = 90;
+
+export const getRenderProgress = (frames: FrameProgress, downloadFraction: number) => {
+  if (downloadFraction > 0) {
+    return { label: 'Finishing your video', percent: lerp(RENDER_END, 100, downloadFraction) };
+  }
+  return {
+    label: 'Creating your video',
+    percent: frames.actionName === 'Rendering' ? lerp(0, RENDER_END, frameFraction(frames)) : 0
+  };
+};

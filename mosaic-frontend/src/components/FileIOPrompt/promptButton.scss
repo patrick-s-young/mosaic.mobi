@@ -3,7 +3,10 @@
 
 
 .promptButton {
+  // shrinks on narrow phones so two buttons always fit side by side
+  flex: 0 1 140px;
   width: 140px;
+  min-width: 0;
   height: $size-bttn-small;
   background: $button-color-default;
   color: $button-background-default;
@@ -35,5 +38,9 @@
     color: $button-background-pressed;
     transform: translateY(0);
     @include dropShadow-2();
+  }
+  &--primary {
+    color: $button-background-hover;
+    background: $button-background-default;
   }
 }

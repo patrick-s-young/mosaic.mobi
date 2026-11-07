@@ -37,7 +37,7 @@ flowchart TD
 
     Edit --> RenderRequest[GET /render/mosaic with assetID, frame, tile count]
     RenderRequest --> RenderFFmpeg[Backend builds FFmpeg filter graph]
-    RenderFFmpeg --> FinalMovie[Create mosaic.mov]
+    RenderFFmpeg --> FinalMovie[Create mosaic mp4]
     FinalMovie --> DownloadBlob[Return rendered video blob]
     DownloadBlob --> Save[Frontend prompts user to save]
 
@@ -53,7 +53,7 @@ During editing, the scrubber chooses the background frame and the mosaic selecto
 ### Backend Flow
 The Express backend exposes two primary routes:
 - `POST /uploadvideo` saves the upload, probes it with ffprobe, crops it square, creates a lightweight resized video, exports preview images, and returns an `assetID`.
-- `GET /render/mosaic` accepts the `assetID`, selected scrubber frame, and tile count, then builds an FFmpeg filter graph to render the final `mosaic.mov`.
+- `GET /render/mosaic` accepts the `assetID`, selected scrubber frame, and tile count, then builds an FFmpeg filter graph to render the final mosaic `.mp4`.
 
 FFmpeg progress is emitted over Socket.IO so the frontend prompt can show upload and render status.
 

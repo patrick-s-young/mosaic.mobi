@@ -13,4 +13,11 @@
     align-items: center;
     height: 100%;
   }
+  &__result {
+    display: block;
+    max-width: 100%;
+    margin: 0 auto 16px;
+    border-radius: 8px;
+    background: #000000;
+  }
 }

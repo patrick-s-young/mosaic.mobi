@@ -4,6 +4,7 @@ import {
 import axios from 'axios';
 import { logEvent, AnalyticsEvent } from '@analytics/analytics';
 import { failureReasonForStatus, getSessionId, reportFailure } from './reportFailure';
+import { setRenderDownloadProgress } from './assetLoading';
 import type { Failure } from '@typescript/types';
 
 // the response type is a blob, so a JSON error body has to be read back out of it
@@ -25,14 +26,18 @@ export const renderMosaic = createAsyncThunk<
   { rejectValue: Failure }
 >(
   'render/renderMosaic',
-  async ({ url, assetID }, { rejectWithValue }) => {
+  async ({ url, assetID }, { rejectWithValue, dispatch, signal }) => {
     const startedAt = performance.now();
     try {
       const response = await axios({
         url,
         method: 'GET',
         responseType: 'blob',
-        headers: { 'X-Session-ID': getSessionId() }
+        headers: { 'X-Session-ID': getSessionId() },
+        signal,
+        onDownloadProgress: ({ progress }) => {
+          if (progress !== undefined) dispatch(setRenderDownloadProgress(progress));
+        }
       });
       // render_success carries how long the server took and how large the
       // output was — useful for spotting slow/heavy renders in the dashboard
@@ -42,6 +47,7 @@ export const renderMosaic = createAsyncThunk<
       });
       return { renderBlob: response.data };
     } catch (err: any) {
+      if (signal.aborted) return rejectWithValue({ stage: 'render', reason: 'cancelled' });
       const failure = await failureFrom(err);
       logEvent(AnalyticsEvent.RENDER_ERROR, {
         render_ms: Math.round(performance.now() - startedAt),
