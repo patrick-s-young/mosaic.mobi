@@ -6,11 +6,14 @@ import './navigationButton.scss';
 const NavigationButton: React.FC<NavigationButtonProps> = ({ 
   label, 
   value,
-  activeNavPhase, 
-  onClick}) => {
-  const buttonClass = value === activeNavPhase 
-    ? 'navigationButton navigationButton--selected' 
-    : 'navigationButton';
+  activeNavPhase,
+  onClick,
+  nudge = false}) => {
+  const buttonClass = [
+    'navigationButton',
+    value === activeNavPhase ? 'navigationButton--selected' : '',
+    nudge ? 'navigationButton--nudge' : ''
+  ].join(' ').trim();
 
   return (
     <button 

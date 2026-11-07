@@ -1,5 +1,5 @@
 import { UploadPhaseEnum } from '@enums/UploadPhaseEnum';
-import { UploadAssetID, UploadDuration, UploadVideoURL, UploadSelectedFile, Failure } from '@typescript/types';
+import { UploadAssetID, UploadDuration, UploadVideoURL, UploadSelectedFile, Failure, UploadProgress } from '@typescript/types';
 
 export type UploadState = 
   & UploadAssetID 
@@ -14,5 +14,6 @@ export type UploadState =
       imageURLs9x16: Array<string>,
       imageFilenames: Array<string>,
       downloadFileName: string,
-      failure: Failure | undefined
+      failure: Failure | undefined,
+      uploadProgress: UploadProgress
     }

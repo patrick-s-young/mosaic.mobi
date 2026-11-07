@@ -5,4 +5,5 @@ export type NavigationButtonProps = {
   value: NavPhaseEnum;
   activeNavPhase: NavPhaseEnum;
   onClick: (navPhase: NavPhaseEnum) => void;
+  nudge?: boolean
 }

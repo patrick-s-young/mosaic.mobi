@@ -1,56 +1,23 @@
 import {
   createAsyncThunk
 } from '@reduxjs/toolkit';
-import { SCRUBBER_FRAMES_MAX } from '@/app.config';
-import type { Failure } from '@typescript/types';
+import { framePath, frameFilenames, loadObjectURL, setUploadProgress } from './assetLoading';
+import type { AspectRatio, Failure, RootState } from '@typescript/types';
 
-// preloads both aspect-ratio scrubber background frame sets (imgNNN.jpg and
-// imgNNN_9x16.jpg). imageFilenames are returned as the aspect-agnostic base
-// names; the backend applies the _9x16 suffix when rendering 9:16.
+// Fetches only the background frame the slider is on, which is all the editor
+// needs to open; loadRemainingFrames fetches the others once it has.
 export const preloadSequentialImages = createAsyncThunk<
-  { imageURLs: Array<string>, imageURLs9x16: Array<string>, imageFilenames: Array<string> },
-  string,
+  { aspectRatio: AspectRatio, index: number, url: string, imageFilenames: Array<string> },
+  { assetID: string, aspectRatio: AspectRatio },
   { rejectValue: Failure }
 >(
   '@api/preloadSequentialImages',
-  async (assetID, { rejectWithValue }) => {
-      const startIdx = 1;
-      const endIdx = SCRUBBER_FRAMES_MAX;
-      const nameFormat = 'img .jpg';
-      const zeroPadding = 3;
-      const directoryPath = `/uploads/${assetID}`;
-      const filenameArr: Array<string> = Array(endIdx - startIdx + 1).fill(startIdx).map((val, idx) => {
-        const imgIdx = val + idx + '';
-        const imgName = nameFormat.replace(' ', imgIdx.padStart(zeroPadding, '0'));
-        return imgName;
-      });
-
-      const loadObjectURL = (path: string): Promise<string> => {
-        return new Promise<string>((resolve, reject) => {
-          const req = new XMLHttpRequest();
-          req.open('GET', path, true);
-          req.responseType = 'blob';
-          req.onload = function() {
-            if (this.status === 200) {
-              const imageBlob: Blob = this.response;
-              resolve(URL.createObjectURL(imageBlob)); // IE10+
-            } else {
-              reject(`req status ${this.status}: ${path}`);
-            }
-          }
-          req.onerror = function() {
-            reject('req ERROR')
-          }
-          req.send();
-        });
-      };
-
+  async ({ assetID, aspectRatio }, { rejectWithValue, dispatch, getState }) => {
+    const index = (getState() as RootState).scrubber.currentScrubberFrame;
     try {
-      const [imageURLs, imageURLs9x16] = await Promise.all([
-        Promise.all(filenameArr.map((filename) => loadObjectURL(`${directoryPath}/${filename}`))),
-        Promise.all(filenameArr.map((filename) => loadObjectURL(`${directoryPath}/${filename.replace(/\.jpg$/i, '_9x16.jpg')}`)))
-      ]);
-      return { imageURLs, imageURLs9x16, imageFilenames: filenameArr };
+      const url = await loadObjectURL(framePath(assetID, index, aspectRatio));
+      dispatch(setUploadProgress({ stage: 'loading', fraction: 1 }));
+      return { aspectRatio, index, url, imageFilenames: frameFilenames() };
     } catch (err) {
       return rejectWithValue({ stage: 'preload', reason: 'download_failed', detail: String(err) });
     }

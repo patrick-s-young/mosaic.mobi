@@ -2,6 +2,7 @@ import { initAnalytics, logEvent, AnalyticsEvent } from '@analytics/analytics';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
+  AppHint,
   AspectRatioToggle,
   AssignDisplay,
   InAppPrompt,
@@ -16,7 +17,7 @@ import {
 // slices
 import { setScrubberCanvasWidth } from '@/components/Scrubber/scrubber.slice';
 import { setCanvasWidth, setUiVisible } from './app.slice';
-import { appDimensions, isMobileDevice } from './app.config';
+import { appDimensions, isMobileDevice, POSTER_URL } from './app.config';
 // interfaces
 import { AppState } from '@interfaces/AppState';
 import { NavState } from '@interfaces/NavState';
@@ -35,6 +36,7 @@ const App: React.FC = () => {
   const { appPhase, aspectRatio, uiVisible } = useSelector<RootState, AppState>((state) => state.app);
   const [isInAppBrowser, _ ] = useState(window.navigator.userAgent.indexOf('Instagram') > -1);
   const is9x16 = aspectRatio === '9x16';
+  const isWaitingForFirstVideo = mosaicPhase === MosaicPhaseEnum.WAITING_FOR_VIDEO;
 
 
   useEffect(() => {
@@ -72,20 +74,25 @@ const App: React.FC = () => {
                 isActive={navPhase === NavPhaseEnum.UPLOAD}
             />
             { navPhase === NavPhaseEnum.EDIT && <AspectRatioToggle /> }
+            <AppHint />
             <div
               className={`video_area ${is9x16 ? 'video_area--9x16' : ''}`}
-              style={is9x16 ? undefined : appDimensions.videoArea}
+              style={{
+                ...(is9x16 ? undefined : appDimensions.videoArea),
+                ...(isWaitingForFirstVideo ? { backgroundImage: `url(${POSTER_URL})` } : undefined)
+              }}
               onClick={is9x16 ? onToggleControls : undefined}
             >
-              { mosaicPhase !== MosaicPhaseEnum.WAITING_FOR_VIDEO &&
-                <>
-                  <Scrubber />
-                  <MosaicTiles />
-                </>
+              { isWaitingForFirstVideo
+                ? <div className='video_area__spinner' role='status' aria-label='Loading' />
+                : <>
+                    <Scrubber />
+                    <MosaicTiles />
+                  </>
               }
             </div>
             <div
-              className={`app_ui_container ${is9x16 ? 'app_ui_container--9x16' : ''} ${is9x16 && !uiVisible ? 'app_ui_container--hidden' : ''}`}
+              className={`app_ui_container ${is9x16 ? 'app_ui_container--9x16' : ''} ${is9x16 && !uiVisible ? 'app_ui_container--hidden' : ''} ${isWaitingForFirstVideo ? 'app_ui_container--waiting' : ''}`}
               style={is9x16 ? undefined : { height: appDimensions.uiContainerHeight }}
             >
               {/* debug tool: <MobileDisplayLog /> */}

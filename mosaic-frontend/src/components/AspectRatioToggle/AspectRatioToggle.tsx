@@ -1,24 +1,36 @@
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logEvent, AnalyticsEvent } from '@analytics/analytics';
-import { setAspectRatio } from '@/app.slice';
+import { setAspectRatio, setHint } from '@/app.slice';
+import { loadAspectAssets, loadRemainingFrames, reportFailure } from '@api/index';
 import { setAspectFormatting } from '@components/MosaicTiles';
 import { AppState } from '@interfaces/AppState';
 import { AppPhaseEnum } from '@typescript/enums';
-import type { RootState, UploadState, AspectRatio } from '@typescript/types';
+import type { AppDispatch, RootState, UploadState, AspectRatio } from '@typescript/types';
 import './aspectRatioToggle.scss';
 
-// Toggles the editor between 1:1 and 9:16. Both aspect-ratio preview sources are
-// preloaded at upload time, so switching is an instant in-memory swap that just
-// recomputes tile geometry and restarts the preview animation.
+// Toggles the editor between 1:1 and 9:16. The other format is fetched the first
+// time it's needed; the toggle waits for it, then recomputes tile geometry and
+// restarts the preview animation.
 const AspectRatioToggle: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const [isSwitching, setIsSwitching] = useState(false);
   const { aspectRatio, canvasWidth, appPhase } = useSelector<RootState, AppState>((state) => state.app);
-  const { resizedWidth } = useSelector<RootState, UploadState>((state) => state.upload);
+  const { resizedWidth, assetID } = useSelector<RootState, UploadState>((state) => state.upload);
   const isLoading = appPhase === AppPhaseEnum.LOADING;
 
-  const onToggle = () => {
-    if (isLoading) return;
+  const onToggle = async () => {
+    if (isLoading || isSwitching) return;
     const nextAspectRatio: AspectRatio = aspectRatio === '1x1' ? '9x16' : '1x1';
+    setIsSwitching(true);
+    const result = await dispatch(loadAspectAssets({ assetID, aspectRatio: nextAspectRatio }));
+    setIsSwitching(false);
+    if (loadAspectAssets.rejected.match(result)) {
+      dispatch(setHint({ hint: 'formatFailed' }));
+      reportFailure(result.payload ?? { stage: 'preload', reason: 'download_failed' }, assetID);
+      return;
+    }
+    dispatch(loadRemainingFrames({ assetID, aspectRatio: nextAspectRatio }));
     dispatch(setAspectRatio({ aspectRatio: nextAspectRatio }));
     dispatch(setAspectFormatting({ videoWidth: resizedWidth, canvasWidth, aspectRatio: nextAspectRatio }));
     logEvent(AnalyticsEvent.SELECT_ASPECT_RATIO, { aspect_ratio: nextAspectRatio });
@@ -32,7 +44,7 @@ const AspectRatioToggle: React.FC = () => {
     <button
       className='aspectRatioToggle'
       onClick={onToggle}
-      disabled={isLoading}
+      disabled={isLoading || isSwitching}
       aria-label={`Switch to ${targetLabel} aspect ratio`}
       title={`Switch to ${targetLabel}`}
     >

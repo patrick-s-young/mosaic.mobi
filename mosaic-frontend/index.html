@@ -11,12 +11,19 @@
     <meta property="og:url" content="https://www.mosaic.mobi" />
     <meta property="og:description" content="Make hypnotic, eye-catching videos for your IG. No download required." />
     <meta property="og:image" content="https://www.mosaic.mobi/mosaic_preview_300x300.png" />
+    <!-- the demo's opening frame (POSTER_URL), fetched before any script runs -->
+    <link rel="preload" as="image" href="/uploads/330055/img011_9x16.jpg" />
     <style>
       .loading-container {
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
+      }
+      @media (max-width: 600px) {
+        .loading-container {
+          background: url('/uploads/330055/img011_9x16.jpg') center / cover no-repeat;
+        }
       }
     </style>
   </head>

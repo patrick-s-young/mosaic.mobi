@@ -1,29 +1,31 @@
 import {
   createAsyncThunk
 } from '@reduxjs/toolkit';
-import type { Failure } from '@typescript/types';
+import { loadObjectURL, previewPath, setUploadProgress } from './assetLoading';
+import type { AspectRatio, Failure, RootState } from '@typescript/types';
 
-// preloads both aspect-ratio preview sources (resized.mov and resized_9x16.mov)
-// as object URLs so toggling between 1:1 and 9:16 is instant (no re-fetch)
+// the share of the "loading" step taken by the preview video; one frame follows
+const PREVIEW_SHARE = 0.9;
+
+// Fetches only the format on screen, as an object URL so it plays without more
+// requests. The other format loads if the user switches to it (loadAspectAssets).
 export const preloadUserVideo = createAsyncThunk<
-  { videoURL: string, videoURL9x16: string },
-  string,
+  { aspectRatio: AspectRatio, url: string },
+  { assetID: string, aspectRatio: AspectRatio },
   { rejectValue: Failure }
 >(
   '@api/preloadUserVideo',
-  async (assetID, { rejectWithValue }) => {
-    const loadObjectURL = async (filename: string) => {
-      const response = await fetch(`/uploads/${assetID}/${filename}`, { method: 'GET' });
-      if (!response.ok) throw new Error(`preloadUserVideo status ${response.status}: ${filename}`);
-      const videoBlob = await response.blob();
-      return URL.createObjectURL(videoBlob);
-    };
+  async ({ assetID, aspectRatio }, { rejectWithValue, dispatch, getState }) => {
     try {
-      const [videoURL, videoURL9x16] = await Promise.all([
-        loadObjectURL('resized.mov'),
-        loadObjectURL('resized_9x16.mov')
-      ]);
-      return { videoURL, videoURL9x16 };
+      const url = await loadObjectURL(previewPath(assetID, aspectRatio), (fraction) => {
+        dispatch(setUploadProgress({ stage: 'loading', fraction: fraction * PREVIEW_SHARE }));
+      });
+      // the previous video's files are about to be replaced, so free their memory
+      const { upload } = getState() as RootState;
+      [upload.videoURL, upload.videoURL9x16, ...upload.imageURLs, ...upload.imageURLs9x16]
+        .filter(Boolean)
+        .forEach((previousURL) => URL.revokeObjectURL(previousURL));
+      return { aspectRatio, url };
     } catch (err) {
       return rejectWithValue({ stage: 'preload', reason: 'download_failed', detail: String(err) });
     }

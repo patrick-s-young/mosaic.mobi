@@ -22,3 +22,5 @@ export type { Rect } from "./Rect";
 export type { RenderBlob } from "./RenderBlob";
 export type { AspectRatio } from "./AspectRatio";
 export type { Failure, FailureStage, FailureReason } from "./Failure";
+export type { UploadProgress } from "./UploadProgress";
+export type { AppHintKind } from "./AppHintKind";

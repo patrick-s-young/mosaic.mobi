@@ -90,7 +90,7 @@ const RenderMosaic: React.FC<RenderMosaicProps> = ({ displaySize, isActive }) =>
             isActive={renderPhase === RenderPhaseEnum.RENDERING}
             {...slideInOutProps}
           >
-            <FileIOPrompt action='rendering' />
+            <FileIOPrompt action='rendering' isActive={renderPhase === RenderPhaseEnum.RENDERING} />
           </SlideInOut>
 
           <SlideInOut 

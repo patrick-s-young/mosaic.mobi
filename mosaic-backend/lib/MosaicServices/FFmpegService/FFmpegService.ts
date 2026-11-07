@@ -91,7 +91,7 @@ export default class FFmpegService {
     });
   }
 
-  private emitProgress (req: Request, progress: { actionName: string, currentFrame: string, totalFrames: number }) {
+  private emitProgress (req: Request, progress: { actionName: string, currentFrame: string, totalFrames: number | string }) {
     const sessionId = failureLog.sessionIdFrom(req);
     if (sessionId !== 'unknown') io.to(sessionId).emit('ffmpegProgress', progress);
   }
@@ -151,7 +151,8 @@ export default class FFmpegService {
   public async resizeVideo (req: Request, res: Response, next: any) {
     const assetID = res.locals.assetID
     const dir = `${env.getVolumnPath()}/${assetID}`;
-    const { totalFrames } = res.locals.videoUpload;
+    // the previews are 24fps, whatever the source's frame rate
+    const totalFrames = Math.round(Number(res.locals.videoUpload.duration) * 24);
 
     const results = await Promise.all([
       this.runFfmpeg(
@@ -174,8 +175,9 @@ export default class FFmpegService {
   public async exportFrames (req: Request, res: Response, next: any) {
     const assetID = res.locals.assetID
     const dir = `${env.getVolumnPath()}/${assetID}`;
-    const { duration, totalFrames } = res.locals.videoUpload;
+    const { duration } = res.locals.videoUpload;
     const frameInterval = 18 / (duration - 1);
+    const totalFrames = Math.round(Number(duration) * frameInterval);
 
     const results = await Promise.all([
       this.runFfmpeg(
