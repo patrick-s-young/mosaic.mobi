@@ -21,6 +21,8 @@ type AspectRatio = keyof typeof ASPECT_OUTPUT;
 // the editor expects this many background frames per aspect ratio (SCRUBBER_FRAMES_MAX)
 const REQUIRED_FRAMES = 20;
 const STDERR_TAIL_LENGTH = 300;
+// the original sound fades out over the end of the export rather than cutting off
+const AUDIO_FADE_SECONDS = 1;
 
 interface FfmpegResult {
   ok: boolean;
@@ -52,6 +54,7 @@ export default class FFmpegService {
           failureLog.respond(req, res, { stage: 'processing', reason: 'unreadable_video', status: 422, detail: 'no video stream' });
           return;
         }
+        res.locals.videoUpload.hasAudio = info.streams.some((stream) => stream.codec_type === 'audio');
         next();
       })
       // a missing/unreadable upload.mov must fail the request, not reject
@@ -179,7 +182,19 @@ export default class FFmpegService {
     ]);
     if (this.failedFfmpeg(req, res, 'processing', 'resize', results)) return;
     console.log(`resizeVideo > done (1x1 + 9x16)`);
+    if (res.locals.videoUpload.hasAudio) res.locals.hasAudio = await this.extractAudio(dir);
     next();
+  }
+
+  // the original sound as a small file for the preview and the export. A failure
+  // here isn't a failed upload: the video just won't offer the sound option.
+  private async extractAudio (dir: string): Promise<boolean> {
+    const audioPath = `${dir}/audio.m4a`;
+    const result = await this.runFfmpeg(['-i', `${dir}/upload.mov`, '-map', '0:a:0', '-vn', '-c:a', 'aac', '-b:a', '128k', '-y', audioPath]);
+    if (result.ok) return true;
+    console.log(`extractAudio err: ${result.stderrTail}`);
+    fs.rmSync(audioPath, { force: true });
+    return false;
   }
 
   // desaturated scrubber background frames for each aspect ratio (imgNNN.jpg and imgNNN_9x16.jpg)
@@ -263,7 +278,9 @@ export default class FFmpegService {
     // never reused for identical source/frame/tile params. 'h' = grid lines, and
     // drops renders cached before ffmpeg's exit status was checked, which may be
     // corrupt.
-    const outputFilename = `mosaic_h_${aspectRatio}_${res.locals.numTiles}_${scrubberFrameBase}.mp4`;
+    const audioPath = `${outputDirectory}/audio.m4a`;
+    const withSound = res.locals.sound === '1' && fs.existsSync(audioPath);
+    const outputFilename = `mosaic_h_${aspectRatio}_${res.locals.numTiles}_${scrubberFrameBase}${withSound ? '_sound' : ''}.mp4`;
     const outputPath = `${outputDirectory}/${outputFilename}`;
     const thumbnailFilename = outputFilename.replace(/\.mp4$/, '.jpg');
     const thumbnailPath = `${outputDirectory}/${thumbnailFilename}`;
@@ -285,7 +302,17 @@ export default class FFmpegService {
     const tempPath = `${outputDirectory}/tmp_${randomUUID()}_${outputFilename}`;
     const ffmpegFilterComplexStr = createFfmpegFilterComplexStr(filterParams);
     const result = await this.runFfmpeg(
-      ['-i', bgImagePath, '-i', inputPath, '-filter_complex', ffmpegFilterComplexStr, '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-preset', 'veryfast', '-crf', '26', '-map', '[out]', '-an', '-y', tempPath],
+      [
+        '-i', bgImagePath, '-i', inputPath,
+        ...(withSound ? ['-stream_loop', '-1', '-i', audioPath] : []),
+        '-filter_complex', ffmpegFilterComplexStr,
+        '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-preset', 'veryfast', '-crf', '26', '-map', '[out]',
+        // the sound plays from the start and loops to fill the export
+        ...(withSound
+          ? ['-map', '2:a', '-af', `afade=t=out:st=${filterParams.outputDuration - AUDIO_FADE_SECONDS}:d=${AUDIO_FADE_SECONDS}`, '-c:a', 'aac', '-b:a', '160k', '-t', String(filterParams.outputDuration)]
+          : ['-an']),
+        '-y', tempPath
+      ],
       (frame) => this.emitProgress(req, { actionName: 'Rendering', currentFrame: frame, totalFrames: totalOutputFrames }),
       res
     );

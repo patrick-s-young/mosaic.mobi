@@ -12,6 +12,7 @@ import ScrubberSlider from '@components/ScrubberSlider/ScrubberSlider';
 import InAppPrompt from '@components/InAppPrompt/InAppPrompt';
 import AspectRatioToggle from '@components/AspectRatioToggle/AspectRatioToggle';
 import AppHint from '@components/AppHint/AppHint';
+import SoundToggle from '@components/SoundToggle/SoundToggle';
 
 export {
   PopOver,
@@ -27,5 +28,6 @@ export {
   ScrubberSlider,
   InAppPrompt,
   AspectRatioToggle,
-  AppHint
+  AppHint,
+  SoundToggle
 };

@@ -12,7 +12,7 @@ import {
 } from '@api/index';
 // slices
 import { setUploadPhase } from '@/components/UploadVideo/upload.slice';
-import { setAppPhase, setHint } from '@/app.slice';
+import { setAppPhase, setHint, setKeepSound } from '@/app.slice';
 import { setMosaicFormatting, setMosaicPhase } from '@components/MosaicTiles/mosaicTiles.slice';
 import { setNavPhase } from '@components/Navigation/nav.slice';
 import { setVideoUploadCount } from '@components/Scrubber/scrubber.slice';
@@ -84,6 +84,7 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
         // waiting state so the controls can't act on a video that isn't there yet
         if (selectedFile !== undefined) {
           dispatch(setMosaicPhase({ mosaicPhase: MosaicPhaseEnum.CANCEL_ANIMATION }));
+          dispatch(setKeepSound({ keepSound: false }));
         }
         dispatch(preloadUserVideo({ assetID, aspectRatio }));
         break;

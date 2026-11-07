@@ -12,6 +12,7 @@ import {
   RenderMosaic,
   Scrubber,
   ScrubberSlider,
+  SoundToggle,
   UploadVideo
 } from '@/components';
 // slices
@@ -74,6 +75,7 @@ const App: React.FC = () => {
                 isActive={navPhase === NavPhaseEnum.UPLOAD}
             />
             { navPhase === NavPhaseEnum.EDIT && <AspectRatioToggle /> }
+            <SoundToggle isVisible={navPhase === NavPhaseEnum.EDIT} />
             <AppHint />
             <div
               className={`video_area ${is9x16 ? 'video_area--9x16' : ''}`}
