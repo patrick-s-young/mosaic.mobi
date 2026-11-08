@@ -8,6 +8,7 @@ import { Request, Response } from 'express';
 import { io } from '../../App';
 import failureLog from '../FailureLogService/FailureLogService';
 import { randomUUID } from 'crypto';
+import ffmpegJobs, { FFMPEG_THREADS, Refusal, Release, isClosed } from '../JobQueue/JobQueue';
 const fs = require('fs');
 
 // the two supported output aspect ratios and their canvas dimensions
@@ -26,6 +27,16 @@ const MAX_CLIP_SECONDS = 15;
 const MIN_CLIP_SECONDS = 2;
 // the original sound fades out over the end of the export rather than cutting off
 const AUDIO_FADE_SECONDS = 1;
+// faster sources are reduced to this at the crop step. The export is 25 fps and
+// the previews 24, so the extra frames of a 60 fps or slow-motion clip only cost
+// memory (about 320 MB more per render at 60 fps).
+const MAX_SOURCE_FPS = 30;
+
+// "60/1" or "30000/1001" from ffprobe
+const parseFrameRate = (rate: unknown): number => {
+  const [num, den] = String(rate).split('/').map(Number);
+  return den > 0 ? num / den : Number(num) || 0;
+};
 
 interface FfmpegResult {
   ok: boolean;
@@ -49,7 +60,8 @@ export default class FFmpegService {
               width: info.streams[key].width,
               height: info.streams[key].height,
               duration: info.streams[key].duration,
-              totalFrames: info.streams[key].nb_frames
+              totalFrames: info.streams[key].nb_frames,
+              frameRate: parseFrameRate(info.streams[key].avg_frame_rate)
             }
           }
         }
@@ -93,12 +105,21 @@ export default class FFmpegService {
   // decide what a failure means; optional onProgress receives the current frame
   // number parsed from stderr. Pass stopWhenClosed to stop ffmpeg if that response
   // closes early, so a cancelled export gives its memory and CPU straight back.
+  // Threads are capped for every run: by default ffmpeg starts one per core for
+  // each encoder and filter graph, which multiplies its memory. The last
+  // argument is always the output, so the encoder cap goes just before it.
   private runFfmpeg (args: string[], onProgress?: (frame: string) => void, stopWhenClosed?: Response): Promise<FfmpegResult> {
     return new Promise((resolve) => {
       let stderrTail = '';
       let clientGone = false;
+      if (stopWhenClosed && isClosed(stopWhenClosed)) {
+        resolve({ ok: false, code: null, signal: null, stderrTail: '', clientGone: true });
+        return;
+      }
+      const threads = String(FFMPEG_THREADS);
+      const cappedArgs = ['-filter_complex_threads', threads, ...args.slice(0, -1), '-threads', threads, args[args.length - 1]];
       try {
-        const proc = spawn(ffmpeg.path, args);
+        const proc = spawn(ffmpeg.path, cappedArgs);
         proc.stderr?.setEncoding('utf8');
         proc.stderr?.on('data', function (data) {
           stderrTail = (stderrTail + data).slice(-STDERR_TAIL_LENGTH);
@@ -133,6 +154,11 @@ export default class FFmpegService {
   private failedFfmpeg (req: Request, res: Response, stage: string, step: string, results: FfmpegResult[]): boolean {
     const failed = results.find((result) => !result.ok);
     if (!failed) return false;
+    // the visitor cancelled, so ffmpeg was stopped on purpose
+    if (results.some((result) => result.clientGone)) {
+      console.log(`${step}: stopped, client disconnected`);
+      return true;
+    }
     const ending = failed.signal ? `signal ${failed.signal}` : `exit ${failed.code}`;
     failureLog.respond(req, res, {
       stage,
@@ -141,6 +167,39 @@ export default class FFmpegService {
       detail: `${step} ${ending}: ${failed.stderrTail}`
     });
     return true;
+  }
+
+  // Waits for a free ffmpeg slot. When the queue is full or the wait runs out,
+  // it answers the request as busy; when the visitor has already gone, there's
+  // no one to answer. Either way it returns undefined and the job must not run.
+  private async waitForSlot (req: Request, res: Response, stage: string): Promise<Release | undefined> {
+    const waitStart = Date.now();
+    const slot: Release | Refusal = await ffmpegJobs.acquire(res);
+    if (typeof slot === 'function') {
+      const waited = Date.now() - waitStart;
+      if (waited >= 100) console.log(`${stage}: waited ${waited}ms for an ffmpeg slot`);
+      return slot;
+    }
+    if (slot === 'gone') {
+      console.log(`${stage}: client disconnected while waiting for an ffmpeg slot`);
+      return undefined;
+    }
+    failureLog.respond(req, res, {
+      stage,
+      reason: 'busy',
+      status: 503,
+      detail: `${slot}: ${ffmpegJobs.runningCount} running, ${ffmpegJobs.waitingCount} waiting`
+    });
+    return undefined;
+  }
+
+  // upload processing holds one slot for all its steps, until the response
+  // ends. Its ffmpeg runs stop if the visitor cancels, so the slot frees then.
+  public async queueProcessing (req: Request, res: Response, next: any) {
+    const release = await this.waitForSlot(req, res, 'processing');
+    if (!release) return;
+    res.once('close', release);
+    next();
   }
 
   // input options that read only the trimmed window of upload.mov. As input
@@ -167,18 +226,24 @@ export default class FFmpegService {
     const assetID = res.locals.assetID
     const dir = `${env.getVolumnPath()}/${assetID}`;
     const inputPath = `${dir}/upload.mov`;
-    const { totalFrames } = res.locals.videoUpload;
+    const { duration, frameRate } = res.locals.videoUpload;
+    const capFps = frameRate > MAX_SOURCE_FPS + 0.5;
+    const fps = capFps ? `fps=${MAX_SOURCE_FPS}, ` : '';
+    const totalFrames = capFps ? Math.round(Number(duration) * MAX_SOURCE_FPS) : res.locals.videoUpload.totalFrames;
 
     const squareCrop = this.buildCrop(ASPECT_OUTPUT['1x1'].crop);
     const wideCrop = this.buildCrop(ASPECT_OUTPUT['9x16'].crop);
 
     const results = await Promise.all([
       this.runFfmpeg(
-        [...this.trimInput(res), '-i', inputPath, '-filter_complex', `[0:v] crop=${squareCrop}, scale=1080:-1 [final]`, '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/cropped.mov`],
-        (frame) => this.emitProgress(req, { actionName: 'Cropping', currentFrame: frame, totalFrames })
+        [...this.trimInput(res), '-i', inputPath, '-filter_complex', `[0:v] crop=${squareCrop}, ${fps}scale=1080:-1 [final]`, '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/cropped.mov`],
+        (frame) => this.emitProgress(req, { actionName: 'Cropping', currentFrame: frame, totalFrames }),
+        res
       ),
       this.runFfmpeg(
-        [...this.trimInput(res), '-i', inputPath, '-filter_complex', `[0:v] crop=${wideCrop}, scale=1080:1920 [final]`, '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/cropped_9x16.mov`]
+        [...this.trimInput(res), '-i', inputPath, '-filter_complex', `[0:v] crop=${wideCrop}, ${fps}scale=1080:1920 [final]`, '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/cropped_9x16.mov`],
+        undefined,
+        res
       )
     ]);
     if (this.failedFfmpeg(req, res, 'processing', 'crop', results)) return;
@@ -196,26 +261,29 @@ export default class FFmpegService {
     const results = await Promise.all([
       this.runFfmpeg(
         ['-i', `${dir}/cropped.mov`, '-filter_complex', `[0:v] scale=320:-1,fps=24 [final]`, '-g', '12', '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/resized.mov`],
-        (frame) => this.emitProgress(req, { actionName: 'Resizing', currentFrame: frame, totalFrames })
+        (frame) => this.emitProgress(req, { actionName: 'Resizing', currentFrame: frame, totalFrames }),
+        res
       ),
       // 320x576 (both multiples of 16). The height is macroblock-aligned so
       // iOS/WebKit can draw this preview video to a <canvas>; a non-aligned
       // height (e.g. 568) renders blank on iOS. Kept in sync with getAspectHeight.
       this.runFfmpeg(
-        ['-i', `${dir}/cropped_9x16.mov`, '-filter_complex', `[0:v] scale=320:576,fps=24 [final]`, '-g', '12', '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/resized_9x16.mov`]
+        ['-i', `${dir}/cropped_9x16.mov`, '-filter_complex', `[0:v] scale=320:576,fps=24 [final]`, '-g', '12', '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/resized_9x16.mov`],
+        undefined,
+        res
       )
     ]);
     if (this.failedFfmpeg(req, res, 'processing', 'resize', results)) return;
     console.log(`resizeVideo > done (1x1 + 9x16)`);
-    if (res.locals.videoUpload.hasAudio) res.locals.hasAudio = await this.extractAudio(dir, this.trimInput(res));
+    if (res.locals.videoUpload.hasAudio) res.locals.hasAudio = await this.extractAudio(dir, this.trimInput(res), res);
     next();
   }
 
   // the original sound as a small file for the preview and the export. A failure
   // here isn't a failed upload: the video just won't offer the sound option.
-  private async extractAudio (dir: string, trimInput: string[]): Promise<boolean> {
+  private async extractAudio (dir: string, trimInput: string[], res: Response): Promise<boolean> {
     const audioPath = `${dir}/audio.m4a`;
-    const result = await this.runFfmpeg([...trimInput, '-i', `${dir}/upload.mov`, '-map', '0:a:0', '-vn', '-c:a', 'aac', '-b:a', '128k', '-y', audioPath]);
+    const result = await this.runFfmpeg([...trimInput, '-i', `${dir}/upload.mov`, '-map', '0:a:0', '-vn', '-c:a', 'aac', '-b:a', '128k', '-y', audioPath], undefined, res);
     if (result.ok) return true;
     console.log(`extractAudio err: ${result.stderrTail}`);
     fs.rmSync(audioPath, { force: true });
@@ -233,10 +301,13 @@ export default class FFmpegService {
     const results = await Promise.all([
       this.runFfmpeg(
         ['-i', `${dir}/cropped.mov`, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-preset', 'ultrafast', '-crf', '28', `${dir}/img%03d.jpg`],
-        (frame) => this.emitProgress(req, { actionName: 'Exporting', currentFrame: frame, totalFrames })
+        (frame) => this.emitProgress(req, { actionName: 'Exporting', currentFrame: frame, totalFrames }),
+        res
       ),
       this.runFfmpeg(
-        ['-i', `${dir}/cropped_9x16.mov`, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-preset', 'ultrafast', '-crf', '28', `${dir}/img%03d_9x16.jpg`]
+        ['-i', `${dir}/cropped_9x16.mov`, '-vf', 'hue=s=0.1', '-r', frameInterval.toString(), '-preset', 'ultrafast', '-crf', '28', `${dir}/img%03d_9x16.jpg`],
+        undefined,
+        res
       )
     ]);
     if (this.failedFfmpeg(req, res, 'processing', 'export', results)) return;
@@ -324,6 +395,9 @@ export default class FFmpegService {
     // killed ffmpeg can never leave a broken file at the cached path. The name
     // is unique so identical simultaneous requests can't write over each other,
     // and it stays out of the 'mosaic_' archive filter.
+    // only renders that aren't cached wait for a slot
+    const release = await this.waitForSlot(req, res, 'render');
+    if (!release) return;
     const tempPath = `${outputDirectory}/tmp_${randomUUID()}_${outputFilename}`;
     const ffmpegFilterComplexStr = createFfmpegFilterComplexStr(filterParams);
     const result = await this.runFfmpeg(
@@ -340,7 +414,7 @@ export default class FFmpegService {
       ],
       (frame) => this.emitProgress(req, { actionName: 'Rendering', currentFrame: frame, totalFrames: totalOutputFrames }),
       res
-    );
+    ).finally(release);
     if (result.clientGone) {
       fs.rmSync(tempPath, { force: true });
       console.log(`renderMosaic : stopped, client disconnected`);

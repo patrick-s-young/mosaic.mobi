@@ -8,9 +8,22 @@ import { createServer } from 'http';
 import env from './environment';
 import { NextFunction, Request, Response } from 'express';
 import failureLog from './MosaicServices/FailureLogService/FailureLogService';
+import RateLimiter from './MosaicServices/RateLimiter/RateLimiter';
+
+const MINUTE = 60 * 1000;
 
 const app = express();
-app.set('trust proxy', true);
+// requests arrive through the load balancer and then nginx, each adding the
+// address it saw to X-Forwarded-For. Trusting exactly those two hops gives the
+// visitor's real address; trusting all of them would let a visitor choose their
+// own, and get around the rate limits.
+app.set('trust proxy', Number(process.env.TRUST_PROXY_HOPS ?? 2));
+
+// before the body is parsed, so a rejected upload is never read into memory
+app.use('/uploadvideo', new RateLimiter('upload', 12, 15 * MINUTE).middleware());
+app.use('/render', new RateLimiter('render', 40, 15 * MINUTE).middleware());
+app.use('/api/failure', new RateLimiter(null, 30, MINUTE).middleware());
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressFileUpload());
 // the volume also holds originals, manifests (with location) and the failure
