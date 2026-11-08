@@ -1,8 +1,7 @@
 import type { UploadProgress } from '@typescript/types';
 
 export interface FileIOPromptProps {
-  action: 'rendering' | 'exportReady' | 'upload' | 'uploading' | 'videoTooLong' | 'uploadFailed' | 'renderFailed'
-  videoDuration?: number
+  action: 'rendering' | 'exportReady' | 'upload' | 'uploading' | 'trim' | 'uploadFailed' | 'renderFailed'
   callBack?: () => void
   onCancel?: () => void
   headlineOverride?: string

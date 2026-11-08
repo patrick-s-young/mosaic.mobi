@@ -15,5 +15,7 @@ export type UploadState =
       imageFilenames: Array<string>,
       failure: Failure | undefined,
       uploadProgress: UploadProgress,
-      hasAudio: boolean
+      hasAudio: boolean,
+      originalDuration: number,
+      trimStart: number
     }

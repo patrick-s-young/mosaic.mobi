@@ -18,7 +18,7 @@ export const AnalyticsEvent = {
   TOGGLE_SOUND: 'toggle_sound',
   UPLOAD_VIDEO: 'upload_video',
   UPLOAD_SUCCESS: 'upload_success',
-  UPLOAD_REJECTED: 'upload_rejected',
+  TRIM_VIDEO: 'trim_video',
   UPLOAD_ERROR: 'upload_error',
   RENDER_VIDEO: 'render_video',
   RENDER_SUCCESS: 'render_success',

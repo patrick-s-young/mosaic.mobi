@@ -29,10 +29,12 @@ export const preUploadValidation = createAsyncThunk<
 >(
   '@api/preUploadValidation',
   async (selectedFile, { rejectWithValue }) => {
-    if (selectedFile.size > MAX_VIDEO_UPLOAD_BYTES) {
-      return rejectWithValue({ stage: 'validation', reason: 'too_large', detail: `${selectedFile.size} bytes` });
-    }
     const uploadDuration = await readDuration(selectedFile);
+    // the duration is recorded too, to show how often trimming would have
+    // helped if the limit applied to the trimmed clip instead of the original
+    if (selectedFile.size > MAX_VIDEO_UPLOAD_BYTES) {
+      return rejectWithValue({ stage: 'validation', reason: 'too_large', detail: `${selectedFile.size} bytes, ${uploadDuration ?? 'unknown'}s` });
+    }
     if (uploadDuration === null || !Number.isFinite(uploadDuration)) {
       return rejectWithValue({ stage: 'validation', reason: 'unreadable_file', detail: selectedFile.type });
     }
