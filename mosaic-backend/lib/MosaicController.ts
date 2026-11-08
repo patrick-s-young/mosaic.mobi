@@ -46,6 +46,10 @@ export class MosaicController {
     this.ffmpegService.probeVideo(req, res, next);
   }
 
+  public queueProcessing (req: Request, res: Response, next: any) {
+    this.ffmpegService.queueProcessing(req, res, next);
+  }
+
   public cropVideo (req: Request, res: Response, next: any) {
     this.ffmpegService.cropVideo(req, res, next);
   }

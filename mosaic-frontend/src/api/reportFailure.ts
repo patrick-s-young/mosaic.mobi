@@ -32,6 +32,8 @@ export const getSessionId = (): string => {
 // responses from nginx and the load balancer have no JSON body to read a reason from
 export const failureReasonForStatus = (status: number): FailureReason => {
   if (status === 413) return 'too_large';
+  if (status === 429) return 'rate_limited';
+  if (status === 503) return 'busy';
   if (status === 504) return 'timeout';
   return 'server_error';
 };

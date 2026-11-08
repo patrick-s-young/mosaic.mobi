@@ -57,6 +57,12 @@ The Express backend exposes two primary routes:
 
 FFmpeg progress is emitted over Socket.IO so the frontend prompt can show upload and render status.
 
+FFmpeg work goes through one queue, so the server only runs as many uploads and renders at once as its memory allows. Others wait up to 25 seconds, then get a "server is busy" message. Uploads, renders and failure reports are also rate limited per visitor. The defaults suit most servers; these optional backend environment variables change them:
+- `FFMPEG_MAX_JOBS`: uploads and renders processed at once (default: worked out from memory and cores, up to 4)
+- `FFMPEG_THREADS`: threads per FFmpeg run (default 2)
+- `FFMPEG_MAX_WAITING` and `FFMPEG_MAX_WAIT_MS`: how many requests may wait, and for how long (defaults 8 and 25000)
+- `TRUST_PROXY_HOPS`: proxies in front of the backend that add to `X-Forwarded-For`, used to find each visitor's address (default 2: the load balancer and nginx)
+
 
 ## Running Locally
 ```

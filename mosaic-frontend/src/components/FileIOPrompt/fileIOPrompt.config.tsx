@@ -61,6 +61,8 @@ const FAILURE_MESSAGES: Partial<Record<FailureReason, string>> = {
   download_failed: CHECK_CONNECTION,
   timeout: SERVER_BUSY,
   ffmpeg_killed: SERVER_BUSY,
+  busy: SERVER_BUSY,
+  rate_limited: 'You\'ve made a lot of videos in a short time. Please wait a few minutes and try again.',
   unreadable_video: COULD_NOT_PROCESS,
   missing_frames: COULD_NOT_PROCESS,
   ffmpeg_failed: COULD_NOT_PROCESS,

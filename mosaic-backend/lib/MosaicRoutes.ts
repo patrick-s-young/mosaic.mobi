@@ -26,6 +26,7 @@ export class MosaicRoutes {
       (req, res, next) => this.mosaicController.uploadVideo(req, res, next),
       (req, res, next) => this.mosaicController.createManifest(req, res, next),
       (req, res, next) => this.mosaicController.probeVideo(req, res, next),
+      (req, res, next) => this.mosaicController.queueProcessing(req, res, next),
       (req, res, next) => this.mosaicController.cropVideo(req, res, next),
       (req, res, next) => this.mosaicController.resizeVideo(req, res, next),
       (req, res, next) => this.mosaicController.exportFrames(req, res, next),
