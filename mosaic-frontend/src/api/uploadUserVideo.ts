@@ -4,10 +4,12 @@ import { failureReasonForStatus, getSessionId } from './reportFailure';
 import { setUploadProgress } from './assetLoading';
 
 // XMLHttpRequest rather than fetch, which can't report upload progress
-export const uploadUserVideo = createAsyncThunk<UploadAssetID & { hasAudio?: boolean }, File, { rejectValue: Failure }>(
+export const uploadUserVideo = createAsyncThunk<UploadAssetID & { hasAudio?: boolean }, { file: File, trimStart: number }, { rejectValue: Failure }>(
   '@api/uploadUserVideo',
-  (file, { rejectWithValue, dispatch, signal }) => new Promise<any>((resolve) => {
+  ({ file, trimStart }, { rejectWithValue, dispatch, signal }) => new Promise<any>((resolve) => {
     const formData = new FormData();
+    // before the file, so the server has it as soon as the file part begins
+    formData.append('trimStart', String(trimStart));
     formData.append('myFile', file);
 
     const request = new XMLHttpRequest();

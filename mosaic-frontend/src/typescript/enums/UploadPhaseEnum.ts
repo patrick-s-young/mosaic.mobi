@@ -1,6 +1,6 @@
 export enum UploadPhaseEnum {
   PROMPT,
-  VIDEO_TOO_LONG,
+  TRIMMING,
   VIDEO_UPLOADING,
   VIDEO_SUBMITED,
   VIDEO_UPLOADED,

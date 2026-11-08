@@ -38,6 +38,10 @@ export class MosaicRoutes {
           return res.status(400).send({ error: true, stage: 'render', reason: 'invalid_request' });
         }
         res.locals = { ...res.locals, ...req.query }
+        // set after the query, so a request can't choose which file is read. The
+        // cropped source is already trimmed, so its length is the one to use.
+        res.locals.probeFile = 'cropped.mov';
+        delete res.locals.trimStart;
         this.mosaicController.probeVideo(req, res, next)
       },
       (req, res, next) => this.mosaicController.renderMosaic(req, res, next),

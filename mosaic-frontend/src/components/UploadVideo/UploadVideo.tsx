@@ -1,5 +1,5 @@
 import { logEvent, AnalyticsEvent } from '@analytics/analytics';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // api
 import { 
@@ -11,7 +11,7 @@ import {
   reportFailure
 } from '@api/index';
 // slices
-import { setUploadPhase } from '@/components/UploadVideo/upload.slice';
+import { confirmTrim, setUploadPhase } from '@/components/UploadVideo/upload.slice';
 import { setAppPhase, setHint, setKeepSound } from '@/app.slice';
 import { setMosaicFormatting, setMosaicPhase } from '@components/MosaicTiles/mosaicTiles.slice';
 import { setNavPhase } from '@components/Navigation/nav.slice';
@@ -20,8 +20,9 @@ import { setVideoUploadCount } from '@components/Scrubber/scrubber.slice';
 import PopOver from '@components/PopOver/PopOver';
 import SlideInOut from '@components/SideInOut/SlideInOut';
 import FileIOPrompt from '@components/FileIOPrompt/FileIOPrompt';
+import TrimVideo from '@components/UploadVideo/TrimVideo';
 import { failureMessage } from '@components/FileIOPrompt/fileIOPrompt.config';
-import { popOverProps, slideInOutProps } from '@/app.config';
+import { MAX_VIDEO_UPLOAD_DURATION, popOverProps, slideInOutProps } from '@/app.config';
 // interfaces
 import { UploadVideoProps } from '@interfaces/UploadVideoProps';
 import { AppState } from '@interfaces/AppState';
@@ -33,6 +34,9 @@ import './uploadVideo.scss';
 
 
 
+// room left for the headline, message, slider and buttons around the trim preview
+const TRIM_CHROME_HEIGHT = 340;
+
 const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { canvasWidth, aspectRatio } = useSelector<RootState, AppState>((state) => state.app);
@@ -42,9 +46,13 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
           uploadDuration,
           resizedWidth,
           failure,
-          uploadProgress } = useSelector<RootState, UploadState>((state) => state.upload); 
+          uploadProgress,
+          originalDuration,
+          trimStart } = useSelector<RootState, UploadState>((state) => state.upload); 
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadRequestRef = useRef<{ abort: () => void }>();
+  const [trimDraft, setTrimDraft] = useState(0);
+  const needsTrim = selectedFile !== undefined && originalDuration > MAX_VIDEO_UPLOAD_DURATION;
 
   useEffect(() => {
     switch(uploadPhase) {
@@ -53,18 +61,15 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
           logEvent(AnalyticsEvent.UPLOAD_VIDEO, {
             file_size_mb: Math.round((selectedFile.size / (1024 * 1024)) * 10) / 10,
             file_type: selectedFile.type || 'unknown',
-            duration_s: Math.round(uploadDuration * 10) / 10
+            duration_s: Math.round(originalDuration * 10) / 10,
+            trimmed: needsTrim
           });
-          uploadRequestRef.current = dispatch(uploadUserVideo(selectedFile));
+          uploadRequestRef.current = dispatch(uploadUserVideo({ file: selectedFile, trimStart }));
           dispatch(setAppPhase({ appPhase: AppPhaseEnum.LOADING}));
         }
         break;
-      case UploadPhaseEnum.VIDEO_TOO_LONG:
-        logEvent(AnalyticsEvent.UPLOAD_REJECTED, {
-          reason: 'too_long',
-          duration_s: Math.round(uploadDuration * 10) / 10
-        });
-        reportFailure({ stage: 'validation', reason: 'too_long', detail: `${uploadDuration}s` });
+      case UploadPhaseEnum.TRIMMING:
+        setTrimDraft(0);
         break;
       case UploadPhaseEnum.UPLOAD_FAILED:
         if (failure !== undefined) {
@@ -134,6 +139,14 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
     dispatch(setAppPhase({ appPhase: AppPhaseEnum.NOT_LOADING }));
   }
 
+  const onUseClip = () => {
+    logEvent(AnalyticsEvent.TRIM_VIDEO, {
+      original_duration_s: Math.round(originalDuration * 10) / 10,
+      trim_start_s: Math.round(trimDraft * 10) / 10
+    });
+    dispatch(confirmTrim({ trimStart: trimDraft }));
+  }
+
   const handleUploadButtonClick = () => {
     inputRef.current?.click();
   }
@@ -180,11 +193,28 @@ const UploadVideo: React.FC<UploadVideoProps> = ({ displaySize, isActive }) => {
           </SlideInOut>
 
 
-          <SlideInOut 
-            isActive={uploadPhase === UploadPhaseEnum.VIDEO_TOO_LONG}
+          <SlideInOut
+            isActive={uploadPhase === UploadPhaseEnum.TRIMMING}
             {...slideInOutProps}
+            enter='12px'
           >
-            <FileIOPrompt action='videoTooLong' callBack={handleUploadButtonClick} onCancel={onCancel} videoDuration={uploadDuration} />
+            <FileIOPrompt
+              action='trim'
+              callBack={onUseClip}
+              onCancel={onCancel}
+              messageOverride={`Choose ${MAX_VIDEO_UPLOAD_DURATION} seconds from your ${Math.round(originalDuration)}-second video.`}
+            >
+              {needsTrim &&
+                <TrimVideo
+                  file={selectedFile}
+                  duration={originalDuration}
+                  start={trimDraft}
+                  onChange={setTrimDraft}
+                  isActive={uploadPhase === UploadPhaseEnum.TRIMMING}
+                  maxHeight={displaySize.height - TRIM_CHROME_HEIGHT}
+                />
+              }
+            </FileIOPrompt>
           </SlideInOut>
 
           <SlideInOut

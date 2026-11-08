@@ -19,7 +19,7 @@ Mosaic turns a short user-uploaded video into a square, social-media-friendly mo
 flowchart TD
     User[User selects a video] --> Validate[Frontend validates duration]
     Validate -->|15 seconds or less| Upload[POST /uploadvideo]
-    Validate -->|too long| TooLong[Show upload warning]
+    Validate -->|longer| Trim[Choose 15 seconds] --> Upload
 
     Upload --> Proxy[nginx proxy]
     Proxy --> Backend[Express backend]

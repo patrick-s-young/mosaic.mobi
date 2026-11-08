@@ -26,7 +26,9 @@ const initialState: UploadState = {
   statusMessage: '',
   failure: undefined,
   uploadProgress: { stage: 'loading', fraction: 0 },
-  hasAudio: false
+  hasAudio: false,
+  originalDuration: defaultVideoConfig.uploadDuration,
+  trimStart: 0
 }
 
 // every step of the upload chain ends here when it fails, so the user always
@@ -44,6 +46,13 @@ const uploadSlice = createSlice ({
       state.uploadPhase = action.payload.uploadPhase;
       state.failure = undefined;
     },
+    // the start of the 15 seconds chosen on the trim screen
+    confirmTrim (state, action: PayloadAction<{ trimStart: number }>) {
+      state.trimStart = action.payload.trimStart;
+      state.uploadDuration = MAX_VIDEO_UPLOAD_DURATION;
+      state.uploadProgress = { stage: 'sending', fraction: 0 };
+      state.uploadPhase = UploadPhaseEnum.VIDEO_SUBMITED;
+    },
     setVideoSubmitted (state, action: PayloadAction<UploadDuration & UploadSelectedFile>) {
       state.uploadDuration = action.payload.uploadDuration;
       state.selectedFile = action.payload.selectedFile;
@@ -59,11 +68,14 @@ const uploadSlice = createSlice ({
       console.log(`preUploadValidation.pending > action.payload: ${action.payload}`);
     })
     builder.addCase(preUploadValidation.fulfilled, (state, action) => {
-      state.uploadDuration = action.payload.uploadDuration;
-      if (state.uploadDuration > MAX_VIDEO_UPLOAD_DURATION) {
-        state.uploadPhase = UploadPhaseEnum.VIDEO_TOO_LONG;
+      // longer videos go to the trim screen instead of being turned away
+      state.selectedFile = action.payload.selectedFile;
+      state.originalDuration = action.payload.uploadDuration;
+      state.trimStart = 0;
+      if (action.payload.uploadDuration > MAX_VIDEO_UPLOAD_DURATION) {
+        state.uploadPhase = UploadPhaseEnum.TRIMMING;
       } else {
-        state.selectedFile = action.payload.selectedFile;
+        state.uploadDuration = action.payload.uploadDuration;
         state.uploadProgress = { stage: 'sending', fraction: 0 };
         state.uploadPhase = UploadPhaseEnum.VIDEO_SUBMITED;
       }
@@ -133,6 +145,7 @@ const uploadSlice = createSlice ({
 });
 
 export const {
+  confirmTrim,
   setVideoSubmitted,
   setUploadPhase
 } = uploadSlice.actions;

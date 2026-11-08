@@ -1,4 +1,4 @@
-import { Cached, CheckCircle, CloudUpload, Warning } from '@material-ui/icons';
+import { Cached, CheckCircle, CloudUpload, Movie, Warning } from '@material-ui/icons';
 import { MAX_VIDEO_UPLOAD_MB } from '@/app.config';
 import type { Failure, FailureReason } from '@typescript/types';
 
@@ -20,14 +20,14 @@ const PROMPT = {
   upload: {
     headline: 'UPLOAD VIDEO',
     headlineIcon: <CloudUpload style={{ fontSize: ICON_SIZE }}/>,
-    message: 'Add a video from your photo library that is fifteen seconds or less.',
+    message: 'Add a video from your photo library. Longer videos can be trimmed to fifteen seconds.',
     buttonLabel: 'UPLOAD',
   },
-  videoTooLong: {
-    headline: 'VIDEO TOO LONG',
-    headlineIcon: <Warning style={{ fontSize: ICON_SIZE }}/>,
-    message: 'The duration of your video is VIDEO_DURATION seconds long. Please upload a video that is fifteen seconds or less.',
-    buttonLabel: 'UPLOAD',
+  trim: {
+    headline: 'TRIM VIDEO',
+    headlineIcon: <Movie style={{ fontSize: ICON_SIZE }}/>,
+    message: '',
+    buttonLabel: 'USE CLIP',
   },
   uploading: {
     headline: 'UPLOADING',
@@ -54,7 +54,7 @@ const SERVER_BUSY = 'Our server is busy right now. Please try again in a moment.
 const CHECK_CONNECTION = 'The connection was interrupted. Please check it and try again.';
 
 const FAILURE_MESSAGES: Partial<Record<FailureReason, string>> = {
-  too_large: `This video is too large. Please choose one under ${MAX_VIDEO_UPLOAD_MB} MB.`,
+  too_large: `This video is too large. Please choose one under ${MAX_VIDEO_UPLOAD_MB} MB, or trim it in your Photos app first.`,
   too_short: 'This video is too short. Please choose one that is at least two seconds long.',
   unreadable_file: 'We couldn\'t read this video. Please try a different one, such as an MP4 or MOV from your phone.',
   network: CHECK_CONNECTION,

@@ -14,7 +14,6 @@ const NO_PROGRESS: FrameProgress = { actionName: null, currentFrame: 0, totalFra
 
 const FileIOPrompt = ({
   action,
-  videoDuration = 0,
   callBack = () => {},
   onCancel = () => {},
   headlineOverride,
@@ -31,9 +30,7 @@ const FileIOPrompt = ({
   const highestPercent = useRef(0);
   const isActiveRef = useRef(false);
   const { headline, headlineIcon, message, buttonLabel } = PROMPT[action];
-  const formattedMessage = messageOverride ?? (action === 'videoTooLong'
-  ? message.replace('VIDEO_DURATION', Number(videoDuration).toFixed(2))
-  : message);
+  const formattedMessage = messageOverride ?? message;
   const showButtons = action !== 'rendering' && action !== 'uploading';
 
   const progress = action === 'uploading' && uploadProgress
@@ -90,7 +87,7 @@ const FileIOPrompt = ({
       }
       {showButtons &&
         <div className={`fileIOPrompt__buttonsContainer ${showCancel ? '' : 'fileIOPrompt__buttonsContainer--single'}`}>
-          <PromptButton prompt={buttonLabelOverride ?? buttonLabel} onClick={callBack} primary={action === 'exportReady'} />
+          <PromptButton prompt={buttonLabelOverride ?? buttonLabel} onClick={callBack} primary={action === 'exportReady' || action === 'trim'} />
           {showCancel && <PromptButton prompt={cancelLabelOverride ?? 'CANCEL'} onClick={onCancel} />}
         </div>
       }

@@ -21,6 +21,9 @@ type AspectRatio = keyof typeof ASPECT_OUTPUT;
 // the editor expects this many background frames per aspect ratio (SCRUBBER_FRAMES_MAX)
 const REQUIRED_FRAMES = 20;
 const STDERR_TAIL_LENGTH = 300;
+// longest clip used, matching the export, and the shortest that can fill a tile
+const MAX_CLIP_SECONDS = 15;
+const MIN_CLIP_SECONDS = 2;
 // the original sound fades out over the end of the export rather than cutting off
 const AUDIO_FADE_SECONDS = 1;
 
@@ -35,7 +38,7 @@ interface FfmpegResult {
 export default class FFmpegService {
   public probeVideo (req: Request, res: Response, next: any) {
     const assetID = res.locals.assetID
-    const inputPath  = `${env.getVolumnPath()}/${assetID}/upload.mov`;
+    const inputPath  = `${env.getVolumnPath()}/${assetID}/${res.locals.probeFile ?? 'upload.mov'}`;
     console.log(`++ probeVideo inputPath: ${inputPath}`)
     ffprobe(inputPath, { path: ffprobeStatic.path })
       .then(function (info, err) {
@@ -55,6 +58,21 @@ export default class FFmpegService {
           return;
         }
         res.locals.videoUpload.hasAudio = info.streams.some((stream) => stream.codec_type === 'audio');
+
+        // on upload, keep only the window chosen on the trim screen, and never
+        // more than the export's length, whatever the browser sent
+        const fullDuration = Number(res.locals.videoUpload.duration);
+        if (res.locals.trimStart !== undefined && Number.isFinite(fullDuration)) {
+          const start = res.locals.trimStart;
+          if (fullDuration - start < MIN_CLIP_SECONDS) {
+            failureLog.respond(req, res, { stage: 'processing', reason: 'too_short', status: 422, detail: `start ${start}s of ${fullDuration}s` });
+            return;
+          }
+          const duration = Math.min(MAX_CLIP_SECONDS, fullDuration - start);
+          res.locals.trim = { start, duration };
+          res.locals.videoUpload.duration = duration;
+          res.locals.videoUpload.totalFrames = Math.round(Number(res.locals.videoUpload.totalFrames) * duration / fullDuration);
+        }
         next();
       })
       // a missing/unreadable upload.mov must fail the request, not reject
@@ -125,6 +143,13 @@ export default class FFmpegService {
     return true;
   }
 
+  // input options that read only the trimmed window of upload.mov. As input
+  // options, -ss seeks accurately because the video is re-encoded.
+  private trimInput (res: Response): string[] {
+    const trim = res.locals.trim;
+    return trim ? ['-ss', String(trim.start), '-t', String(trim.duration)] : [];
+  }
+
   // largest centered crop matching targetAspect (w/h), with even dimensions.
   // Written as expressions so it is evaluated against the frame ffmpeg actually
   // decoded: phones store portrait video as landscape plus a rotation flag, and
@@ -149,11 +174,11 @@ export default class FFmpegService {
 
     const results = await Promise.all([
       this.runFfmpeg(
-        ['-i', inputPath, '-filter_complex', `[0:v] crop=${squareCrop}, scale=1080:-1 [final]`, '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/cropped.mov`],
+        [...this.trimInput(res), '-i', inputPath, '-filter_complex', `[0:v] crop=${squareCrop}, scale=1080:-1 [final]`, '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/cropped.mov`],
         (frame) => this.emitProgress(req, { actionName: 'Cropping', currentFrame: frame, totalFrames })
       ),
       this.runFfmpeg(
-        ['-i', inputPath, '-filter_complex', `[0:v] crop=${wideCrop}, scale=1080:1920 [final]`, '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/cropped_9x16.mov`]
+        [...this.trimInput(res), '-i', inputPath, '-filter_complex', `[0:v] crop=${wideCrop}, scale=1080:1920 [final]`, '-pix_fmt', 'yuv420p', '-preset', 'ultrafast', '-crf', '28', '-map', '[final]', '-an', '-y', `${dir}/cropped_9x16.mov`]
       )
     ]);
     if (this.failedFfmpeg(req, res, 'processing', 'crop', results)) return;
@@ -182,15 +207,15 @@ export default class FFmpegService {
     ]);
     if (this.failedFfmpeg(req, res, 'processing', 'resize', results)) return;
     console.log(`resizeVideo > done (1x1 + 9x16)`);
-    if (res.locals.videoUpload.hasAudio) res.locals.hasAudio = await this.extractAudio(dir);
+    if (res.locals.videoUpload.hasAudio) res.locals.hasAudio = await this.extractAudio(dir, this.trimInput(res));
     next();
   }
 
   // the original sound as a small file for the preview and the export. A failure
   // here isn't a failed upload: the video just won't offer the sound option.
-  private async extractAudio (dir: string): Promise<boolean> {
+  private async extractAudio (dir: string, trimInput: string[]): Promise<boolean> {
     const audioPath = `${dir}/audio.m4a`;
-    const result = await this.runFfmpeg(['-i', `${dir}/upload.mov`, '-map', '0:a:0', '-vn', '-c:a', 'aac', '-b:a', '128k', '-y', audioPath]);
+    const result = await this.runFfmpeg([...trimInput, '-i', `${dir}/upload.mov`, '-map', '0:a:0', '-vn', '-c:a', 'aac', '-b:a', '128k', '-y', audioPath]);
     if (result.ok) return true;
     console.log(`extractAudio err: ${result.stderrTail}`);
     fs.rmSync(audioPath, { force: true });

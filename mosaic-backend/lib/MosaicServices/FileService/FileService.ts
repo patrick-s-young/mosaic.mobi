@@ -12,6 +12,13 @@ export default class FileService {
           return failureLog.respond(req, res, { stage: 'upload', reason: 'no_file', status: 400 });
         }
 
+        // start of the 15 seconds chosen on the trim screen; 0 for shorter videos
+        const trimStart = req.body?.trimStart === undefined ? 0 : Number(req.body.trimStart);
+        if (!Number.isFinite(trimStart) || trimStart < 0) {
+          return failureLog.respond(req, res, { stage: 'upload', reason: 'invalid_request', status: 400, detail: `trimStart ${req.body?.trimStart}` });
+        }
+        res.locals.trimStart = trimStart;
+
         // random, not a timestamp: this ID is the only thing protecting a user's
         // processed files, so it must not be guessable
         const assetID = randomUUID();
